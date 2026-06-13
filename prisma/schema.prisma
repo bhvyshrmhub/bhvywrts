@@ -1,0 +1,26 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated"
+}
+
+datasource db {
+  provider = "sqlite"
+}
+
+model Story {
+  id          String   @id @default(cuid())
+  title       String
+  subtitle    String   @default("")
+  slug        String   @unique
+  content     String   @default("")
+  excerpt     String   @default("")
+  category    String   @default("Thoughts")
+  tags        String   @default("")
+  coverImage  String   @default("")
+  published   Boolean  @default(false)
+  featured    Boolean  @default(false)
+  wordCount   Int      @default(0)
+  readingTime Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
