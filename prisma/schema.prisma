@@ -4,9 +4,8 @@ generator client {
 }
 
 datasource db {
-  provider = "sqlite"
+  provider = "postgresql"
 }
-
 model Story {
   id          String   @id @default(cuid())
   title       String

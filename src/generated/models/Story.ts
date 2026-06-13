@@ -1338,6 +1338,7 @@ export type StoryCreateManyArgs<ExtArgs extends runtime.Types.Extensions.Interna
    * The data used to create many Stories.
    */
   data: Prisma.StoryCreateManyInput | Prisma.StoryCreateManyInput[]
+  skipDuplicates?: boolean
 }
 
 /**
@@ -1356,6 +1357,7 @@ export type StoryCreateManyAndReturnArgs<ExtArgs extends runtime.Types.Extension
    * The data used to create many Stories.
    */
   data: Prisma.StoryCreateManyInput | Prisma.StoryCreateManyInput[]
+  skipDuplicates?: boolean
 }
 
 /**
