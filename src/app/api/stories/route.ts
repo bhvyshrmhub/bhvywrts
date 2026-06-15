@@ -55,8 +55,11 @@ export async function POST(req: NextRequest) {
 
   const body = await req.json()
 
+  const now = new Date().toISOString()
+
   const { data: story, error } = await sb()
     .insert({
+      id: crypto.randomUUID(),
       title: body.title,
       subtitle: body.subtitle || "",
       slug: body.slug,
@@ -69,6 +72,8 @@ export async function POST(req: NextRequest) {
       featured: body.featured ?? false,
       wordCount: body.wordCount ?? 0,
       readingTime: body.readingTime ?? 0,
+      createdAt: now,
+      updatedAt: now,
     })
     .select()
     .single()

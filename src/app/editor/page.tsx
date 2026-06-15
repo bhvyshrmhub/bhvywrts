@@ -31,6 +31,7 @@ export default function NewStoryPage() {
     const slug = slugify(title)
     const wordCount = calculateWords(content)
     const excerpt = content.replace(/<[^>]*>/g, "").slice(0, 200)
+    const generatedSlug = `${slug}-${Date.now()}`
 
     try {
       const res = await fetch("/api/stories", {
@@ -39,7 +40,7 @@ export default function NewStoryPage() {
         body: JSON.stringify({
           title,
           subtitle,
-          slug: `${slug}-${Date.now()}`,
+          slug: generatedSlug,
           content,
           excerpt,
           category,
@@ -48,9 +49,15 @@ export default function NewStoryPage() {
           published: publish,
         }),
       })
-      const story = await res.json()
-      router.push(`/editor/${story.slug}`)
-    } catch {}
+      if (!res.ok) {
+        const err = await res.json()
+        console.error("Failed to save story:", err.error)
+        return
+      }
+      router.push(`/editor/${generatedSlug}`)
+    } catch (e) {
+      console.error("Failed to save story:", e)
+    }
     setSaving(false)
   }
 
