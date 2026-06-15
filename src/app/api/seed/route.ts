@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server"
-import { prisma } from "@/lib/prisma"
+import { sb } from "@/lib/supabase"
 
 const sampleStories = [
   {
@@ -135,13 +135,28 @@ const sampleStories = [
 ]
 
 export async function GET() {
-  const existing = await prisma.story.count()
-  if (existing > 0) {
+  const { count: existing, error: countError } = await sb()
+    .select("*", { count: "exact", head: true })
+
+  if (countError) {
+    return NextResponse.json({ error: countError.message }, { status: 500 })
+  }
+
+  if (existing && existing > 0) {
     return NextResponse.json({ message: "Database already has stories", count: existing })
   }
 
-  for (const story of sampleStories) {
-    await prisma.story.create({ data: story })
+  const { error: insertError } = await sb()
+    .insert(
+      sampleStories.map((s) => ({
+        ...s,
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+      }))
+    )
+
+  if (insertError) {
+    return NextResponse.json({ error: insertError.message }, { status: 500 })
   }
 
   return NextResponse.json({ message: "Seeded successfully", count: sampleStories.length })

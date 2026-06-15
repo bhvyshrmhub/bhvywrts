@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server"
-import { prisma } from "@/lib/prisma"
+import { sb } from "@/lib/supabase"
 import { isAuthenticated } from "@/lib/auth"
 
 export async function GET(
@@ -7,11 +7,16 @@ export async function GET(
   { params }: { params: Promise<{ slug: string }> }
 ) {
   const { slug } = await params
-  const story = await prisma.story.findUnique({ where: { slug } })
 
-  if (!story) return NextResponse.json({ error: "Not found" }, { status: 404 })
+  const { data: story, error } = await sb()
+    .select("*")
+    .eq("slug", slug)
+    .single()
 
-  // Only allow viewing drafts if authenticated
+  if (error || !story) {
+    return NextResponse.json({ error: "Not found" }, { status: 404 })
+  }
+
   if (!story.published && !(await isAuthenticated(req))) {
     return NextResponse.json({ error: "Not found" }, { status: 404 })
   }
@@ -25,13 +30,35 @@ export async function PATCH(
 ) {
   const { slug } = await params
 
-  // Extra safety beyond middleware
   if (!(await isAuthenticated(req))) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
   }
 
   const body = await req.json()
-  const story = await prisma.story.update({ where: { slug }, data: body })
+
+  const { data: story, error } = await sb()
+    .update({
+      ...(body.title !== undefined && { title: body.title }),
+      ...(body.subtitle !== undefined && { subtitle: body.subtitle }),
+      ...(body.content !== undefined && { content: body.content }),
+      ...(body.excerpt !== undefined && { excerpt: body.excerpt }),
+      ...(body.category !== undefined && { category: body.category }),
+      ...(body.tags !== undefined && { tags: body.tags }),
+      ...(body.coverImage !== undefined && { coverImage: body.coverImage }),
+      ...(body.published !== undefined && { published: body.published }),
+      ...(body.featured !== undefined && { featured: body.featured }),
+      ...(body.wordCount !== undefined && { wordCount: body.wordCount }),
+      ...(body.readingTime !== undefined && { readingTime: body.readingTime }),
+      updatedAt: new Date().toISOString(),
+    })
+    .eq("slug", slug)
+    .select()
+    .single()
+
+  if (error) {
+    return NextResponse.json({ error: error.message }, { status: 500 })
+  }
+
   return NextResponse.json(story)
 }
 
@@ -45,6 +72,11 @@ export async function DELETE(
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
   }
 
-  await prisma.story.delete({ where: { slug } })
+  const { error } = await sb().delete().eq("slug", slug)
+
+  if (error) {
+    return NextResponse.json({ error: error.message }, { status: 500 })
+  }
+
   return NextResponse.json({ success: true })
 }

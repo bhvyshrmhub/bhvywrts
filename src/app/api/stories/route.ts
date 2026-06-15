@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server"
-import { prisma } from "@/lib/prisma"
+import { sb } from "@/lib/supabase"
 import { isAuthenticated } from "@/lib/auth"
 
 export async function GET(req: NextRequest) {
@@ -9,33 +9,41 @@ export async function GET(req: NextRequest) {
   const sort = searchParams.get("sort") || "newest"
   const published = searchParams.get("published")
 
-  const where: Record<string, unknown> = {}
+  let query = sb().select("*")
 
   if (published === "all") {
-    // Admin only: show all stories
+    // Admin: show all
   } else if (published === "true") {
-    where.published = true
+    query = query.eq("published", true)
   } else if (published === "false") {
-    where.published = false
+    query = query.eq("published", false)
   } else {
-    where.published = true
+    query = query.eq("published", true)
   }
 
-  if (category && category !== "all") where.category = category
+  if (category && category !== "all") {
+    query = query.eq("category", category)
+  }
+
   if (search) {
-    where.OR = [
-      { title: { contains: search } },
-      { excerpt: { contains: search } },
-      { tags: { contains: search } },
-    ]
+    query = query.or(
+      `title.ilike.%${search}%,excerpt.ilike.%${search}%,tags.ilike.%${search}%`
+    )
   }
 
-  const orderBy: Record<string, string> =
-    sort === "oldest" ? { createdAt: "asc" } :
-    sort === "title" ? { title: "asc" } :
-    { createdAt: "desc" }
+  if (sort === "oldest") {
+    query = query.order("createdAt", { ascending: true })
+  } else if (sort === "title") {
+    query = query.order("title", { ascending: true })
+  } else {
+    query = query.order("createdAt", { ascending: false })
+  }
 
-  const stories = await prisma.story.findMany({ where, orderBy })
+  const { data: stories, error } = await query
+
+  if (error) {
+    return NextResponse.json({ error: error.message }, { status: 500 })
+  }
 
   return NextResponse.json(stories)
 }
@@ -46,6 +54,28 @@ export async function POST(req: NextRequest) {
   }
 
   const body = await req.json()
-  const story = await prisma.story.create({ data: body })
+
+  const { data: story, error } = await sb()
+    .insert({
+      title: body.title,
+      subtitle: body.subtitle || "",
+      slug: body.slug,
+      content: body.content || "",
+      excerpt: body.excerpt || "",
+      category: body.category || "Thoughts",
+      tags: body.tags || "",
+      coverImage: body.coverImage || "",
+      published: body.published ?? false,
+      featured: body.featured ?? false,
+      wordCount: body.wordCount ?? 0,
+      readingTime: body.readingTime ?? 0,
+    })
+    .select()
+    .single()
+
+  if (error) {
+    return NextResponse.json({ error: error.message }, { status: 500 })
+  }
+
   return NextResponse.json(story)
 }

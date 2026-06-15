@@ -1,21 +1,24 @@
 import { NextResponse } from "next/server"
-import { prisma } from "@/lib/prisma"
+import { sb } from "@/lib/supabase"
 
 export async function GET() {
-  const [stories, published, featured] = await Promise.all([
-    prisma.story.findMany(),
-    prisma.story.count({ where: { published: true } }),
-    prisma.story.count({ where: { featured: true } }),
-  ])
+  const { data: stories, error } = await sb().select("*")
 
-  const totalWords = stories.reduce((acc, s) => acc + s.wordCount, 0)
-  const totalReadingTime = stories.reduce((acc, s) => acc + s.readingTime, 0)
+  if (error) {
+    return NextResponse.json({ error: error.message }, { status: 500 })
+  }
+
+  const totalStories = stories.length
+  const published = stories.filter((s: any) => s.published).length
+  const featured = stories.filter((s: any) => s.featured).length
+  const totalWords = stories.reduce((acc: number, s: any) => acc + (s.wordCount || 0), 0)
+  const totalReadingTime = stories.reduce((acc: number, s: any) => acc + (s.readingTime || 0), 0)
 
   return NextResponse.json({
-    totalStories: stories.length,
+    totalStories,
     published,
     featured,
-    drafts: stories.length - published,
+    drafts: totalStories - published,
     totalWords,
     totalReadingTime,
   })
