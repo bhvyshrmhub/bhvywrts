@@ -3,7 +3,7 @@
 import { useState, useEffect, use } from "react"
 import { useRouter } from "next/navigation"
 import { motion } from "framer-motion"
-import { ArrowLeft, Save, Eye, Check, X } from "lucide-react"
+import { ArrowLeft, Save, Eye, Check, X, Sparkles } from "lucide-react"
 import Link from "next/link"
 import { Navbar } from "@/components/Navbar"
 import { TipTapEditor } from "@/components/TipTapEditor"
@@ -48,20 +48,29 @@ export default function EditStoryPage({ params }: { params: Promise<{ id: string
     const wordCount = calculateWords(content)
     const excerpt = content.replace(/<[^>]*>/g, "").slice(0, 200)
 
-    await fetch(`/api/stories/${story.slug}`, {
-      method: "PATCH",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        title,
-        subtitle,
-        content,
-        excerpt,
-        category,
-        wordCount,
-        readingTime: calculateReadingTime(content),
-        published: publish,
-      }),
-    })
+    try {
+      const res = await fetch(`/api/stories/${story.slug}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          title,
+          subtitle,
+          content,
+          excerpt,
+          category,
+          wordCount,
+          readingTime: calculateReadingTime(content),
+          published: publish,
+        }),
+      })
+      if (!res.ok) {
+        const err = await res.json()
+        console.error("Failed to update story:", err.error)
+        return
+      }
+    } catch (e) {
+      console.error("Failed to update story:", e)
+    }
     setSaving(false)
   }
 
@@ -78,11 +87,11 @@ export default function EditStoryPage({ params }: { params: Promise<{ id: string
       <div className="relative min-h-screen">
         <Navbar />
         <main className="relative z-10 pt-20 max-w-4xl mx-auto px-4">
-          <div className="animate-pulse space-y-6">
-            <div className="h-8 bg-card/30 rounded w-1/4" />
-            <div className="h-10 bg-card/30 rounded w-3/4" />
-            <div className="h-6 bg-card/30 rounded w-1/2" />
-            <div className="h-96 bg-card/30 rounded-2xl" />
+          <div className="space-y-6">
+            <div className="h-5 skeleton rounded w-1/4" />
+            <div className="h-10 skeleton rounded w-3/4" />
+            <div className="h-5 skeleton rounded w-1/2" />
+            <div className="h-96 skeleton rounded-2xl" />
           </div>
         </main>
       </div>
@@ -92,7 +101,7 @@ export default function EditStoryPage({ params }: { params: Promise<{ id: string
   return (
     <div className="relative min-h-screen">
       <Navbar />
-      <main className="relative z-10 pt-20 pb-16">
+      <main className="relative z-10 pt-20 pb-24">
         <div className="max-w-4xl mx-auto px-4 sm:px-6">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -101,13 +110,13 @@ export default function EditStoryPage({ params }: { params: Promise<{ id: string
           >
             <Link
               href="/dashboard"
-              className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground"
+              className="inline-flex items-center gap-2 text-sm text-muted-foreground/50 hover:text-foreground transition-colors group"
             >
-              <ArrowLeft className="w-4 h-4" />
+              <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
               Back to Dashboard
             </Link>
 
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-1.5">
               {modes.map((m) => (
                 <button
                   key={m.id}
@@ -115,8 +124,8 @@ export default function EditStoryPage({ params }: { params: Promise<{ id: string
                   className={cn(
                     "px-3 py-1.5 rounded-full text-xs transition-all",
                     mode === m.id
-                      ? "bg-accent/20 text-accent border border-accent/30"
-                      : "text-muted-foreground hover:text-foreground border border-transparent"
+                      ? "glass text-primary border border-primary/20"
+                      : "text-muted-foreground/50 hover:text-foreground border border-transparent"
                   )}
                 >
                   {m.label}
@@ -130,60 +139,62 @@ export default function EditStoryPage({ params }: { params: Promise<{ id: string
               value={title}
               onChange={(e) => setTitle(e.target.value)}
               placeholder="Story Title..."
-              className="text-2xl sm:text-3xl font-bold border-none bg-transparent px-0 h-auto focus-visible:ring-0 placeholder:text-muted-foreground/30"
+              className="text-2xl sm:text-3xl font-bold border-none bg-transparent px-0 h-auto focus-visible:ring-0 placeholder:text-muted-foreground/20"
             />
             <Input
               value={subtitle}
               onChange={(e) => setSubtitle(e.target.value)}
               placeholder="Add a subtitle..."
-              className="text-base border-none bg-transparent px-0 h-auto focus-visible:ring-0 placeholder:text-muted-foreground/30 text-muted-foreground"
+              className="text-base border-none bg-transparent px-0 h-auto focus-visible:ring-0 placeholder:text-muted-foreground/20 text-muted-foreground/50"
             />
           </div>
 
           <TipTapEditor content={content} onChange={setContent} />
 
           <div className={cn(
-            "fixed bottom-0 left-0 right-0 border-t border-border/30 bg-background/80 backdrop-blur-xl z-40",
+            "fixed bottom-0 left-0 right-0 z-40",
             mode === "fullscreen" && "hidden"
           )}>
-            <div className="max-w-4xl mx-auto px-4 sm:px-6 py-3 flex items-center justify-between">
-              <div className="flex items-center gap-4 text-xs text-muted-foreground">
-                <span>{metrics.words} words</span>
-                <span>{metrics.characters} chars</span>
-                <span>{metrics.paragraphs} paragraphs</span>
-                <span>{metrics.readingTime} min read</span>
-              </div>
+            <div className="glass-strong border-t border-white/10">
+              <div className="max-w-4xl mx-auto px-4 sm:px-6 py-3 flex items-center justify-between">
+                <div className="flex items-center gap-3 sm:gap-4 text-xs text-muted-foreground/40">
+                  <span>{metrics.words} words</span>
+                  <span className="hidden sm:inline">{metrics.characters} chars</span>
+                  <span className="hidden sm:inline">{metrics.paragraphs} paragraphs</span>
+                  <span>{metrics.readingTime} min read</span>
+                </div>
 
-              <div className="flex items-center gap-2">
-                <Select value={category} onValueChange={setCategory}>
-                  <SelectTrigger className="h-8 text-xs rounded-full w-[130px] border-border/50">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {CATEGORIES.map((cat) => (
-                      <SelectItem key={cat} value={cat}>{cat}</SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-                <Button
-                  onClick={() => saveStory(story?.published ?? false)}
-                  disabled={saving || !title.trim()}
-                  variant="ghost"
-                  size="sm"
-                  className="rounded-full h-8 text-xs gap-1"
-                >
-                  <Save className="w-3.5 h-3.5" />
-                  Save
-                </Button>
-                <Button
-                  onClick={() => saveStory(true)}
-                  disabled={saving || !title.trim()}
-                  size="sm"
-                  className="rounded-full h-8 text-xs gap-1"
-                >
-                  <Check className="w-3.5 h-3.5" />
-                  Publish
-                </Button>
+                <div className="flex items-center gap-2">
+                  <Select value={category} onValueChange={setCategory}>
+                    <SelectTrigger className="h-8 text-xs rounded-xl w-[110px] sm:w-[130px] glass border-white/10">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {CATEGORIES.map((cat) => (
+                        <SelectItem key={cat} value={cat}>{cat}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  <Button
+                    onClick={() => saveStory(false)}
+                    disabled={saving || !title.trim()}
+                    variant="ghost"
+                    size="sm"
+                    className="rounded-xl h-8 text-xs gap-1.5 text-muted-foreground/60 hover:text-foreground"
+                  >
+                    <Save className="w-3.5 h-3.5" />
+                    <span className="hidden sm:inline">Save Draft</span>
+                  </Button>
+                  <Button
+                    onClick={() => saveStory(true)}
+                    disabled={saving || !title.trim()}
+                    size="sm"
+                    className="rounded-xl h-8 text-xs gap-1.5 bg-primary hover:bg-primary/90 text-primary-foreground"
+                  >
+                    <Check className="w-3.5 h-3.5" />
+                    <span className="hidden sm:inline">Publish</span>
+                  </Button>
+                </div>
               </div>
             </div>
           </div>

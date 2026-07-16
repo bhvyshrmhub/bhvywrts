@@ -6,6 +6,7 @@ import { Moon, Sun, Droplets, Sparkles, Leaf, Mountain } from "lucide-react"
 import { useThemeStore } from "@/lib/store"
 import type { Theme } from "@/types"
 import { themes } from "@/lib/themes"
+import { cn } from "@/lib/utils"
 
 const themeIcons: Record<Theme, React.ReactNode> = {
   midnight: <Moon className="w-4 h-4" />,
@@ -53,22 +54,28 @@ export function ThemeToggle() {
   }
 
   return (
-    <button
+    <motion.button
       onClick={cycleTheme}
-      className="relative flex items-center gap-2 px-3 py-1.5 rounded-full bg-accent/30 hover:bg-accent/50 border border-border/50 transition-all text-xs text-muted-foreground"
+      whileHover={{ scale: 1.05 }}
+      whileTap={{ scale: 0.95 }}
+      className={cn(
+        "relative flex items-center gap-2 px-3 py-1.5 rounded-full",
+        "glass text-xs text-muted-foreground/60 hover:text-foreground",
+        "transition-all"
+      )}
     >
       <AnimatePresence mode="wait">
         <motion.span
           key={theme}
-          initial={{ rotate: -90, opacity: 0 }}
-          animate={{ rotate: 0, opacity: 1 }}
-          exit={{ rotate: 90, opacity: 0 }}
-          transition={{ duration: 0.2 }}
+          initial={{ rotate: -90, opacity: 0, scale: 0.5 }}
+          animate={{ rotate: 0, opacity: 1, scale: 1 }}
+          exit={{ rotate: 90, opacity: 0, scale: 0.5 }}
+          transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
         >
           {themeIcons[theme]}
         </motion.span>
       </AnimatePresence>
       <span className="hidden sm:inline">{themes[theme].name}</span>
-    </button>
+    </motion.button>
   )
 }
