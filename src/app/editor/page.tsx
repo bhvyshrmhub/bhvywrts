@@ -3,7 +3,7 @@
 import { useState } from "react"
 import { useRouter } from "next/navigation"
 import { motion } from "framer-motion"
-import { ArrowLeft, Save, Check, Sparkles } from "lucide-react"
+import { ArrowLeft, Save, Check } from "lucide-react"
 import Link from "next/link"
 import { Navbar } from "@/components/Navbar"
 import { TipTapEditor } from "@/components/TipTapEditor"
@@ -36,14 +36,8 @@ export default function NewStoryPage() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          title,
-          subtitle,
-          slug: generatedSlug,
-          content,
-          excerpt,
-          category,
-          coverImage,
-          wordCount,
+          title, subtitle, slug: generatedSlug, content, excerpt,
+          category, coverImage, wordCount,
           readingTime: calculateReadingTime(content),
           published: publish,
         }),
@@ -71,7 +65,7 @@ export default function NewStoryPage() {
   return (
     <div className="relative min-h-screen">
       <Navbar />
-      <main className="relative pt-14 md:pt-16 pb-24">
+      <main className="relative pt-16 md:pt-20 pb-24">
         <div className="max-w-4xl mx-auto px-4 sm:px-6">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -94,7 +88,7 @@ export default function NewStoryPage() {
                   className={cn(
                     "px-2.5 py-1 rounded text-[11px] transition-colors",
                     mode === m.id
-                      ? "bg-foreground text-background"
+                      ? "glass text-foreground"
                       : "text-muted-foreground hover:text-foreground"
                   )}
                 >
@@ -134,7 +128,7 @@ export default function NewStoryPage() {
             transition={{ delay: 0.3 }}
             className={cn("fixed bottom-0 left-0 right-0 z-40", mode === "fullscreen" && "hidden")}
           >
-            <div className="border-t border-border bg-background">
+            <div className="glass-strong border-t border-glass-border">
               <div className="max-w-4xl mx-auto px-4 sm:px-6 py-3 flex items-center justify-between">
                 <div className="flex items-center gap-3 text-xs text-muted-foreground/60">
                   <span>{metrics.words} words</span>
@@ -164,7 +158,7 @@ export default function NewStoryPage() {
                   <button
                     onClick={() => saveStory(true)}
                     disabled={saving || !title.trim()}
-                    className="h-8 px-3 text-xs rounded-lg bg-foreground text-background hover:opacity-90 transition-opacity disabled:opacity-40 flex items-center gap-1.5"
+                    className="h-8 px-3 text-xs rounded-xl bg-primary text-primary-foreground hover:opacity-90 transition-opacity disabled:opacity-40 flex items-center gap-1.5"
                   >
                     <Check className="w-3.5 h-3.5" />
                     <span className="hidden sm:inline">Publish</span>

@@ -1,11 +1,11 @@
 "use client"
 
-import { useState, useEffect, useRef } from "react"
+import { useState, useEffect, useCallback, useRef } from "react"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { motion } from "framer-motion"
-import { Home, BookOpen, LayoutDashboard, PenSquare, Search, LogOut } from "lucide-react"
-import { SearchBar } from "./SearchBar"
+import { Search, Bookmark, User, BookOpen, LogOut } from "lucide-react"
+import { SearchOverlay } from "./SearchOverlay"
 import { ThemeToggle } from "./ThemeToggle"
 import { useAuthStore } from "@/lib/store"
 import { cn } from "@/lib/utils"
@@ -30,21 +30,23 @@ export function Navbar() {
     return () => window.removeEventListener("scroll", onScroll)
   }, [])
 
-  const navLinks = [
-    { href: "/", label: "Home", icon: Home },
-    { href: "/stories", label: "Library", icon: BookOpen },
-  ]
+  useEffect(() => {
+    const onKeyDown = (e: KeyboardEvent) => {
+      if ((e.metaKey || e.ctrlKey) && e.key === "k") {
+        e.preventDefault()
+        setSearchOpen(true)
+      }
+      if (e.key === "Escape") setSearchOpen(false)
+    }
+    window.addEventListener("keydown", onKeyDown)
+    return () => window.removeEventListener("keydown", onKeyDown)
+  }, [])
 
-  const adminLinks = isAdmin && !checking
-    ? [
-        { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
-        { href: "/editor", label: "Write", icon: PenSquare },
-      ]
-    : []
+  const logoRef = useRef<HTMLAnchorElement>(null)
 
   return (
     <>
-      <SearchBar open={searchOpen} onOpenChange={setSearchOpen} />
+      <SearchOverlay open={searchOpen} onClose={() => setSearchOpen(false)} />
 
       {/* Desktop Nav */}
       <motion.header
@@ -53,118 +55,117 @@ export function Navbar() {
         transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
         className={cn(
           "fixed top-0 left-0 right-0 z-50 hidden md:block transition-colors duration-300",
-          scrolled ? "bg-background/95 border-b border-border" : "bg-transparent"
+          scrolled ? "glass-strong" : "bg-transparent"
         )}
       >
         <nav className="max-w-6xl mx-auto px-6">
           <div className="flex items-center justify-between h-16">
-            <div className="flex items-center gap-10">
-              <Link href="/" className="flex items-center gap-2 group">
-                <span className="text-lg font-[var(--font-brand)] text-foreground leading-none">
-                  Bhavy Writes
-                </span>
+            <div className="w-[200px]">
+              <Link
+                href="/stories"
+                className={cn(
+                  "relative text-sm transition-colors",
+                  pathname === "/stories" ? "text-foreground" : "text-muted-foreground hover:text-foreground"
+                )}
+              >
+                Stories
+                {pathname === "/stories" && (
+                  <motion.div
+                    layoutId="nav-indicator"
+                    className="absolute -bottom-1 left-0 right-0 h-[2px] bg-foreground"
+                    transition={{ type: "spring", stiffness: 380, damping: 30 }}
+                  />
+                )}
               </Link>
-              <div className="flex items-center gap-1">
-                {navLinks.map((link) => (
-                  <Link
-                    key={link.href}
-                    href={link.href}
-                    className={cn(
-                      "relative px-3 py-1.5 text-sm transition-colors",
-                      pathname === link.href
-                        ? "text-foreground"
-                        : "text-muted-foreground hover:text-foreground"
-                    )}
-                  >
-                    {link.label}
-                    {pathname === link.href && (
-                      <motion.div
-                        layoutId="nav-indicator"
-                        className="absolute bottom-0 left-3 right-3 h-[2px] bg-foreground"
-                        transition={{ type: "spring", stiffness: 380, damping: 30 }}
-                      />
-                    )}
-                  </Link>
-                ))}
-              </div>
             </div>
 
-            <div className="flex items-center gap-3">
+            {/* Center */}
+            <Link
+              ref={logoRef}
+              href="/"
+              className="text-xl font-[var(--font-brand)] text-foreground hover:text-accent transition-colors"
+              id="nav-logo"
+            >
+              Bhavy Writes
+            </Link>
+
+            {/* Right */}
+            <div className="w-[200px] flex items-center justify-end gap-2">
               <button
                 onClick={() => setSearchOpen(true)}
-                className="flex items-center gap-2 px-3 py-1.5 text-sm text-muted-foreground border border-border rounded-lg hover:border-foreground/30 transition-colors"
+                className="flex items-center gap-2 px-3 py-1.5 text-sm text-muted-foreground rounded-lg hover:bg-secondary transition-colors"
                 aria-label="Search"
               >
                 <Search className="w-4 h-4" />
-                <span className="hidden sm:inline">Search</span>
-                <kbd className="hidden sm:inline-flex text-[10px] px-1.5 py-0.5 rounded border border-border bg-secondary text-muted-foreground ml-2">
+                <kbd className="text-[10px] px-1.5 py-0.5 rounded border border-border text-muted-foreground">
                   ⌘K
                 </kbd>
               </button>
-              {adminLinks.map((link) => (
-                <Link
-                  key={link.href}
-                  href={link.href}
-                  className={cn(
-                    "px-3 py-1.5 text-sm transition-colors",
-                    pathname === link.href
-                      ? "text-foreground"
-                      : "text-muted-foreground hover:text-foreground"
-                  )}
-                >
-                  {link.label}
-                </Link>
-              ))}
-              {isAdmin && !checking && (
-                <button
-                  onClick={logout}
-                  className="text-muted-foreground hover:text-foreground transition-colors p-1"
-                  title="Logout"
-                >
-                  <LogOut className="w-4 h-4" />
-                </button>
-              )}
               <ThemeToggle />
             </div>
           </div>
         </nav>
       </motion.header>
 
-      {/* Mobile Bottom Nav */}
-      <nav className="fixed bottom-0 left-0 right-0 z-50 md:hidden bg-background border-t border-border">
-        <div className="flex items-center justify-around h-14 px-2">
+      {/* Mobile Liquid Glass Nav */}
+      <nav className="fixed bottom-4 left-4 right-4 z-50 md:hidden">
+        <div className="flex items-center justify-around h-14 px-2 rounded-2xl glass-strong">
+          <Link
+            href="/stories"
+            className={cn(
+              "flex flex-col items-center gap-0.5 px-3 py-1 rounded-lg transition-colors",
+              pathname === "/stories" ? "text-foreground" : "text-muted-foreground"
+            )}
+          >
+            <BookOpen className="w-5 h-5" />
+            <span className="text-[9px] font-medium">Stories</span>
+          </Link>
+
           <button
             onClick={() => setSearchOpen(true)}
             className="flex flex-col items-center gap-0.5 px-3 py-1 text-muted-foreground"
           >
-            <Search className="w-4 h-4" />
-            <span className="text-[10px] font-medium">Search</span>
+            <Search className="w-5 h-5" />
+            <span className="text-[9px] font-medium">Search</span>
           </button>
-          {[...navLinks, ...adminLinks].map((link) => (
+
+          <Link
+            href="/stories?bookmarked=true"
+            className={cn(
+              "flex flex-col items-center gap-0.5 px-3 py-1 rounded-lg transition-colors",
+              pathname === "/stories" && "text-foreground" ? "text-foreground" : "text-muted-foreground"
+            )}
+          >
+            <Bookmark className="w-5 h-5" />
+            <span className="text-[9px] font-medium">Books</span>
+          </Link>
+
+          {isAdmin && !checking ? (
+            <>
+              <Link
+                href="/dashboard"
+                className="flex flex-col items-center gap-0.5 px-3 py-1 text-muted-foreground"
+              >
+                <User className="w-5 h-5" />
+                <span className="text-[9px] font-medium">Admin</span>
+              </Link>
+              <button
+                onClick={logout}
+                className="flex flex-col items-center gap-0.5 px-3 py-1 text-muted-foreground"
+              >
+                <LogOut className="w-5 h-5" />
+                <span className="text-[9px] font-medium">Exit</span>
+              </button>
+            </>
+          ) : (
             <Link
-              key={link.href}
-              href={link.href}
-              className={cn(
-                "flex flex-col items-center gap-0.5 px-3 py-1 rounded-lg transition-colors",
-                pathname === link.href
-                  ? "text-foreground"
-                  : "text-muted-foreground"
-              )}
-            >
-              <link.icon className="w-4 h-4" />
-              <span className="text-[10px] font-medium">{link.label}</span>
-            </Link>
-          ))}
-          {isAdmin && !checking && (
-            <button
-              onClick={logout}
+              href="/admin"
               className="flex flex-col items-center gap-0.5 px-3 py-1 text-muted-foreground"
             >
-              <LogOut className="w-4 h-4" />
-              <span className="text-[10px] font-medium">Logout</span>
-            </button>
+              <User className="w-5 h-5" />
+              <span className="text-[9px] font-medium">Me</span>
+            </Link>
           )}
-          <ThemeToggle />
         </div>
       </nav>
     </>

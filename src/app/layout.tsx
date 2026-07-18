@@ -58,7 +58,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className={`${geistSans.variable} ${geistMono.variable} ${playfair.variable} ${sourceSerif.variable} ${dancingScript.variable} ${ibmPlexMono.variable}`} suppressHydrationWarning>
-      <body className="min-h-screen bg-background text-foreground antialiased">
+      <body className="min-h-screen antialiased">
         <ThemeProvider>
           {children}
         </ThemeProvider>

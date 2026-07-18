@@ -1,26 +1,19 @@
 "use client"
 
-import { useTheme } from "next-themes"
-import { useEffect, useState } from "react"
-import { Moon, Sun } from "lucide-react"
+import { useThemeValue } from "./ThemeProvider"
 
 export function ThemeToggle() {
-  const { theme, setTheme, resolvedTheme } = useTheme()
-  const [mounted, setMounted] = useState(false)
-
-  useEffect(() => setMounted(true), [])
-
-  if (!mounted) return <div className="w-8 h-8" />
-
-  const current = theme === "system" ? resolvedTheme : theme
+  const { themeLabel, themeIcon, cycleTheme } = useThemeValue()
 
   return (
     <button
-      onClick={() => setTheme(current === "dark" ? "light" : "dark")}
-      className="relative flex items-center justify-center w-8 h-8 rounded-lg text-muted-foreground hover:text-foreground hover:bg-secondary transition-colors"
-      aria-label="Toggle theme"
+      onClick={cycleTheme}
+      className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs text-muted-foreground hover:text-foreground hover:bg-secondary transition-colors"
+      aria-label={`Theme: ${themeLabel}`}
+      title={`Theme: ${themeLabel}`}
     >
-      {current === "dark" ? <Moon className="w-4 h-4" /> : <Sun className="w-4 h-4" />}
+      <span className="text-sm">{themeIcon}</span>
+      <span className="hidden sm:inline font-medium">{themeLabel}</span>
     </button>
   )
 }

@@ -49,17 +49,11 @@ export function StoryCard({ story, index = 0 }: StoryCardProps) {
     e.preventDefault()
     e.stopPropagation()
     if (navigator.share) {
-      navigator.share({ title: story.title, url: `/stories/${story.slug}` })
+      navigator.share({ title: story.title, url: `/stories/${story.slug}` }).catch(() => {})
     } else {
       navigator.clipboard.writeText(`${window.location.origin}/stories/${story.slug}`)
     }
   }
-
-  const formattedDate = new Date(story.createdAt).toLocaleDateString("en-US", {
-    month: "short",
-    day: "numeric",
-    year: "numeric",
-  })
 
   return (
     <motion.article
@@ -67,11 +61,9 @@ export function StoryCard({ story, index = 0 }: StoryCardProps) {
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5, delay: index * 0.08, ease: [0.16, 1, 0.3, 1] }}
     >
-      <Link
-        href={`/stories/${story.slug}`}
-        className="group block"
-      >
-        <div className="hover-lift rounded-lg overflow-hidden bg-card border border-border">
+      <Link href={`/stories/${story.slug}`} className="group block">
+        <div className="glass-card rounded-xl overflow-hidden hover-lift">
+          {/* Cover Image */}
           <div className="aspect-[16/9] relative overflow-hidden bg-secondary">
             {story.coverImage ? (
               <>
@@ -81,7 +73,7 @@ export function StoryCard({ story, index = 0 }: StoryCardProps) {
                   alt={story.title}
                   onLoad={() => setImageLoaded(true)}
                   className={cn(
-                    "w-full h-full object-cover transition-all duration-700 group-hover:scale-[1.03]",
+                    "w-full h-full object-cover transition-all duration-700 group-hover:scale-[1.05]",
                     imageLoaded ? "opacity-100" : "opacity-0"
                   )}
                 />
@@ -89,31 +81,35 @@ export function StoryCard({ story, index = 0 }: StoryCardProps) {
             ) : (
               <div className="absolute inset-0 flex items-center justify-center">
                 <div className="text-center">
-                  <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1" className="text-muted-foreground/30 mx-auto mb-2">
+                  <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1" className="text-muted-foreground/20 mx-auto mb-2">
                     <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" />
                     <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" />
                   </svg>
-                  <span className="text-xs text-muted-foreground/40">No cover</span>
                 </div>
               </div>
             )}
+
+            {/* Glass overlay on hover */}
+            <div className="absolute inset-0 bg-gradient-to-t from-black/30 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+
+            {/* Category badge */}
+            {story.category && (
+              <span className="absolute top-3 left-3 px-2.5 py-1 rounded-full text-[10px] font-medium glass backdrop-blur-md text-foreground/80">
+                {story.category}
+              </span>
+            )}
           </div>
 
+          {/* Content */}
           <div className="p-5">
-            <div className="flex items-center gap-2 mb-3">
-              {story.category && (
-                <span className="text-[11px] font-medium text-muted-foreground uppercase tracking-wider">
-                  {story.category}
-                </span>
-              )}
-              <span className="text-[11px] text-muted-foreground/60">&middot;</span>
+            <div className="flex items-center gap-2 mb-2">
               <span className="text-[11px] text-muted-foreground flex items-center gap-1">
                 <Clock className="w-3 h-3" />
                 {readingTime}
               </span>
             </div>
 
-            <h3 className="text-lg font-[var(--font-serif)] text-foreground leading-snug group-hover:text-accent transition-colors duration-300">
+            <h3 className="text-lg font-[var(--font-serif)] text-foreground leading-snug group-hover:text-accent transition-colors duration-300 line-clamp-2">
               {story.title}
             </h3>
 
@@ -124,20 +120,22 @@ export function StoryCard({ story, index = 0 }: StoryCardProps) {
             )}
 
             <div className="flex items-center justify-between mt-4 pt-3 border-t border-border/50">
-              <span className="text-xs text-muted-foreground">{formattedDate}</span>
-              <div className="flex items-center gap-2">
+              <span className="text-xs text-muted-foreground">
+                {new Date(story.createdAt).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}
+              </span>
+              <div className="flex items-center gap-1">
                 <button
                   onClick={toggleBookmark}
                   className={cn(
-                    "p-1.5 rounded transition-colors",
-                    bookmarked ? "text-accent" : "text-muted-foreground hover:text-foreground"
+                    "p-1.5 rounded-lg transition-colors",
+                    bookmarked ? "text-accent" : "text-muted-foreground/50 hover:text-foreground"
                   )}
                 >
                   <Bookmark className="w-3.5 h-3.5" fill={bookmarked ? "currentColor" : "none"} />
                 </button>
                 <button
                   onClick={handleShare}
-                  className="p-1.5 rounded text-muted-foreground hover:text-foreground transition-colors"
+                  className="p-1.5 rounded-lg text-muted-foreground/50 hover:text-foreground transition-colors"
                 >
                   <Share2 className="w-3.5 h-3.5" />
                 </button>

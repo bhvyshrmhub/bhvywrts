@@ -53,14 +53,8 @@ export default function EditStoryPage({ params }: { params: Promise<{ id: string
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          title,
-          subtitle,
-          content,
-          excerpt,
-          category,
-          coverImage,
-          wordCount,
-          readingTime: calculateReadingTime(content),
+          title, subtitle, content, excerpt, category, coverImage,
+          wordCount, readingTime: calculateReadingTime(content),
           published: publish,
         }),
       })
@@ -87,11 +81,11 @@ export default function EditStoryPage({ params }: { params: Promise<{ id: string
     return (
       <div className="relative min-h-screen">
         <Navbar />
-        <main className="relative pt-14 md:pt-16 max-w-4xl mx-auto px-4 py-6">
+        <main className="relative pt-16 md:pt-20 max-w-4xl mx-auto px-4 py-6">
           <div className="space-y-4">
             <div className="h-4 skeleton rounded w-1/4" />
             <div className="h-10 skeleton rounded w-3/4" />
-            <div className="h-64 skeleton rounded-lg" />
+            <div className="h-64 skeleton rounded-xl" />
           </div>
         </main>
       </div>
@@ -101,7 +95,7 @@ export default function EditStoryPage({ params }: { params: Promise<{ id: string
   return (
     <div className="relative min-h-screen">
       <Navbar />
-      <main className="relative pt-14 md:pt-16 pb-24">
+      <main className="relative pt-16 md:pt-20 pb-24">
         <div className="max-w-4xl mx-auto px-4 sm:px-6">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -124,7 +118,7 @@ export default function EditStoryPage({ params }: { params: Promise<{ id: string
                   className={cn(
                     "px-2.5 py-1 rounded text-[11px] transition-colors",
                     mode === m.id
-                      ? "bg-foreground text-background"
+                      ? "glass text-foreground"
                       : "text-muted-foreground hover:text-foreground"
                   )}
                 >
@@ -159,7 +153,7 @@ export default function EditStoryPage({ params }: { params: Promise<{ id: string
           <TipTapEditor content={content} onChange={setContent} />
 
           <div className={cn("fixed bottom-0 left-0 right-0 z-40", mode === "fullscreen" && "hidden")}>
-            <div className="border-t border-border bg-background">
+            <div className="glass-strong border-t border-glass-border">
               <div className="max-w-4xl mx-auto px-4 sm:px-6 py-3 flex items-center justify-between">
                 <div className="flex items-center gap-3 text-xs text-muted-foreground/60">
                   <span>{metrics.words} words</span>
@@ -189,7 +183,7 @@ export default function EditStoryPage({ params }: { params: Promise<{ id: string
                   <button
                     onClick={() => saveStory(true)}
                     disabled={saving || !title.trim()}
-                    className="h-8 px-3 text-xs rounded-lg bg-foreground text-background hover:opacity-90 transition-opacity disabled:opacity-40 flex items-center gap-1.5"
+                    className="h-8 px-3 text-xs rounded-xl bg-primary text-primary-foreground hover:opacity-90 transition-opacity disabled:opacity-40 flex items-center gap-1.5"
                   >
                     <Check className="w-3.5 h-3.5" />
                     <span className="hidden sm:inline">Publish</span>

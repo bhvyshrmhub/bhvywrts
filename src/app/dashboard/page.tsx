@@ -55,7 +55,7 @@ export default function DashboardPage() {
     <div className="min-h-screen">
       <ReadingProgress />
       <Navbar />
-      <main className="pt-14 md:pt-16 pb-16 md:pb-0">
+      <main className="pt-16 md:pt-20 pb-20 md:pb-0">
         <div className="max-w-6xl mx-auto px-6 py-10 md:py-12">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -69,7 +69,7 @@ export default function DashboardPage() {
               </div>
               <Link
                 href="/editor"
-                className="inline-flex items-center gap-2 px-4 py-2 text-sm rounded-lg bg-foreground text-background hover:opacity-90 transition-opacity"
+                className="inline-flex items-center gap-2 px-4 py-2 text-sm rounded-xl glass hover:bg-secondary transition-colors"
               >
                 <Plus className="w-4 h-4" />
                 New Story
@@ -88,7 +88,7 @@ export default function DashboardPage() {
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: i * 0.05, duration: 0.5 }}
-                  className="p-4 rounded-lg bg-card border border-border"
+                  className="p-4 rounded-xl glass-card"
                 >
                   <stat.icon className="w-4 h-4 text-muted-foreground mb-2" />
                   <div className="text-xl font-semibold text-foreground">{stat.value}</div>
@@ -97,7 +97,7 @@ export default function DashboardPage() {
               ))}
             </div>
 
-            <div className="flex items-center gap-2 border-b border-border pb-3 mb-6">
+            <div className="flex items-center gap-2 border-b border-border/50 pb-3 mb-6">
               {(["all", "published", "drafts"] as const).map((f) => (
                 <button
                   key={f}
@@ -105,7 +105,7 @@ export default function DashboardPage() {
                   className={cn(
                     "px-3 py-1.5 rounded-lg text-xs transition-colors",
                     filter === f
-                      ? "bg-foreground text-background"
+                      ? "glass text-foreground"
                       : "text-muted-foreground hover:text-foreground"
                   )}
                 >
@@ -117,7 +117,7 @@ export default function DashboardPage() {
             {loading ? (
               <div className="space-y-2">
                 {Array.from({ length: 4 }).map((_, i) => (
-                  <div key={i} className="h-16 rounded-lg skeleton border border-border" />
+                  <div key={i} className="h-16 rounded-xl skeleton border border-border/50" />
                 ))}
               </div>
             ) : stories.length === 0 ? (
@@ -140,7 +140,7 @@ export default function DashboardPage() {
                     initial={{ opacity: 0, y: 10 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: i * 0.03, duration: 0.4 }}
-                    className="group p-4 rounded-lg bg-card border border-border hover:border-foreground/20 transition-colors"
+                    className="group p-4 rounded-xl glass-card hover:border-accent/20 transition-colors"
                   >
                     <div className="flex items-start justify-between gap-4">
                       <div className="flex-1 min-w-0">

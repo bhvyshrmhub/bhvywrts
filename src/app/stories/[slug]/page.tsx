@@ -5,12 +5,12 @@ import Link from "next/link"
 import { motion } from "framer-motion"
 import {
   ArrowLeft, Clock, Calendar, Share2, Bookmark,
-  ChevronLeft, ChevronRight,
 } from "lucide-react"
 import { Navbar } from "@/components/Navbar"
 import { Footer } from "@/components/Footer"
 import { ReadingProgress } from "@/components/ReadingProgress"
 import { FloatingWriteButton } from "@/components/FloatingWriteButton"
+import { Stars } from "@/components/Stars"
 import { formatDate, cn } from "@/lib/utils"
 import { supabase } from "@/lib/supabase-client"
 import type { Story } from "@/types"
@@ -32,7 +32,7 @@ function ShareButton({ title, slug }: { title: string; slug: string }) {
   return (
     <button
       onClick={handleShare}
-      className="flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs text-muted-foreground hover:text-foreground hover:bg-secondary transition-colors"
+      className="flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs glass hover:text-foreground transition-colors"
     >
       <Share2 className="w-3.5 h-3.5" />
       {copied ? "Copied!" : "Share"}
@@ -64,8 +64,8 @@ function BookmarkButton({ id }: { id: string }) {
       className={cn(
         "flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs transition-colors",
         bookmarked
-          ? "text-accent bg-accent/10"
-          : "text-muted-foreground hover:text-foreground hover:bg-secondary"
+          ? "glass text-accent"
+          : "glass hover:text-foreground"
       )}
     >
       <Bookmark className="w-3.5 h-3.5" fill={bookmarked ? "currentColor" : "none"} />
@@ -107,11 +107,11 @@ export default function StoryPage({ params }: { params: Promise<{ slug: string }
       <div className="min-h-screen">
         <ReadingProgress />
         <Navbar />
-        <main className="pt-14 md:pt-16 pb-16 md:pb-0 max-w-3xl mx-auto px-6 py-10">
+        <main className="pt-16 md:pt-20 pb-20 md:pb-0 max-w-3xl mx-auto px-6 py-10">
           <div className="space-y-4">
             <div className="h-4 skeleton rounded w-1/4" />
             <div className="h-10 skeleton rounded w-3/4" />
-            <div className="h-64 skeleton rounded-lg" />
+            <div className="h-64 skeleton rounded-xl" />
             <div className="space-y-3">
               {Array.from({ length: 8 }).map((_, i) => (
                 <div key={i} className="h-4 skeleton rounded" style={{ width: `${60 + Math.random() * 40}%` }} />
@@ -127,10 +127,10 @@ export default function StoryPage({ params }: { params: Promise<{ slug: string }
     return (
       <div className="min-h-screen">
         <Navbar />
-        <main className="pt-14 md:pt-16 pb-16 md:pb-0 max-w-3xl mx-auto px-6 py-20 text-center">
+        <main className="pt-16 md:pt-20 pb-20 md:pb-0 max-w-3xl mx-auto px-6 py-20 text-center">
           <h1 className="text-2xl font-[var(--font-serif)] text-muted-foreground/60">Story not found</h1>
           <Link href="/stories" className="text-sm text-muted-foreground hover:text-foreground mt-2 inline-block underline-animate">
-            Back to library
+            Back to stories
           </Link>
         </main>
       </div>
@@ -141,9 +141,10 @@ export default function StoryPage({ params }: { params: Promise<{ slug: string }
     <div className="min-h-screen">
       <ReadingProgress />
       <Navbar />
-      <main className="pt-0 md:pt-16 pb-16 md:pb-0">
-        {story.coverImage && (
-          <div className="relative h-[40vh] md:h-[55vh] min-h-[300px] overflow-hidden bg-secondary">
+      <main className="pt-0 md:pt-16 pb-20 md:pb-0">
+        {/* Hero Cover */}
+        {story.coverImage ? (
+          <div className="relative h-[45vh] md:h-[60vh] min-h-[350px] overflow-hidden">
             {!imageLoaded && <div className="absolute inset-0 skeleton" />}
             <img
               src={story.coverImage}
@@ -154,11 +155,17 @@ export default function StoryPage({ params }: { params: Promise<{ slug: string }
                 imageLoaded ? "opacity-100" : "opacity-0"
               )}
             />
-            <div className="absolute inset-0 bg-gradient-to-t from-background via-background/20 to-transparent" />
+            <div className="absolute inset-0 bg-gradient-to-t from-background via-background/40 to-transparent" />
+            <Stars count={30} />
+          </div>
+        ) : (
+          <div className="relative h-[30vh] min-h-[200px] gradient-bg flex items-center justify-center">
+            <Stars count={30} />
+            <div className="w-16 h-16 rounded-full bg-gradient-to-br from-purple-200/30 to-purple-100/20 moon-glow animate-moon-glow" />
           </div>
         )}
 
-        <article className="max-w-3xl mx-auto px-6 -mt-20 relative z-10">
+        <article className="max-w-3xl mx-auto px-6 -mt-16 relative z-10">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -166,10 +173,10 @@ export default function StoryPage({ params }: { params: Promise<{ slug: string }
           >
             <Link
               href="/stories"
-              className="inline-flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground transition-colors mb-6 bg-background/80 backdrop-blur-sm px-3 py-1.5 rounded-lg border border-border"
+              className="inline-flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground transition-colors mb-6 glass px-3 py-1.5 rounded-lg"
             >
               <ArrowLeft className="w-3.5 h-3.5" />
-              Back to library
+              Back to stories
             </Link>
           </motion.div>
 
@@ -181,11 +188,11 @@ export default function StoryPage({ params }: { params: Promise<{ slug: string }
           >
             {!story.coverImage && <div className="h-8" />}
             {story.category && (
-              <span className="inline-block text-[11px] font-medium text-accent uppercase tracking-widest mb-3">
+              <span className="inline-block text-[10px] font-medium text-accent uppercase tracking-[0.2em] mb-3">
                 {story.category}
               </span>
             )}
-            <h1 className="text-3xl md:text-4xl font-[var(--font-serif)] text-foreground leading-tight mb-3">
+            <h1 className="text-3xl md:text-5xl font-[var(--font-serif)] text-foreground leading-tight mb-4">
               {story.title}
             </h1>
             {story.excerpt && (
@@ -218,11 +225,11 @@ export default function StoryPage({ params }: { params: Promise<{ slug: string }
               prose-p:text-foreground/80 prose-p:leading-relaxed prose-p:text-base md:prose-p:text-lg
               prose-a:text-accent prose-a:no-underline hover:prose-a:underline
               prose-strong:text-foreground
-              prose-code:bg-secondary prose-code:px-1.5 prose-code:py-0.5 prose-code:rounded prose-code:text-sm
-              prose-pre:bg-card prose-pre:border prose-pre:border-border prose-pre:rounded-lg
+              prose-code:glass prose-code:px-1.5 prose-code:py-0.5 prose-code:rounded prose-code:text-sm
+              prose-pre:glass-card prose-pre:rounded-xl
               prose-blockquote:border-l-2 prose-blockquote:border-accent/30 prose-blockquote:text-muted-foreground prose-blockquote:pl-6 prose-blockquote:italic
-              prose-img:rounded-lg prose-img:shadow-lg
-              prose-hr:border-border
+              prose-img:rounded-xl prose-img:shadow-lg
+              prose-hr:border-border/50
               prose-li:text-foreground/80
               [&_p]:mb-6
               [&_h2]:mt-12 [&_h2]:mb-6
@@ -230,7 +237,7 @@ export default function StoryPage({ params }: { params: Promise<{ slug: string }
             dangerouslySetInnerHTML={{ __html: story.content }}
           />
 
-          <div className="flex items-center justify-between mt-12 pt-6 border-t border-border">
+          <div className="flex items-center justify-between mt-12 pt-6 border-t border-border/50">
             <div className="flex items-center gap-2">
               <ShareButton title={story.title} slug={story.slug} />
               <BookmarkButton id={story.id} />
@@ -239,23 +246,25 @@ export default function StoryPage({ params }: { params: Promise<{ slug: string }
         </article>
 
         {related.length > 0 && (
-          <section className="max-w-6xl mx-auto px-6 py-12 md:py-16 border-t border-border mt-12">
-            <h2 className="text-xl font-[var(--font-serif)] text-foreground mb-6">Related Stories</h2>
+          <section className="max-w-6xl mx-auto px-6 py-12 md:py-16 border-t border-border/50 mt-12">
+            <h2 className="text-2xl font-[var(--font-serif)] text-foreground mb-6">Related Stories</h2>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               {related.map((relatedStory) => (
-                <Link key={relatedStory.id} href={`/stories/${relatedStory.slug}`} className="group block hover-lift rounded-lg overflow-hidden bg-card border border-border">
-                  <div className="aspect-[16/9] bg-secondary overflow-hidden">
-                    {relatedStory.coverImage ? (
-                      <img src={relatedStory.coverImage} alt={relatedStory.title} className="w-full h-full object-cover transition-all duration-500 group-hover:scale-[1.03]" />
-                    ) : (
-                      <div className="w-full h-full flex items-center justify-center">
-                        <Bookmark className="w-6 h-6 text-muted-foreground/20" />
-                      </div>
-                    )}
-                  </div>
-                  <div className="p-4">
-                    <h3 className="text-sm font-[var(--font-serif)] text-foreground group-hover:text-accent transition-colors">{relatedStory.title}</h3>
-                    <p className="text-xs text-muted-foreground mt-1">{relatedStory.readingTime || "5"} min read</p>
+                <Link key={relatedStory.id} href={`/stories/${relatedStory.slug}`} className="group block">
+                  <div className="glass-card rounded-xl overflow-hidden hover-lift">
+                    <div className="aspect-[16/9] bg-secondary overflow-hidden">
+                      {relatedStory.coverImage ? (
+                        <img src={relatedStory.coverImage} alt={relatedStory.title} className="w-full h-full object-cover transition-all duration-500 group-hover:scale-[1.05]" />
+                      ) : (
+                        <div className="w-full h-full flex items-center justify-center">
+                          <Bookmark className="w-6 h-6 text-muted-foreground/20" />
+                        </div>
+                      )}
+                    </div>
+                    <div className="p-4">
+                      <h3 className="text-sm font-[var(--font-serif)] text-foreground group-hover:text-accent transition-colors">{relatedStory.title}</h3>
+                      <p className="text-xs text-muted-foreground mt-1">{relatedStory.readingTime || "5"} min read</p>
+                    </div>
                   </div>
                 </Link>
               ))}
