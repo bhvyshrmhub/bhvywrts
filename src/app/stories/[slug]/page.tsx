@@ -174,6 +174,8 @@ export default function StoryPage({ params }: { params: Promise<{ slug: string }
             <img
               src={story.coverImage}
               alt={story.title}
+              loading="lazy"
+              decoding="async"
               onLoad={() => setImageLoaded(true)}
               className={cn(
                 "w-full h-full object-cover animate-image-reveal",
@@ -236,12 +238,7 @@ export default function StoryPage({ params }: { params: Promise<{ slug: string }
             <h1 className="text-3xl md:text-5xl font-[var(--font-serif)] text-foreground leading-tight mb-4">
               {story.title}
             </h1>
-            {story.excerpt && (
-              <p className="text-base text-muted-foreground leading-relaxed">
-                {story.excerpt}
-              </p>
-            )}
-            <div className="flex flex-wrap items-center gap-4 mt-4 text-xs text-muted-foreground">
+            <div className="flex flex-wrap items-center gap-4 mt-2 text-xs text-muted-foreground">
               <span className="flex items-center gap-1.5">
                 <Calendar className="w-3.5 h-3.5" />
                 {formatDate(story.createdAt)}

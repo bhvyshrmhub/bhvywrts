@@ -3,7 +3,7 @@
 import { useState, useEffect, useRef } from "react"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
-import { motion, AnimatePresence } from "framer-motion"
+import { AnimatePresence, motion } from "framer-motion"
 import { Search, LogOut, Menu, X, Bookmark } from "lucide-react"
 import { SearchOverlay } from "./SearchOverlay"
 import { useAuthStore } from "@/lib/store"
@@ -16,12 +16,19 @@ export function Navbar() {
   const [compact, setCompact] = useState(false)
   const [searchOpen, setSearchOpen] = useState(false)
   const [menuOpen, setMenuOpen] = useState(false)
+  const ticking = useRef(false)
 
   useEffect(() => {
     const onScroll = () => {
-      const current = window.scrollY
-      setScrolled(current > 40)
-      setCompact(current > 120)
+      if (!ticking.current) {
+        requestAnimationFrame(() => {
+          const current = window.scrollY
+          setScrolled(current > 40)
+          setCompact(current > 120)
+          ticking.current = false
+        })
+        ticking.current = true
+      }
     }
     window.addEventListener("scroll", onScroll, { passive: true })
     return () => window.removeEventListener("scroll", onScroll)
@@ -53,20 +60,19 @@ export function Navbar() {
     <>
       <SearchOverlay open={searchOpen} onClose={() => setSearchOpen(false)} />
 
-      <motion.header
-        initial={{ y: 0 }}
-        animate={{ y: 0 }}
-        transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
+      <header
         className={cn(
-          "fixed top-0 left-0 right-0 z-50 transition-all duration-300",
+          "fixed top-0 left-0 right-0 z-50 transition-[background,box-shadow] duration-300 will-change-transform",
           scrolled ? "glass-strong" : "bg-transparent"
         )}
       >
-        <nav className="max-w-6xl mx-auto px-5 md:px-6">
-          <div className={cn(
-            "flex items-center justify-between transition-all duration-300",
-            compact ? "h-10 md:h-12" : "h-12 md:h-16"
-          )}>
+        <nav className="max-w-6xl mx-auto px-5 md:px-6 will-change-transform">
+          <div
+            className={cn(
+              "flex items-center justify-between transition-[height] duration-300 ease-out will-change-transform",
+              compact ? "h-10 md:h-12" : "h-12 md:h-16"
+            )}
+          >
             {/* Left */}
             <div className="flex items-center gap-1 w-[80px] md:w-[200px]">
               <Link
@@ -87,7 +93,7 @@ export function Navbar() {
               </Link>
             </div>
 
-            {/* Center - Animated Gradient Logo */}
+            {/* Center */}
             <Link
               href="/"
               className={cn(
@@ -97,12 +103,10 @@ export function Navbar() {
               id="nav-logo"
             >
               Bhavy Writes
-              <span className="absolute inset-0 animate-logo-shine pointer-events-none" />
             </Link>
 
             {/* Right */}
             <div className="flex items-center justify-end gap-1 w-[80px] md:w-[200px]">
-              {/* Mobile hamburger */}
               <button
                 onClick={() => setMenuOpen(!menuOpen)}
                 className="md:hidden flex items-center justify-center w-8 h-8 rounded-lg text-muted-foreground hover:text-foreground hover:bg-secondary transition-colors"
@@ -121,7 +125,6 @@ export function Navbar() {
           </div>
         </nav>
 
-        {/* Mobile slide-down menu */}
         <AnimatePresence>
           {menuOpen && (
             <motion.div
@@ -157,7 +160,7 @@ export function Navbar() {
             </motion.div>
           )}
         </AnimatePresence>
-      </motion.header>
+      </header>
     </>
   )
 }

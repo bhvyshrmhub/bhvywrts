@@ -84,6 +84,8 @@ export function StoryCard({ story, index = 0 }: StoryCardProps) {
                   <img
                     src={story.coverImage}
                     alt={story.title}
+                    loading="lazy"
+                    decoding="async"
                     onLoad={() => setImageLoaded(true)}
                     className={cn(
                       "w-full h-full object-cover transition-all duration-700 group-hover:scale-[1.05]",

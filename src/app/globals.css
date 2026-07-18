@@ -30,7 +30,7 @@
   --glow: rgba(139, 92, 246, 0.3);
   --moon-glow: rgba(167, 139, 250, 0.15);
   --star-color: rgba(167, 139, 250, 0.5);
-  --glass-blur: 16px;
+  --glass-blur: 8px;
   --mood-dreamy: #a78bfa;
   --mood-calm: #60a5fa;
   --mood-mystery: #c084fc;
@@ -111,23 +111,27 @@
   -webkit-backdrop-filter: blur(var(--glass-blur));
   border: 1px solid var(--glass-border);
   box-shadow: 0 4px 20px var(--glass-shadow);
+  will-change: transform;
 }
 
 .glass-strong {
   background: color-mix(in srgb, var(--glass-bg) 85%, transparent);
-  backdrop-filter: blur(24px);
-  -webkit-backdrop-filter: blur(24px);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
   border: 1px solid var(--glass-border);
   box-shadow: 0 8px 32px var(--glass-shadow);
+  will-change: transform;
 }
 
 .glass-card {
   background: var(--card);
-  backdrop-filter: blur(var(--glass-blur));
-  -webkit-backdrop-filter: blur(var(--glass-blur));
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
   border: 1px solid var(--card-border);
   box-shadow: 0 4px 24px var(--glass-shadow);
-  transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1),
+              box-shadow 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  will-change: transform;
 }
 
 .glass-card:hover {
@@ -395,11 +399,13 @@
   );
   background-size: 200% 100%;
   animation: shimmer 1.8s ease-in-out infinite;
+  will-change: background-position;
 }
 
 .hover-lift {
   transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1),
               box-shadow 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+  will-change: transform;
 }
 
 .hover-lift:hover {
