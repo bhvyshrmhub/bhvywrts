@@ -10,7 +10,7 @@ import { FloatingWriteButton } from "./FloatingWriteButton"
 import { ReadingProgress } from "./ReadingProgress"
 import { Stars } from "./Stars"
 import { Butterfly } from "./Butterfly"
-import { ArrowRight, Clock, BookOpen, Sparkles, Moon, Quote } from "lucide-react"
+import { ArrowRight, Clock, BookOpen, Sparkles, Quote } from "lucide-react"
 import Link from "next/link"
 import { DAILY_THOUGHTS, COLLECTIONS, parseStoryTags, type CollectionType } from "@/lib/constants"
 import type { Story } from "@/types"
@@ -74,10 +74,10 @@ export function HomeContent() {
     return (
       <>
         <Navbar />
-        <main className="min-h-screen pt-20">
-          <div className="max-w-6xl mx-auto px-6 py-12">
-            {[...Array(6)].map((_, i) => (
-              <div key={i} className="h-48 rounded-xl skeleton mb-6" />
+        <main className="min-h-screen pt-16 px-5">
+          <div className="max-w-6xl mx-auto py-8 space-y-4">
+            {[...Array(4)].map((_, i) => (
+              <div key={i} className="h-28 rounded-3xl skeleton" />
             ))}
           </div>
         </main>
@@ -89,173 +89,147 @@ export function HomeContent() {
   return (
     <>
       <Navbar />
-      <ReadingProgress />
       <main className="min-h-screen">
-        {/* Featured Hero */}
-        {featured && (
-          <section className="relative min-h-[80vh] flex items-end overflow-hidden">
-            <Stars count={50} className="z-0" />
-            <Butterfly className="absolute z-10" style={{ left: "15%", top: "20%" }} delay={2} size={16} />
-
-            <div className="absolute top-20 right-[10%] z-0 pointer-events-none">
-              <div className="relative">
-                <div className="w-32 h-32 md:w-40 md:h-40 rounded-full bg-gradient-to-br from-purple-300/20 via-blue-200/15 to-pink-200/10 moon-glow animate-moon-glow" />
-              </div>
+        {/* About + Daily Thought + Featured — compact section */}
+        <section className="relative overflow-hidden">
+          {/* Single subtle moon behind content */}
+          <div className="absolute -top-16 right-0 z-0 pointer-events-none">
+            <div className="relative">
+              <div className="w-28 h-28 md:w-36 md:h-36 rounded-full bg-gradient-to-br from-purple-300/8 via-blue-200/6 to-transparent moon-glow animate-moon-glow" style={{ boxShadow: "0 0 40px rgba(167, 139, 250, 0.06), 0 0 80px rgba(167, 139, 250, 0.03)" }} />
             </div>
+          </div>
+          <Stars count={25} />
 
-            <div className="relative z-10 w-full max-w-6xl mx-auto px-6 pb-12 md:pb-20">
+          <div className="relative z-10 max-w-6xl mx-auto px-5 pt-6 pb-4">
+            {/* About — 2-3 lines */}
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6 }}
+              className="mb-5"
+            >
+              <h1 className="text-xl md:text-2xl font-[var(--font-serif)] text-foreground">
+                A personal sanctuary for{" "}
+                <span className="font-[var(--font-brand)] gradient-logo text-lg md:text-xl">stories</span>
+              </h1>
+              <p className="text-sm text-muted-foreground/70 mt-1 leading-relaxed max-w-lg">
+                Thoughts become tales under the moonlight.
+              </p>
+            </motion.div>
+
+            {/* Daily Thought */}
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.1 }}
+              className="mb-5"
+            >
+              <div className="glass rounded-2xl px-5 py-4" style={{ borderRadius: 24 }}>
+                <div className="flex items-start gap-3">
+                  <Quote className="w-3.5 h-3.5 text-purple-400/40 mt-0.5 shrink-0" />
+                  <p className="text-sm text-foreground/80 leading-relaxed italic">
+                    &ldquo;{dailyThought}&rdquo;
+                  </p>
+                </div>
+              </div>
+            </motion.div>
+
+            {/* Featured Story — compact card */}
+            {featured && (
               <motion.div
-                initial={{ opacity: 0, y: 30 }}
+                initial={{ opacity: 0, y: 15 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
-                className="relative"
-                style={{ borderRadius: 32 }}
+                transition={{ duration: 0.6, delay: 0.2 }}
               >
                 <Link href={`/stories/${featured.slug}`} className="group block">
                   <div
                     className="relative overflow-hidden"
-                    style={{ borderRadius: 32, boxShadow: "0 8px 40px rgba(139, 92, 246, 0.12), 0 2px 8px rgba(0,0,0,0.3)" }}
+                    style={{ borderRadius: 28, boxShadow: "0 4px 24px rgba(139, 92, 246, 0.08)" }}
                   >
                     {featured.coverImage ? (
-                      <>
-                        <div className="aspect-[21/9] md:aspect-[3/1] relative">
-                          <img
-                            src={featured.coverImage}
-                            alt={featured.title}
-                            className="w-full h-full object-cover transition-all duration-700 group-hover:scale-[1.03]"
-                          />
-                          <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-black/10" />
-                        </div>
-                      </>
+                      <div className="aspect-[21/8] md:aspect-[3/1] relative">
+                        <img
+                          src={featured.coverImage}
+                          alt={featured.title}
+                          className="w-full h-full object-cover transition-all duration-700 group-hover:scale-[1.03]"
+                        />
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-black/10" />
+                      </div>
                     ) : (
-                      <div className="aspect-[21/9] md:aspect-[3/1] relative bg-gradient-to-br from-purple-900/30 via-blue-900/20 to-pink-900/30">
-                        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent" />
+                      <div className="aspect-[21/8] md:aspect-[3/1] relative bg-gradient-to-br from-purple-900/10 via-blue-900/5 to-pink-900/10">
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/10 to-transparent" />
                       </div>
                     )}
                     <div className="absolute inset-0 flex items-end">
-                      <div className="p-6 md:p-10 lg:p-14 w-full">
-                        <motion.span
-                          initial={{ opacity: 0, y: 10 }}
-                          animate={{ opacity: 1, y: 0 }}
-                          transition={{ delay: 0.2 }}
-                          className="inline-block text-[10px] font-medium text-purple-300 uppercase tracking-[0.25em] mb-3"
-                        >
-                          {featured.category || "Featured Story"}
-                        </motion.span>
-                        <motion.h1
-                          initial={{ opacity: 0, y: 20 }}
-                          animate={{ opacity: 1, y: 0 }}
-                          transition={{ delay: 0.3, duration: 0.8 }}
-                          className="text-3xl md:text-5xl lg:text-6xl font-[var(--font-serif)] text-white leading-tight mb-3 max-w-3xl"
-                        >
+                      <div className="p-4 md:p-8 w-full">
+                        <span className="text-[9px] font-medium text-purple-300/80 uppercase tracking-[0.2em] mb-1 block">
+                          {featured.category || "Featured"}
+                        </span>
+                        <h2 className="text-base md:text-2xl font-[var(--font-serif)] text-white leading-snug max-w-xl line-clamp-2">
                           {featured.title}
-                        </motion.h1>
+                        </h2>
                         {featured.excerpt && (
-                          <motion.p
-                            initial={{ opacity: 0, y: 20 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            transition={{ delay: 0.4, duration: 0.8 }}
-                            className="text-sm md:text-base text-white/60 max-w-lg line-clamp-2 leading-relaxed"
-                          >
+                          <p className="text-xs text-white/50 mt-1 max-w-lg line-clamp-1 md:line-clamp-2">
                             {featured.excerpt}
-                          </motion.p>
+                          </p>
                         )}
-                        <motion.div
-                          initial={{ opacity: 0, y: 20 }}
-                          animate={{ opacity: 1, y: 0 }}
-                          transition={{ delay: 0.5, duration: 0.8 }}
-                          className="flex items-center gap-3 mt-4"
-                        >
-                          <span className="inline-flex items-center gap-1.5 text-xs text-white/50">
-                            <Clock className="w-3.5 h-3.5" />
-                            {featured.readingTime || "5"} min read
+                        <div className="flex items-center gap-2 mt-2">
+                          <span className="text-[10px] text-white/40 flex items-center gap-1">
+                            <Clock className="w-3 h-3" />
+                            {featured.readingTime || "5"} min
                           </span>
-                          <span className="text-white/30">&middot;</span>
-                          <span className="text-xs text-white/50">
-                            {new Date(featured.createdAt).toLocaleDateString("en-US", {
-                              month: "long", day: "numeric", year: "numeric"
-                            })}
-                          </span>
-                        </motion.div>
+                        </div>
                       </div>
                     </div>
                   </div>
                 </Link>
               </motion.div>
-            </div>
-          </section>
-        )}
-
-        {/* About Bhavy Writes */}
-        <section className="max-w-6xl mx-auto px-6 py-16 md:py-20 text-center">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, margin: "-100px" }}
-            transition={{ duration: 0.8 }}
-          >
-            <Moon className="w-6 h-6 text-accent/60 mx-auto mb-4" />
-            <h2 className="text-3xl md:text-4xl font-[var(--font-serif)] text-foreground mb-4">
-              Welcome to{" "}
-              <span className="font-[var(--font-brand)] text-2xl md:text-3xl gradient-text">
-                Bhavy Writes
-              </span>
-            </h2>
-            <p className="text-sm md:text-base text-muted-foreground max-w-xl mx-auto leading-relaxed">
-              A personal sanctuary where stories come alive under the moonlight.
-              Every page holds a piece of imagination, every word dances with dreams.
-              Here, thoughts become tales, and the quiet hours find their voice.
-            </p>
-          </motion.div>
-        </section>
-
-        {/* Daily Thought */}
-        <section className="border-t border-border/50">
-          <div className="max-w-3xl mx-auto px-6 py-16 md:py-20 text-center">
-            <motion.div
-              initial={{ opacity: 0 }}
-              whileInView={{ opacity: 1 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.6 }}
-              className="glass-strong rounded-2xl p-8 md:p-12"
-            >
-              <Quote className="w-5 h-5 text-accent/40 mx-auto mb-4" />
-              <p className="text-lg md:text-xl font-[var(--font-serif)] text-foreground leading-relaxed italic">
-                &ldquo;{dailyThought}&rdquo;
-              </p>
-              <p className="text-xs text-muted-foreground/60 mt-4">Daily Thought</p>
-            </motion.div>
+            )}
           </div>
         </section>
 
-        {/* Moon of the Day */}
-        <section className="py-16 md:py-20 relative overflow-hidden gradient-bg">
-          <Stars count={30} />
-          <div className="max-w-6xl mx-auto px-6 text-center relative z-10">
-            <motion.div
-              initial={{ opacity: 0, scale: 0.9 }}
-              whileInView={{ opacity: 1, scale: 1 }}
-              viewport={{ once: true }}
-              transition={{ duration: 1 }}
+        {/* Latest Stories */}
+        <section className="max-w-6xl mx-auto px-5 py-6">
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-lg font-[var(--font-serif)] text-foreground">Latest</h2>
+            <Link
+              href="/stories"
+              className="flex items-center gap-1 text-xs text-muted-foreground/50 hover:text-foreground transition-colors"
             >
-              <div className="w-20 h-20 md:w-28 md:h-28 rounded-full bg-gradient-to-br from-purple-200/30 via-purple-100/20 to-white/10 moon-glow animate-moon-glow mx-auto mb-6" />
-              <h2 className="text-2xl md:text-3xl font-[var(--font-serif)] text-foreground">Moon of the Day</h2>
-              <p className="text-sm text-muted-foreground mt-2">
-                The moon watches over every story written tonight.
-              </p>
-            </motion.div>
+              View all <ArrowRight className="w-3 h-3" />
+            </Link>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
+            {latest.map((story, i) => (
+              <StoryCard key={story.id} story={story} index={i} />
+            ))}
           </div>
         </section>
 
         {/* Continue Reading */}
         {continueReading.length > 0 && (
-          <section className="max-w-6xl mx-auto px-6 py-12 md:py-16">
-            <div className="flex items-center gap-2 mb-8">
-              <BookOpen className="w-4 h-4 text-accent" />
-              <h2 className="text-2xl font-[var(--font-serif)] text-foreground">Continue Reading</h2>
+          <section className="max-w-6xl mx-auto px-5 py-6 border-t border-border/30">
+            <div className="flex items-center gap-2 mb-4">
+              <BookOpen className="w-3.5 h-3.5 text-purple-400/60" />
+              <h2 className="text-lg font-[var(--font-serif)] text-foreground">Continue Reading</h2>
             </div>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6">
               {continueReading.map((story, i) => (
+                <StoryCard key={story.id} story={story} index={i} />
+              ))}
+            </div>
+          </section>
+        )}
+
+        {/* Featured Stories */}
+        {featuredStories.length > 0 && (
+          <section className="max-w-6xl mx-auto px-5 py-6 border-t border-border/30">
+            <div className="flex items-center gap-2 mb-4">
+              <Sparkles className="w-3.5 h-3.5 text-blue-400/60" />
+              <h2 className="text-lg font-[var(--font-serif)] text-foreground">Featured</h2>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6">
+              {featuredStories.map((story, i) => (
                 <StoryCard key={story.id} story={story} index={i} />
               ))}
             </div>
@@ -264,82 +238,45 @@ export function HomeContent() {
 
         {/* Story Collections */}
         {collections.size > 0 && (
-          <section className="border-t border-border/50">
-            <div className="max-w-6xl mx-auto px-6 py-12 md:py-16">
-              <h2 className="text-2xl font-[var(--font-serif)] text-foreground mb-8">Story Collections</h2>
-              <div className="space-y-8">
-                {Array.from(collections.entries()).map(([collection, collectionStories], ci) => (
-                  <motion.div
-                    key={collection}
-                    initial={{ opacity: 0, y: 20 }}
-                    whileInView={{ opacity: 1, y: 0 }}
-                    viewport={{ once: true }}
-                    transition={{ delay: ci * 0.1 }}
-                  >
-                    <div className="flex items-center justify-between mb-4">
-                      <h3 className="text-lg font-[var(--font-serif)] text-foreground">{collection}</h3>
-                      <Link
-                        href={`/stories?collection=${encodeURIComponent(collection)}`}
-                        className="text-xs text-muted-foreground hover:text-foreground transition-colors"
-                      >
-                        View all <ArrowRight className="w-3 h-3 inline" />
-                      </Link>
-                    </div>
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                      {collectionStories.slice(0, 3).map((story, i) => (
-                        <StoryCard key={story.id} story={story} index={i} />
-                      ))}
-                    </div>
-                  </motion.div>
-                ))}
-              </div>
+          <section className="max-w-6xl mx-auto px-5 py-6 border-t border-border/30">
+            <h2 className="text-lg font-[var(--font-serif)] text-foreground mb-4">Collections</h2>
+            <div className="space-y-5">
+              {Array.from(collections.entries()).map(([collection, collectionStories], ci) => (
+                <motion.div
+                  key={collection}
+                  initial={{ opacity: 0, y: 10 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: ci * 0.05 }}
+                >
+                  <div className="flex items-center justify-between mb-3">
+                    <h3 className="text-sm font-[var(--font-serif)] text-foreground/80">{collection}</h3>
+                    <Link
+                      href={`/stories?collection=${encodeURIComponent(collection)}`}
+                      className="text-[10px] text-muted-foreground/50 hover:text-foreground transition-colors"
+                    >
+                      View all <ArrowRight className="w-2.5 h-2.5 inline" />
+                    </Link>
+                  </div>
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6">
+                    {collectionStories.slice(0, 3).map((story, i) => (
+                      <StoryCard key={story.id} story={story} index={i} />
+                    ))}
+                  </div>
+                </motion.div>
+              ))}
             </div>
           </section>
         )}
-
-        {/* Featured Stories */}
-        {featuredStories.length > 0 && (
-          <section className="border-t border-border/50">
-            <div className="max-w-6xl mx-auto px-6 py-12 md:py-16">
-              <div className="flex items-center gap-2 mb-8">
-                <Sparkles className="w-4 h-4 text-accent" />
-                <h2 className="text-2xl font-[var(--font-serif)] text-foreground">Featured Stories</h2>
-              </div>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                {featuredStories.map((story, i) => (
-                  <StoryCard key={story.id} story={story} index={i} />
-                ))}
-              </div>
-            </div>
-          </section>
-        )}
-
-        {/* Latest Stories */}
-        <section className="max-w-6xl mx-auto px-6 py-12 md:py-16">
-          <div className="flex items-center justify-between mb-8">
-            <h2 className="text-2xl font-[var(--font-serif)] text-foreground">Latest Stories</h2>
-            <Link
-              href="/stories"
-              className="flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground transition-colors"
-            >
-              View all <ArrowRight className="w-3.5 h-3.5" />
-            </Link>
-          </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {latest.map((story, i) => (
-              <StoryCard key={story.id} story={story} index={i} />
-            ))}
-          </div>
-        </section>
 
         {/* Empty State */}
         {stories.length === 0 && !loading && (
-          <div className="max-w-6xl mx-auto px-6 py-24 text-center relative">
-            <Stars count={20} />
+          <div className="px-5 py-16 text-center relative">
+            <Stars count={15} />
             <div className="relative z-10">
-              <div className="w-16 h-16 rounded-full bg-gradient-to-br from-purple-200/30 to-purple-100/20 moon-glow mx-auto mb-4 animate-moon-glow" />
-              <BookOpen className="w-8 h-8 text-muted-foreground/30 mx-auto mb-4" />
-              <p className="text-muted-foreground">No stories yet. The first page awaits.</p>
+              <div className="w-12 h-12 rounded-full bg-gradient-to-br from-purple-400/10 to-pink-400/5 moon-glow mx-auto mb-3 animate-moon-glow" />
+              <BookOpen className="w-6 h-6 text-muted-foreground/20 mx-auto mb-3" />
+              <p className="text-sm text-muted-foreground/50">No stories yet. The first page awaits.</p>
             </div>
           </div>
         )}

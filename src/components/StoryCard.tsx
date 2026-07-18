@@ -125,7 +125,7 @@ export function StoryCard({ story, index = 0 }: StoryCardProps) {
           </div>
 
           {/* Content */}
-          <div className="p-5 md:p-6">
+          <div className="p-4 md:p-6">
             <div className="flex items-center gap-2 mb-3">
               <span className="text-xs text-muted-foreground/60 flex items-center gap-1">
                 <Clock className="w-3 h-3" />

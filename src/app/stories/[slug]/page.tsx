@@ -132,7 +132,7 @@ export default function StoryPage({ params }: { params: Promise<{ slug: string }
       <div className="min-h-screen">
         <ReadingProgress />
         <Navbar />
-        <main className="pt-20 md:pt-20 max-w-3xl mx-auto px-6 py-10">
+        <main className="pt-12 md:pt-16 max-w-3xl mx-auto px-6 py-10">
           <div className="space-y-4">
             <div className="h-4 skeleton rounded w-1/4" />
             <div className="h-10 skeleton rounded w-3/4" />
@@ -152,7 +152,7 @@ export default function StoryPage({ params }: { params: Promise<{ slug: string }
     return (
       <div className="min-h-screen">
         <Navbar />
-        <main className="pt-20 md:pt-20 max-w-3xl mx-auto px-6 py-20 text-center">
+        <main className="pt-12 md:pt-16 max-w-3xl mx-auto px-6 py-20 text-center">
           <h1 className="text-2xl font-[var(--font-serif)] text-muted-foreground/60">Story not found</h1>
           <Link href="/stories" className="text-sm text-muted-foreground hover:text-foreground mt-2 inline-block underline-animate">
             Back to stories

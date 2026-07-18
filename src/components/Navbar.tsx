@@ -65,7 +65,7 @@ export function Navbar() {
         <nav className="max-w-6xl mx-auto px-5 md:px-6">
           <div className={cn(
             "flex items-center justify-between transition-all duration-300",
-            compact ? "h-12" : "h-16"
+            compact ? "h-10 md:h-12" : "h-12 md:h-16"
           )}>
             {/* Left */}
             <div className="flex items-center gap-1 w-[80px] md:w-[200px]">
@@ -92,7 +92,7 @@ export function Navbar() {
               href="/"
               className={cn(
                 "font-[var(--font-brand)] gradient-logo relative",
-                compact ? "text-lg" : "text-xl"
+                compact ? "text-base md:text-lg" : "text-lg md:text-xl"
               )}
               id="nav-logo"
             >

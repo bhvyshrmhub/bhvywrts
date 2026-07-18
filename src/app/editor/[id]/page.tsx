@@ -87,7 +87,7 @@ export default function EditStoryPage({ params }: { params: Promise<{ id: string
     return (
       <div className="relative min-h-screen">
         <Navbar />
-        <main className="relative pt-20 md:pt-20 max-w-4xl mx-auto px-4 py-6">
+        <main className="relative pt-12 md:pt-16 max-w-4xl mx-auto px-4 py-6">
           <div className="space-y-4">
             <div className="h-4 skeleton rounded w-1/4" />
             <div className="h-10 skeleton rounded w-3/4" />
@@ -101,7 +101,7 @@ export default function EditStoryPage({ params }: { params: Promise<{ id: string
   return (
     <div className="relative min-h-screen">
       <Navbar />
-      <main className="relative pt-20 md:pt-20 pb-24">
+      <main className="relative pt-12 md:pt-16 pb-24">
         <div className="max-w-4xl mx-auto px-4 sm:px-6">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
