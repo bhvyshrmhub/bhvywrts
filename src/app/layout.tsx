@@ -1,6 +1,13 @@
 import type { Metadata } from "next"
-import { Geist, Geist_Mono, Playfair_Display } from "next/font/google"
-import { CursorWrapper } from "@/components/CursorWrapper"
+import {
+  Geist,
+  Geist_Mono,
+  Playfair_Display,
+  Source_Serif_4,
+  Dancing_Script,
+  IBM_Plex_Mono,
+} from "next/font/google"
+import { ThemeProvider } from "@/components/ThemeProvider"
 import "./globals.css"
 
 const geistSans = Geist({
@@ -15,6 +22,22 @@ const geistMono = Geist_Mono({
 
 const playfair = Playfair_Display({
   variable: "--font-playfair",
+  subsets: ["latin"],
+})
+
+const sourceSerif = Source_Serif_4({
+  variable: "--font-source-serif",
+  subsets: ["latin"],
+})
+
+const dancingScript = Dancing_Script({
+  variable: "--font-dancing-script",
+  subsets: ["latin"],
+})
+
+const ibmPlexMono = IBM_Plex_Mono({
+  variable: "--font-ibm-plex-mono",
+  weight: ["300", "400", "500"],
   subsets: ["latin"],
 })
 
@@ -34,10 +57,11 @@ export default function RootLayout({
   children: React.ReactNode
 }>) {
   return (
-    <html lang="en" className={`${geistSans.variable} ${geistMono.variable} ${playfair.variable}`}>
+    <html lang="en" className={`${geistSans.variable} ${geistMono.variable} ${playfair.variable} ${sourceSerif.variable} ${dancingScript.variable} ${ibmPlexMono.variable}`} suppressHydrationWarning>
       <body className="min-h-screen bg-background text-foreground antialiased">
-        {children}
-        <CursorWrapper />
+        <ThemeProvider>
+          {children}
+        </ThemeProvider>
       </body>
     </html>
   )

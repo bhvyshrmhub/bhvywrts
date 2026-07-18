@@ -11,20 +11,16 @@ export default function LandingPage() {
   useEffect(() => {
     setMounted(true)
     const seen = localStorage.getItem("bhavy-intro-seen")
-    if (seen) {
-      setShowIntro(false)
-    }
+    if (seen) setShowIntro(false)
   }, [])
-
-  const handleComplete = () => {
-    setShowIntro(false)
-    localStorage.setItem("bhavy-intro-seen", "true")
-  }
 
   if (!mounted) return null
 
   if (showIntro) {
-    return <LandingAnimation onComplete={handleComplete} />
+    return <LandingAnimation onComplete={() => {
+      setShowIntro(false)
+      localStorage.setItem("bhavy-intro-seen", "true")
+    }} />
   }
 
   return <HomeContent />

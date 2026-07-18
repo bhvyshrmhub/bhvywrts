@@ -3,16 +3,14 @@
 import { useState } from "react"
 import { useRouter } from "next/navigation"
 import { motion } from "framer-motion"
-import { ArrowLeft, Save, Eye, Check, X, Sparkles } from "lucide-react"
+import { ArrowLeft, Save, Check, Sparkles } from "lucide-react"
 import Link from "next/link"
 import { Navbar } from "@/components/Navbar"
 import { TipTapEditor } from "@/components/TipTapEditor"
+import { CoverImageUpload } from "@/components/CoverImageUpload"
 import { useEditorStore } from "@/lib/store"
 import { slugify, calculateReadingTime, calculateWords } from "@/lib/utils"
 import { CATEGORIES } from "@/lib/constants"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { cn } from "@/lib/utils"
 
 export default function NewStoryPage() {
@@ -22,8 +20,8 @@ export default function NewStoryPage() {
   const [subtitle, setSubtitle] = useState("")
   const [category, setCategory] = useState("Thoughts")
   const [content, setContent] = useState("")
+  const [coverImage, setCoverImage] = useState<string | null>(null)
   const [saving, setSaving] = useState(false)
-  const [showMeta, setShowMeta] = useState(true)
 
   const saveStory = async (publish: boolean) => {
     if (!title.trim()) return
@@ -44,6 +42,7 @@ export default function NewStoryPage() {
           content,
           excerpt,
           category,
+          coverImage,
           wordCount,
           readingTime: calculateReadingTime(content),
           published: publish,
@@ -72,18 +71,18 @@ export default function NewStoryPage() {
   return (
     <div className="relative min-h-screen">
       <Navbar />
-      <main className="relative z-10 pt-20 pb-24">
+      <main className="relative pt-14 md:pt-16 pb-24">
         <div className="max-w-4xl mx-auto px-4 sm:px-6">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            className="flex items-center justify-between mb-6"
+            className="flex items-center justify-between mb-6 pt-6"
           >
             <Link
               href="/dashboard"
-              className="inline-flex items-center gap-2 text-sm text-muted-foreground/50 hover:text-foreground transition-colors group"
+              className="inline-flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground transition-colors"
             >
-              <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
+              <ArrowLeft className="w-3.5 h-3.5" />
               Back
             </Link>
 
@@ -93,10 +92,10 @@ export default function NewStoryPage() {
                   key={m.id}
                   onClick={() => setMode(m.id)}
                   className={cn(
-                    "px-3 py-1.5 rounded-full text-xs transition-all",
+                    "px-2.5 py-1 rounded text-[11px] transition-colors",
                     mode === m.id
-                      ? "glass text-primary border border-primary/20"
-                      : "text-muted-foreground/50 hover:text-foreground border border-transparent"
+                      ? "bg-foreground text-background"
+                      : "text-muted-foreground hover:text-foreground"
                   )}
                 >
                   {m.label}
@@ -105,25 +104,27 @@ export default function NewStoryPage() {
             </div>
           </motion.div>
 
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.1 }}
-            className={cn("space-y-4 mb-6", mode === "focus" && "max-w-3xl mx-auto")}
-          >
-            <Input
-              value={title}
-              onChange={(e) => setTitle(e.target.value)}
-              placeholder="Story Title..."
-              className="text-2xl sm:text-3xl font-bold border-none bg-transparent px-0 h-auto focus-visible:ring-0 placeholder:text-muted-foreground/20"
-            />
-            <Input
-              value={subtitle}
-              onChange={(e) => setSubtitle(e.target.value)}
-              placeholder="Add a subtitle..."
-              className="text-base border-none bg-transparent px-0 h-auto focus-visible:ring-0 placeholder:text-muted-foreground/20 text-muted-foreground/50"
-            />
-          </motion.div>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+            <div className="md:col-span-2">
+              <div className={cn("space-y-4 mb-6", mode === "focus" && "max-w-3xl mx-auto")}>
+                <input
+                  value={title}
+                  onChange={(e) => setTitle(e.target.value)}
+                  placeholder="Story Title..."
+                  className="w-full text-2xl sm:text-3xl font-[var(--font-serif)] bg-transparent border-none outline-none placeholder:text-muted-foreground/20 text-foreground"
+                />
+                <input
+                  value={subtitle}
+                  onChange={(e) => setSubtitle(e.target.value)}
+                  placeholder="Add a subtitle..."
+                  className="w-full text-base bg-transparent border-none outline-none placeholder:text-muted-foreground/20 text-muted-foreground/80"
+                />
+              </div>
+            </div>
+            <div>
+              <CoverImageUpload currentImage={coverImage} onImageChange={setCoverImage} />
+            </div>
+          </div>
 
           <TipTapEditor content={content} onChange={setContent} />
 
@@ -131,14 +132,11 @@ export default function NewStoryPage() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.3 }}
-            className={cn(
-              "fixed bottom-0 left-0 right-0 z-40",
-              mode === "fullscreen" && "hidden"
-            )}
+            className={cn("fixed bottom-0 left-0 right-0 z-40", mode === "fullscreen" && "hidden")}
           >
-            <div className="glass-strong border-t border-white/10">
+            <div className="border-t border-border bg-background">
               <div className="max-w-4xl mx-auto px-4 sm:px-6 py-3 flex items-center justify-between">
-                <div className="flex items-center gap-3 sm:gap-4 text-xs text-muted-foreground/40">
+                <div className="flex items-center gap-3 text-xs text-muted-foreground/60">
                   <span>{metrics.words} words</span>
                   <span className="hidden sm:inline">{metrics.characters} chars</span>
                   <span className="hidden sm:inline">{metrics.paragraphs} paragraphs</span>
@@ -146,35 +144,31 @@ export default function NewStoryPage() {
                 </div>
 
                 <div className="flex items-center gap-2">
-                  <Select value={category} onValueChange={setCategory}>
-                    <SelectTrigger className="h-8 text-xs rounded-xl w-[110px] sm:w-[130px] glass border-white/10">
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {CATEGORIES.map((cat) => (
-                        <SelectItem key={cat} value={cat}>{cat}</SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                  <Button
+                  <select
+                    value={category}
+                    onChange={(e) => setCategory(e.target.value)}
+                    className="h-8 text-xs rounded-lg bg-secondary text-secondary-foreground border border-border outline-none appearance-none cursor-pointer px-2"
+                  >
+                    {CATEGORIES.map((cat) => (
+                      <option key={cat} value={cat}>{cat}</option>
+                    ))}
+                  </select>
+                  <button
                     onClick={() => saveStory(false)}
                     disabled={saving || !title.trim()}
-                    variant="ghost"
-                    size="sm"
-                    className="rounded-xl h-8 text-xs gap-1.5 text-muted-foreground/60 hover:text-foreground"
+                    className="h-8 px-3 text-xs rounded-lg text-muted-foreground hover:text-foreground border border-border hover:bg-secondary transition-colors disabled:opacity-40 flex items-center gap-1.5"
                   >
                     <Save className="w-3.5 h-3.5" />
-                    <span className="hidden sm:inline">Save Draft</span>
-                  </Button>
-                  <Button
+                    <span className="hidden sm:inline">Draft</span>
+                  </button>
+                  <button
                     onClick={() => saveStory(true)}
                     disabled={saving || !title.trim()}
-                    size="sm"
-                    className="rounded-xl h-8 text-xs gap-1.5 bg-primary hover:bg-primary/90 text-primary-foreground"
+                    className="h-8 px-3 text-xs rounded-lg bg-foreground text-background hover:opacity-90 transition-opacity disabled:opacity-40 flex items-center gap-1.5"
                   >
                     <Check className="w-3.5 h-3.5" />
                     <span className="hidden sm:inline">Publish</span>
-                  </Button>
+                  </button>
                 </div>
               </div>
             </div>

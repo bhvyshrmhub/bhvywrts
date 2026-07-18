@@ -1,97 +1,151 @@
 "use client"
 
+import { useState } from "react"
 import Link from "next/link"
 import { motion } from "framer-motion"
-import { Clock, BookOpen, Calendar, Sparkles } from "lucide-react"
+import { Clock, Bookmark, Share2 } from "lucide-react"
 import { cn } from "@/lib/utils"
-import { formatDate } from "@/lib/utils"
-import type { Story } from "@/types"
 
 interface StoryCardProps {
-  story: Story
+  story: {
+    id: string
+    slug: string
+    title: string
+    excerpt: string | null
+    coverImage: string | null
+    category: string | null
+    createdAt: string
+    author?: string | null
+    readingTime?: string | number | null
+    content?: string | null
+  }
   index?: number
 }
 
 export function StoryCard({ story, index = 0 }: StoryCardProps) {
+  const [imageLoaded, setImageLoaded] = useState(false)
+  const [bookmarked, setBookmarked] = useState(false)
+  const readingTime = story.readingTime || (
+    story.content
+      ? Math.max(1, Math.ceil(story.content.split(/\s+/).length / 200)) + " min read"
+      : "5 min read"
+  )
+
+  const toggleBookmark = (e: React.MouseEvent) => {
+    e.preventDefault()
+    e.stopPropagation()
+    setBookmarked(!bookmarked)
+    try {
+      const stored = JSON.parse(localStorage.getItem("bhavy-bookmarks") || "[]")
+      if (!bookmarked) {
+        localStorage.setItem("bhavy-bookmarks", JSON.stringify([...stored, story.id]))
+      } else {
+        localStorage.setItem("bhavy-bookmarks", JSON.stringify(stored.filter((id: string) => id !== story.id)))
+      }
+    } catch {}
+  }
+
+  const handleShare = (e: React.MouseEvent) => {
+    e.preventDefault()
+    e.stopPropagation()
+    if (navigator.share) {
+      navigator.share({ title: story.title, url: `/stories/${story.slug}` })
+    } else {
+      navigator.clipboard.writeText(`${window.location.origin}/stories/${story.slug}`)
+    }
+  }
+
+  const formattedDate = new Date(story.createdAt).toLocaleDateString("en-US", {
+    month: "short",
+    day: "numeric",
+    year: "numeric",
+  })
+
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 40 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true, margin: "-50px" }}
-      transition={{ duration: 0.7, delay: index * 0.1, ease: [0.16, 1, 0.3, 1] }}
-      whileHover={{ y: -8 }}
+    <motion.article
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.5, delay: index * 0.08, ease: [0.16, 1, 0.3, 1] }}
     >
-      <Link href={`/stories/${story.slug}`} className="group block h-full">
-        <div
-          className={cn(
-            "relative h-full rounded-2xl overflow-hidden",
-            "glass-card",
-            "elevation-2",
-            "transition-all duration-500",
-            "group-hover:elevation-4",
-            "group-hover:border-primary/30",
-            "group-hover:[transform:perspective(1200px)_rotateX(2deg)_rotateY(2deg)_scale(1.01)]"
-          )}
-        >
-          <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-white/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+      <Link
+        href={`/stories/${story.slug}`}
+        className="group block"
+      >
+        <div className="hover-lift rounded-lg overflow-hidden bg-card border border-border">
+          <div className="aspect-[16/9] relative overflow-hidden bg-secondary">
+            {story.coverImage ? (
+              <>
+                {!imageLoaded && <div className="absolute inset-0 skeleton" />}
+                <img
+                  src={story.coverImage}
+                  alt={story.title}
+                  onLoad={() => setImageLoaded(true)}
+                  className={cn(
+                    "w-full h-full object-cover transition-all duration-700 group-hover:scale-[1.03]",
+                    imageLoaded ? "opacity-100" : "opacity-0"
+                  )}
+                />
+              </>
+            ) : (
+              <div className="absolute inset-0 flex items-center justify-center">
+                <div className="text-center">
+                  <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1" className="text-muted-foreground/30 mx-auto mb-2">
+                    <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" />
+                    <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" />
+                  </svg>
+                  <span className="text-xs text-muted-foreground/40">No cover</span>
+                </div>
+              </div>
+            )}
+          </div>
 
-          {story.coverImage ? (
-            <div className="relative h-48 overflow-hidden">
-              <motion.div
-                className="absolute inset-0 bg-cover bg-center"
-                style={{ backgroundImage: `url(${story.coverImage})` }}
-                whileHover={{ scale: 1.08 }}
-                transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-card via-card/50 to-transparent" />
-            </div>
-          ) : (
-            <div className="h-32 bg-gradient-to-br from-primary/[0.03] via-accent/[0.02] to-secondary/[0.03] flex items-center justify-center">
-              <Sparkles className="w-8 h-8 text-primary/20" />
-            </div>
-          )}
-
-          <div className="p-5 space-y-3">
-            <div className="flex items-center gap-2 flex-wrap">
-              <span className="px-2.5 py-0.5 rounded-full text-xs font-medium glass text-primary/80 border border-primary/20">
-                {story.category}
-              </span>
-              {story.featured && (
-                <span className="px-2.5 py-0.5 rounded-full text-xs font-medium bg-amber-500/10 text-amber-400/80 border border-amber-500/20">
-                  Featured
+          <div className="p-5">
+            <div className="flex items-center gap-2 mb-3">
+              {story.category && (
+                <span className="text-[11px] font-medium text-muted-foreground uppercase tracking-wider">
+                  {story.category}
                 </span>
               )}
+              <span className="text-[11px] text-muted-foreground/60">&middot;</span>
+              <span className="text-[11px] text-muted-foreground flex items-center gap-1">
+                <Clock className="w-3 h-3" />
+                {readingTime}
+              </span>
             </div>
 
-            <h3 className="text-lg font-semibold leading-snug text-foreground group-hover:text-primary transition-colors line-clamp-2">
+            <h3 className="text-lg font-[var(--font-serif)] text-foreground leading-snug group-hover:text-accent transition-colors duration-300">
               {story.title}
             </h3>
 
             {story.excerpt && (
-              <p className="text-sm text-muted-foreground/70 line-clamp-2 leading-relaxed">
+              <p className="text-sm text-muted-foreground mt-2 line-clamp-2 leading-relaxed">
                 {story.excerpt}
               </p>
             )}
 
-            <div className="flex items-center gap-4 pt-2 text-xs text-muted-foreground/50">
-              <span className="flex items-center gap-1.5">
-                <BookOpen className="w-3.5 h-3.5" />
-                {story.wordCount} words
-              </span>
-              <span className="flex items-center gap-1.5">
-                <Clock className="w-3.5 h-3.5" />
-                {story.readingTime} min read
-              </span>
-              <span className="flex items-center gap-1.5 ml-auto">
-                <Calendar className="w-3.5 h-3.5" />
-                {formatDate(story.createdAt)}
-              </span>
+            <div className="flex items-center justify-between mt-4 pt-3 border-t border-border/50">
+              <span className="text-xs text-muted-foreground">{formattedDate}</span>
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={toggleBookmark}
+                  className={cn(
+                    "p-1.5 rounded transition-colors",
+                    bookmarked ? "text-accent" : "text-muted-foreground hover:text-foreground"
+                  )}
+                >
+                  <Bookmark className="w-3.5 h-3.5" fill={bookmarked ? "currentColor" : "none"} />
+                </button>
+                <button
+                  onClick={handleShare}
+                  className="p-1.5 rounded text-muted-foreground hover:text-foreground transition-colors"
+                >
+                  <Share2 className="w-3.5 h-3.5" />
+                </button>
+              </div>
             </div>
           </div>
-
-          <div className="absolute inset-0 rounded-2xl ring-1 ring-inset ring-white/[0.06] group-hover:ring-primary/20 transition-all pointer-events-none" />
         </div>
       </Link>
-    </motion.div>
+    </motion.article>
   )
 }

@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
 import { motion } from "framer-motion"
-import { Lock, Eye, EyeOff, ArrowRight, Sparkles } from "lucide-react"
+import { Lock, Eye, EyeOff, ArrowRight } from "lucide-react"
 import { useAuthStore } from "@/lib/store"
 
 export default function AdminLoginPage() {
@@ -34,7 +34,7 @@ export default function AdminLoginPage() {
     if (success) {
       router.push("/dashboard")
     } else {
-      setError("Invalid username or password")
+      setError("Invalid credentials")
     }
     setLoading(false)
   }
@@ -43,117 +43,82 @@ export default function AdminLoginPage() {
     return (
       <div className="min-h-screen flex items-center justify-center bg-background">
         <div className="flex flex-col items-center gap-3">
-          <div className="w-8 h-8 border-2 border-primary border-t-transparent rounded-full animate-spin" />
-          <p className="text-xs text-muted-foreground/40">Verifying session...</p>
+          <div className="w-6 h-6 border-2 border-foreground border-t-transparent rounded-full animate-spin" />
+          <p className="text-xs text-muted-foreground">Verifying...</p>
         </div>
       </div>
     )
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-background p-4 relative overflow-hidden">
+    <div className="min-h-screen flex items-center justify-center bg-background p-4">
       <motion.div
-        className="absolute top-1/4 left-1/4 w-64 h-64 rounded-full blur-3xl pointer-events-none"
-        style={{ background: "radial-gradient(circle, rgba(139,92,246,0.06) 0%, transparent 70%)" }}
-        animate={{ x: [0, 30, -20, 0], y: [0, -20, 30, 0] }}
-        transition={{ duration: 15, repeat: Infinity, ease: "easeInOut" }}
-      />
-      <motion.div
-        className="absolute bottom-1/4 right-1/4 w-48 h-48 rounded-full blur-3xl pointer-events-none"
-        style={{ background: "radial-gradient(circle, rgba(232,121,249,0.04) 0%, transparent 70%)" }}
-        animate={{ x: [0, -20, 30, 0], y: [0, 30, -20, 0] }}
-        transition={{ duration: 18, repeat: Infinity, ease: "easeInOut" }}
-      />
-
-      <motion.div
-        initial={{ opacity: 0, scale: 0.95 }}
-        animate={{ opacity: 1, scale: 1 }}
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
-        className="relative w-full max-w-md"
+        className="w-full max-w-sm"
       >
-        <div className="relative z-10 glass-strong border border-white/10 rounded-3xl p-8 sm:p-10">
-          <div className="text-center mb-8 space-y-3">
-            <motion.div
-              whileHover={{ rotate: -5, scale: 1.05 }}
-              className="w-16 h-16 rounded-2xl bg-gradient-to-br from-primary via-accent to-secondary flex items-center justify-center mx-auto shadow-xl shadow-primary/20"
-            >
-              <Lock className="w-7 h-7 text-white" />
-            </motion.div>
-            <h1 className="text-2xl font-bold text-foreground">Admin Access</h1>
-            <p className="text-sm text-muted-foreground/50">Sign in to manage your stories</p>
+        <div className="text-center mb-8">
+          <div className="w-12 h-12 rounded-full bg-secondary flex items-center justify-center mx-auto mb-4">
+            <Lock className="w-5 h-5 text-muted-foreground" />
+          </div>
+          <h1 className="text-2xl font-[var(--font-serif)] text-foreground">Admin</h1>
+          <p className="text-sm text-muted-foreground mt-1">Sign in to manage stories</p>
+        </div>
+
+        <form onSubmit={handleLogin} className="space-y-4">
+          <div>
+            <input
+              type="text"
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
+              placeholder="Username"
+              className="w-full px-4 py-2.5 rounded-lg bg-card border border-border text-foreground placeholder:text-muted-foreground/40 outline-none focus:border-foreground/30 transition-colors text-sm"
+              autoFocus
+            />
           </div>
 
-          <form onSubmit={handleLogin} className="space-y-5">
-            <div className="space-y-2">
-              <label className="text-xs text-muted-foreground/50 font-medium tracking-wide uppercase">
-                Username
-              </label>
-              <input
-                type="text"
-                value={username}
-                onChange={(e) => setUsername(e.target.value)}
-                className="w-full px-4 py-3.5 rounded-2xl bg-white/5 border border-white/10 text-foreground placeholder:text-muted-foreground/30 focus:outline-none focus:border-primary/50 focus:ring-1 focus:ring-primary/20 transition-all"
-                placeholder="Enter username"
-                autoFocus
-              />
-            </div>
-
-            <div className="space-y-2">
-              <label className="text-xs text-muted-foreground/50 font-medium tracking-wide uppercase">
-                Password
-              </label>
-              <div className="relative">
-                <input
-                  type={showPassword ? "text" : "password"}
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  className="w-full px-4 py-3.5 rounded-2xl bg-white/5 border border-white/10 text-foreground placeholder:text-muted-foreground/30 focus:outline-none focus:border-primary/50 focus:ring-1 focus:ring-primary/20 transition-all pr-12"
-                  placeholder="Enter password"
-                />
-                <button
-                  type="button"
-                  onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-4 top-1/2 -translate-y-1/2 text-muted-foreground/30 hover:text-muted-foreground transition-colors"
-                >
-                  {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
-                </button>
-              </div>
-            </div>
-
-            {error && (
-              <motion.p
-                initial={{ opacity: 0, y: -5 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ type: "spring", stiffness: 300, damping: 20 }}
-                className="text-sm text-destructive text-center"
-              >
-                {error}
-              </motion.p>
-            )}
-
-            <motion.button
-              type="submit"
-              disabled={loading || !username || !password}
-              whileHover={{ scale: 1.01 }}
-              whileTap={{ scale: 0.99 }}
-              className="relative w-full py-3.5 rounded-2xl bg-primary text-primary-foreground font-medium overflow-hidden transition-all disabled:opacity-50 disabled:cursor-not-allowed group"
+          <div className="relative">
+            <input
+              type={showPassword ? "text" : "password"}
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              placeholder="Password"
+              className="w-full px-4 py-2.5 rounded-lg bg-card border border-border text-foreground placeholder:text-muted-foreground/40 outline-none focus:border-foreground/30 transition-colors text-sm pr-10"
+            />
+            <button
+              type="button"
+              onClick={() => setShowPassword(!showPassword)}
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground/40 hover:text-muted-foreground transition-colors"
             >
-              <motion.div
-                className="absolute inset-0 bg-gradient-to-r from-primary via-accent to-secondary opacity-0 group-hover:opacity-100 transition-opacity duration-500"
-              />
-              <span className="relative z-10 flex items-center justify-center gap-2">
-                {loading ? (
-                  <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                ) : (
-                  <>
-                    Sign In
-                    <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-                  </>
-                )}
-              </span>
-            </motion.button>
-          </form>
-        </div>
+              {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+            </button>
+          </div>
+
+          {error && (
+            <motion.p
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              className="text-sm text-destructive text-center"
+            >
+              {error}
+            </motion.p>
+          )}
+
+          <button
+            type="submit"
+            disabled={loading || !username || !password}
+            className="w-full py-2.5 rounded-lg bg-foreground text-background text-sm font-medium hover:opacity-90 transition-opacity disabled:opacity-40 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+          >
+            {loading ? (
+              <div className="w-4 h-4 border-2 border-background border-t-transparent rounded-full animate-spin" />
+            ) : (
+              <>
+                Sign In <ArrowRight className="w-4 h-4" />
+              </>
+            )}
+          </button>
+        </form>
       </motion.div>
     </div>
   )

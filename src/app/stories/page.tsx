@@ -2,35 +2,35 @@
 
 import { useState, useEffect, useCallback } from "react"
 import { motion } from "framer-motion"
-import { BookOpen, SlidersHorizontal, ArrowUpDown, Sparkles } from "lucide-react"
+import { BookOpen, TrendingUp, Clock, Bookmark, ArrowRight } from "lucide-react"
 import { Navbar } from "@/components/Navbar"
 import { Footer } from "@/components/Footer"
-import { ParticleBackground } from "@/components/ParticleBackground"
 import { StoryCard } from "@/components/StoryCard"
 import { SearchBar } from "@/components/SearchBar"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { ReadingProgress } from "@/components/ReadingProgress"
+import { FloatingWriteButton } from "@/components/FloatingWriteButton"
 import { CATEGORIES } from "@/lib/constants"
+import Link from "next/link"
 import type { Story } from "@/types"
 
 function SkeletonCard() {
   return (
-    <div className="h-72 rounded-2xl glass overflow-hidden skeleton" />
+    <div className="h-72 rounded-lg skeleton border border-border" />
   )
 }
 
 export default function StoriesPage() {
   const [stories, setStories] = useState<Story[]>([])
   const [loading, setLoading] = useState(true)
-  const [search, setSearch] = useState("")
   const [category, setCategory] = useState("all")
   const [sort, setSort] = useState("newest")
+  const [bookmarkedIds, setBookmarkedIds] = useState<string[]>([])
 
   const fetchStories = useCallback(async () => {
     setLoading(true)
     const params = new URLSearchParams()
     params.set("published", "true")
     if (category && category !== "all") params.set("category", category)
-    if (search) params.set("search", search)
     if (sort) params.set("sort", sort)
     try {
       const res = await fetch(`/api/stories?${params}`)
@@ -38,112 +38,107 @@ export default function StoriesPage() {
       setStories(data)
     } catch {}
     setLoading(false)
-  }, [category, search, sort])
+  }, [category, sort])
 
   useEffect(() => {
-    const timer = setTimeout(fetchStories, 300)
-    return () => clearTimeout(timer)
+    fetchStories()
   }, [fetchStories])
+
+  useEffect(() => {
+    try {
+      const stored = JSON.parse(localStorage.getItem("bhavy-bookmarks") || "[]")
+      setBookmarkedIds(stored)
+    } catch {}
+  }, [])
+
+  const bookmarkedStories = stories.filter(s => bookmarkedIds.includes(s.id))
 
   return (
     <div className="relative min-h-screen">
-      <ParticleBackground />
+      <ReadingProgress />
       <Navbar />
-
-      <main className="relative z-10 pt-28 pb-16">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <main className="relative pt-14 md:pt-16 pb-16 md:pb-0">
+        <div className="max-w-6xl mx-auto px-6 py-10 md:py-12">
           <motion.div
-            initial={{ opacity: 0, y: 30 }}
+            initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
-            className="space-y-8 sm:space-y-10"
+            transition={{ duration: 0.6 }}
           >
-            <div className="text-center space-y-4">
-              <motion.div
-                initial={{ scale: 0.9, opacity: 0 }}
-                animate={{ scale: 1, opacity: 1 }}
-                transition={{ delay: 0.2, duration: 0.6 }}
-                className="inline-flex items-center gap-2 px-3 py-1 rounded-full glass text-xs text-primary/70 border border-primary/20"
-              >
-                <Sparkles className="w-3 h-3" />
-                Browse the collection
-              </motion.div>
-              <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold tracking-tight">
-                <span className="gradient-text bg-gradient-to-r from-primary via-accent to-secondary">
-                  Story Library
-                </span>
-              </h1>
-              <p className="text-muted-foreground/50 text-base sm:text-lg max-w-xl mx-auto">
-                Browse through a collection of stories, thoughts, and reflections.
-              </p>
-            </div>
-
-            <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-4 max-w-3xl mx-auto">
-              <div className="flex-1">
-                <SearchBar value={search} onChange={setSearch} />
+            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
+              <div>
+                <h1 className="text-3xl font-[var(--font-serif)] text-foreground">Library</h1>
+                <p className="text-sm text-muted-foreground mt-1">Browse the complete collection</p>
               </div>
-              <div className="flex gap-3">
-                <Select value={category} onValueChange={setCategory}>
-                  <SelectTrigger className="w-[140px] rounded-2xl glass border-white/10 h-12">
-                    <SlidersHorizontal className="w-3.5 h-3.5 mr-1" />
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="all">All</SelectItem>
-                    {CATEGORIES.map((cat) => (
-                      <SelectItem key={cat} value={cat}>{cat}</SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-                <Select value={sort} onValueChange={setSort}>
-                  <SelectTrigger className="w-[140px] rounded-2xl glass border-white/10 h-12">
-                    <ArrowUpDown className="w-3.5 h-3.5 mr-1" />
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="newest">Newest</SelectItem>
-                    <SelectItem value="oldest">Oldest</SelectItem>
-                    <SelectItem value="title">Title</SelectItem>
-                  </SelectContent>
-                </Select>
+              <div className="flex items-center gap-2">
+                <SearchBar />
+                <select
+                  value={sort}
+                  onChange={(e) => setSort(e.target.value)}
+                  className="px-3 py-1.5 text-sm bg-secondary text-secondary-foreground rounded-lg border border-border outline-none appearance-none cursor-pointer hover:bg-border transition-colors"
+                >
+                  <option value="newest">Newest</option>
+                  <option value="oldest">Oldest</option>
+                  <option value="title">Title</option>
+                </select>
               </div>
             </div>
 
-            {loading ? (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 sm:gap-6">
-                {Array.from({ length: 6 }).map((_, i) => (
-                  <SkeletonCard key={i} />
-                ))}
-              </div>
-            ) : stories.length === 0 ? (
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                className="text-center py-24 space-y-4"
+            <div className="flex flex-wrap gap-2 mb-10">
+              <button
+                onClick={() => setCategory("all")}
+                className={`px-3 py-1.5 text-xs rounded-lg transition-colors ${
+                  category === "all"
+                    ? "bg-foreground text-background"
+                    : "bg-secondary text-secondary-foreground hover:bg-border"
+                }`}
               >
-                <BookOpen className="w-12 h-12 text-muted-foreground/30 mx-auto" />
-                <h3 className="text-xl font-medium text-muted-foreground/60">No stories found</h3>
-                <p className="text-sm text-muted-foreground/40">
-                  Try adjusting your search or filter criteria.
-                </p>
-              </motion.div>
-            ) : (
-              <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ delay: 0.2, duration: 0.6 }}
-                className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 sm:gap-6"
-              >
-                {stories.map((story, i) => (
-                  <StoryCard key={story.id} story={story} index={i} />
-                ))}
-              </motion.div>
-            )}
+                All
+              </button>
+              {CATEGORIES.map((cat) => (
+                <button
+                  key={cat}
+                  onClick={() => setCategory(cat)}
+                  className={`px-3 py-1.5 text-xs rounded-lg transition-colors ${
+                    category === cat
+                      ? "bg-foreground text-background"
+                      : "bg-secondary text-secondary-foreground hover:bg-border"
+                  }`}
+                >
+                  {cat}
+                </button>
+              ))}
+            </div>
           </motion.div>
+
+          {loading ? (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {Array.from({ length: 6 }).map((_, i) => (
+                <SkeletonCard key={i} />
+              ))}
+            </div>
+          ) : stories.length === 0 ? (
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="text-center py-24"
+            >
+              <BookOpen className="w-10 h-10 text-muted-foreground/30 mx-auto mb-4" />
+              <h3 className="text-lg font-medium text-muted-foreground/60">No stories found</h3>
+              <p className="text-sm text-muted-foreground/40 mt-1">
+                Try a different category or check back later.
+              </p>
+            </motion.div>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {stories.map((story, i) => (
+                <StoryCard key={story.id} story={story} index={i} />
+              ))}
+            </div>
+          )}
         </div>
       </main>
-
       <Footer />
+      <FloatingWriteButton />
     </div>
   )
 }
