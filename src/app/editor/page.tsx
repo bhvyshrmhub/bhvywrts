@@ -10,7 +10,7 @@ import { TipTapEditor } from "@/components/TipTapEditor"
 import { CoverImageUpload } from "@/components/CoverImageUpload"
 import { useEditorStore } from "@/lib/store"
 import { slugify, calculateReadingTime, calculateWords } from "@/lib/utils"
-import { CATEGORIES } from "@/lib/constants"
+import { CATEGORIES, MOODS, COLLECTIONS, buildTags, type Mood, type CollectionType } from "@/lib/constants"
 import { cn } from "@/lib/utils"
 
 export default function NewStoryPage() {
@@ -19,6 +19,8 @@ export default function NewStoryPage() {
   const [title, setTitle] = useState("")
   const [subtitle, setSubtitle] = useState("")
   const [category, setCategory] = useState("Thoughts")
+  const [mood, setMood] = useState<Mood | "">("")
+  const [collection, setCollection] = useState<CollectionType | "">("")
   const [content, setContent] = useState("")
   const [coverImage, setCoverImage] = useState<string | null>(null)
   const [saving, setSaving] = useState(false)
@@ -30,6 +32,7 @@ export default function NewStoryPage() {
     const wordCount = calculateWords(content)
     const excerpt = content.replace(/<[^>]*>/g, "").slice(0, 200)
     const generatedSlug = `${slug}-${Date.now()}`
+    const tags = buildTags(mood || null, collection || null, null)
 
     try {
       const res = await fetch("/api/stories", {
@@ -37,7 +40,7 @@ export default function NewStoryPage() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           title, subtitle, slug: generatedSlug, content, excerpt,
-          category, coverImage, wordCount,
+          category, coverImage, wordCount, tags,
           readingTime: calculateReadingTime(content),
           published: publish,
         }),
@@ -65,7 +68,7 @@ export default function NewStoryPage() {
   return (
     <div className="relative min-h-screen">
       <Navbar />
-      <main className="relative pt-16 md:pt-20 pb-24">
+      <main className="relative pt-20 md:pt-20 pb-24">
         <div className="max-w-4xl mx-auto px-4 sm:px-6">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -138,6 +141,26 @@ export default function NewStoryPage() {
                 </div>
 
                 <div className="flex items-center gap-2">
+                  <select
+                    value={mood}
+                    onChange={(e) => setMood(e.target.value as Mood | "")}
+                    className="h-8 text-xs rounded-lg bg-secondary text-secondary-foreground border border-border outline-none appearance-none cursor-pointer px-2"
+                  >
+                    <option value="">Mood</option>
+                    {MOODS.map((m) => (
+                      <option key={m} value={m}>{m}</option>
+                    ))}
+                  </select>
+                  <select
+                    value={collection}
+                    onChange={(e) => setCollection(e.target.value as CollectionType | "")}
+                    className="h-8 text-xs rounded-lg bg-secondary text-secondary-foreground border border-border outline-none appearance-none cursor-pointer px-2"
+                  >
+                    <option value="">Collection</option>
+                    {COLLECTIONS.map((c) => (
+                      <option key={c} value={c}>{c}</option>
+                    ))}
+                  </select>
                   <select
                     value={category}
                     onChange={(e) => setCategory(e.target.value)}

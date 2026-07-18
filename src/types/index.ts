@@ -16,7 +16,7 @@ export interface Story {
   updatedAt: string
 }
 
-export type Theme = 'midnight' | 'ocean' | 'sunset' | 'forest' | 'galaxy' | 'paper'
+export type Theme = "light" | "dark"
 
 export interface ThemeConfig {
   id: Theme
@@ -38,4 +38,4 @@ export interface EditorMetrics {
   readingTime: number
 }
 
-export type WritingMode = 'normal' | 'focus' | 'typewriter' | 'zen' | 'fullscreen'
+export type WritingMode = "normal" | "focus" | "typewriter" | "zen" | "fullscreen"

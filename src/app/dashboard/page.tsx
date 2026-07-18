@@ -55,7 +55,7 @@ export default function DashboardPage() {
     <div className="min-h-screen">
       <ReadingProgress />
       <Navbar />
-      <main className="pt-16 md:pt-20 pb-20 md:pb-0">
+      <main className="pt-20 md:pt-20">
         <div className="max-w-6xl mx-auto px-6 py-10 md:py-12">
           <motion.div
             initial={{ opacity: 0, y: 20 }}

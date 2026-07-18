@@ -2,23 +2,21 @@
 
 import { createContext, useContext, useEffect, useState, useCallback, type ReactNode } from "react"
 
-type Theme = "moonlight" | "aurora" | "blossom"
+type Theme = "light" | "dark"
 
 const THEME_KEY = "bhavy-theme"
 
 const themeLabels: Record<Theme, string> = {
-  moonlight: "Moonlight",
-  aurora: "Aurora",
-  blossom: "Blossom",
+  light: "Light",
+  dark: "Dark",
 }
 
 const themeIcons: Record<Theme, string> = {
-  moonlight: "🌙",
-  aurora: "☀️",
-  blossom: "🌸",
+  light: "☀️",
+  dark: "🌙",
 }
 
-const themeOrder: Theme[] = ["moonlight", "aurora", "blossom"]
+const themeOrder: Theme[] = ["light", "dark"]
 
 interface ThemeContextType {
   theme: Theme
@@ -29,10 +27,10 @@ interface ThemeContextType {
 }
 
 const ThemeCtx = createContext<ThemeContextType>({
-  theme: "moonlight",
+  theme: "dark",
   setTheme: () => {},
   cycleTheme: () => {},
-  themeLabel: "Moonlight",
+  themeLabel: "Dark",
   themeIcon: "🌙",
 })
 
@@ -40,20 +38,33 @@ export function useThemeValue() {
   return useContext(ThemeCtx)
 }
 
+function getSystemTheme(): Theme {
+  if (typeof window === "undefined") return "dark"
+  return window.matchMedia("(prefers-color-scheme: light)").matches ? "light" : "dark"
+}
+
 export function ThemeProvider({ children }: { children: ReactNode }) {
-  const [theme, setThemeState] = useState<Theme>("moonlight")
+  const [theme, setThemeState] = useState<Theme>("dark")
   const [mounted, setMounted] = useState(false)
 
   useEffect(() => {
-    const stored = (typeof window !== "undefined" ? localStorage.getItem(THEME_KEY) : null) as Theme | null
-    if (stored && themeOrder.includes(stored)) {
+    const stored = localStorage.getItem(THEME_KEY) as Theme | null
+    if (stored && (stored === "light" || stored === "dark")) {
       setThemeState(stored)
+    } else {
+      setThemeState(getSystemTheme())
     }
     setMounted(true)
   }, [])
 
   const applyTheme = useCallback((t: Theme) => {
-    document.documentElement.className = t
+    if (t === "dark") {
+      document.documentElement.classList.add("dark")
+      document.documentElement.classList.remove("light")
+    } else {
+      document.documentElement.classList.add("light")
+      document.documentElement.classList.remove("dark")
+    }
     localStorage.setItem(THEME_KEY, t)
   }, [])
 

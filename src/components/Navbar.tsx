@@ -1,10 +1,10 @@
 "use client"
 
-import { useState, useEffect, useCallback, useRef } from "react"
+import { useState, useEffect, useRef } from "react"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
-import { motion } from "framer-motion"
-import { Search, Bookmark, User, BookOpen, LogOut } from "lucide-react"
+import { motion, AnimatePresence } from "framer-motion"
+import { Search, User, LogOut, Menu, X, Bookmark } from "lucide-react"
 import { SearchOverlay } from "./SearchOverlay"
 import { ThemeToggle } from "./ThemeToggle"
 import { useAuthStore } from "@/lib/store"
@@ -14,16 +14,16 @@ export function Navbar() {
   const pathname = usePathname()
   const { isAdmin, checking, logout } = useAuthStore()
   const [scrolled, setScrolled] = useState(false)
-  const [hidden, setHidden] = useState(false)
+  const [compact, setCompact] = useState(false)
   const [searchOpen, setSearchOpen] = useState(false)
+  const [menuOpen, setMenuOpen] = useState(false)
   const lastScroll = useRef(0)
 
   useEffect(() => {
     const onScroll = () => {
       const current = window.scrollY
       setScrolled(current > 40)
-      if (current > 200) setHidden(current > lastScroll.current)
-      else setHidden(false)
+      setCompact(current > 120)
       lastScroll.current = current
     }
     window.addEventListener("scroll", onScroll, { passive: true })
@@ -36,35 +36,46 @@ export function Navbar() {
         e.preventDefault()
         setSearchOpen(true)
       }
-      if (e.key === "Escape") setSearchOpen(false)
+      if (e.key === "Escape") { setSearchOpen(false); setMenuOpen(false) }
     }
     window.addEventListener("keydown", onKeyDown)
     return () => window.removeEventListener("keydown", onKeyDown)
   }, [])
 
-  const logoRef = useRef<HTMLAnchorElement>(null)
+  const extraLinks = [
+    ...(isAdmin && !checking
+      ? [
+          { href: "/dashboard", label: "Dashboard" },
+          { href: "/editor", label: "Write" },
+        ]
+      : []),
+    ...(!isAdmin || checking ? [{ href: "/admin", label: "Admin" }] : []),
+  ]
 
   return (
     <>
       <SearchOverlay open={searchOpen} onClose={() => setSearchOpen(false)} />
 
-      {/* Desktop Nav */}
       <motion.header
         initial={{ y: 0 }}
-        animate={{ y: hidden ? -100 : 0 }}
-        transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
+        animate={{ y: 0 }}
+        transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
         className={cn(
-          "fixed top-0 left-0 right-0 z-50 hidden md:block transition-colors duration-300",
+          "fixed top-0 left-0 right-0 z-50 transition-all duration-300",
           scrolled ? "glass-strong" : "bg-transparent"
         )}
       >
-        <nav className="max-w-6xl mx-auto px-6">
-          <div className="flex items-center justify-between h-16">
-            <div className="w-[200px]">
+        <nav className="max-w-6xl mx-auto px-5 md:px-6">
+          <div className={cn(
+            "flex items-center justify-between transition-all duration-300",
+            compact ? "h-12" : "h-16"
+          )}>
+            {/* Left */}
+            <div className="flex items-center gap-1 w-[80px] md:w-[200px]">
               <Link
                 href="/stories"
                 className={cn(
-                  "relative text-sm transition-colors",
+                  "relative text-sm transition-colors whitespace-nowrap",
                   pathname === "/stories" ? "text-foreground" : "text-muted-foreground hover:text-foreground"
                 )}
               >
@@ -81,93 +92,97 @@ export function Navbar() {
 
             {/* Center */}
             <Link
-              ref={logoRef}
               href="/"
-              className="text-xl font-[var(--font-brand)] text-foreground hover:text-accent transition-colors"
+              className={cn(
+                "font-[var(--font-brand)] text-foreground hover:text-accent transition-colors whitespace-nowrap",
+                compact ? "text-lg" : "text-xl"
+              )}
               id="nav-logo"
             >
               Bhavy Writes
             </Link>
 
             {/* Right */}
-            <div className="w-[200px] flex items-center justify-end gap-2">
+            <div className="flex items-center justify-end gap-1 w-[80px] md:w-[200px]">
+              {/* Mobile hamburger */}
+              <button
+                onClick={() => setMenuOpen(!menuOpen)}
+                className="md:hidden flex items-center justify-center w-8 h-8 rounded-lg text-muted-foreground hover:text-foreground hover:bg-secondary transition-colors"
+                aria-label="Menu"
+              >
+                {menuOpen ? <X className="w-4 h-4" /> : <Menu className="w-4 h-4" />}
+              </button>
               <button
                 onClick={() => setSearchOpen(true)}
-                className="flex items-center gap-2 px-3 py-1.5 text-sm text-muted-foreground rounded-lg hover:bg-secondary transition-colors"
+                className="hidden md:flex items-center justify-center w-8 h-8 rounded-lg text-muted-foreground hover:text-foreground hover:bg-secondary transition-colors"
                 aria-label="Search"
               >
                 <Search className="w-4 h-4" />
-                <kbd className="text-[10px] px-1.5 py-0.5 rounded border border-border text-muted-foreground">
-                  ⌘K
-                </kbd>
               </button>
               <ThemeToggle />
             </div>
           </div>
         </nav>
-      </motion.header>
 
-      {/* Mobile Liquid Glass Nav */}
-      <nav className="fixed bottom-4 left-4 right-4 z-50 md:hidden">
-        <div className="flex items-center justify-around h-14 px-2 rounded-2xl glass-strong">
-          <Link
-            href="/stories"
-            className={cn(
-              "flex flex-col items-center gap-0.5 px-3 py-1 rounded-lg transition-colors",
-              pathname === "/stories" ? "text-foreground" : "text-muted-foreground"
-            )}
-          >
-            <BookOpen className="w-5 h-5" />
-            <span className="text-[9px] font-medium">Stories</span>
-          </Link>
-
-          <button
-            onClick={() => setSearchOpen(true)}
-            className="flex flex-col items-center gap-0.5 px-3 py-1 text-muted-foreground"
-          >
-            <Search className="w-5 h-5" />
-            <span className="text-[9px] font-medium">Search</span>
-          </button>
-
-          <Link
-            href="/stories?bookmarked=true"
-            className={cn(
-              "flex flex-col items-center gap-0.5 px-3 py-1 rounded-lg transition-colors",
-              pathname === "/stories" && "text-foreground" ? "text-foreground" : "text-muted-foreground"
-            )}
-          >
-            <Bookmark className="w-5 h-5" />
-            <span className="text-[9px] font-medium">Books</span>
-          </Link>
-
-          {isAdmin && !checking ? (
-            <>
-              <Link
-                href="/dashboard"
-                className="flex flex-col items-center gap-0.5 px-3 py-1 text-muted-foreground"
-              >
-                <User className="w-5 h-5" />
-                <span className="text-[9px] font-medium">Admin</span>
-              </Link>
-              <button
-                onClick={logout}
-                className="flex flex-col items-center gap-0.5 px-3 py-1 text-muted-foreground"
-              >
-                <LogOut className="w-5 h-5" />
-                <span className="text-[9px] font-medium">Exit</span>
-              </button>
-            </>
-          ) : (
-            <Link
-              href="/admin"
-              className="flex flex-col items-center gap-0.5 px-3 py-1 text-muted-foreground"
+        {/* Mobile slide-down menu */}
+        <AnimatePresence>
+          {menuOpen && (
+            <motion.div
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: "auto" }}
+              exit={{ opacity: 0, height: 0 }}
+              transition={{ duration: 0.2, ease: [0.16, 1, 0.3, 1] }}
+              className="md:hidden overflow-hidden glass-strong border-t border-glass-border"
             >
-              <User className="w-5 h-5" />
-              <span className="text-[9px] font-medium">Me</span>
-            </Link>
+              <div className="px-5 py-3 space-y-1">
+                <MobileLink href="/stories" label="Stories" icon={null} current={pathname} onClick={() => setMenuOpen(false)} />
+                <button
+                  onClick={() => { setSearchOpen(true); setMenuOpen(false) }}
+                  className="flex items-center gap-2 w-full px-3 py-2 text-sm rounded-lg text-muted-foreground hover:text-foreground hover:bg-secondary transition-colors"
+                >
+                  <Search className="w-4 h-4" />
+                  Search
+                </button>
+                <MobileLink href="/stories?bookmarked=true" label="Bookmarks" icon={Bookmark} current={pathname} onClick={() => setMenuOpen(false)} />
+                {extraLinks.map((link) => (
+                  <MobileLink key={link.href} href={link.href} label={link.label} icon={null} current={pathname} onClick={() => setMenuOpen(false)} />
+                ))}
+                {isAdmin && !checking && (
+                  <button
+                    onClick={() => { logout(); setMenuOpen(false) }}
+                    className="flex items-center gap-2 w-full px-3 py-2 text-sm text-muted-foreground hover:text-foreground hover:bg-secondary rounded-lg transition-colors"
+                  >
+                    <LogOut className="w-4 h-4" />
+                    Logout
+                  </button>
+                )}
+              </div>
+            </motion.div>
           )}
-        </div>
-      </nav>
+        </AnimatePresence>
+      </motion.header>
     </>
+  )
+}
+
+function MobileLink({ href, label, icon: Icon, current, onClick }: {
+  href: string
+  label: string
+  icon: React.ElementType | null
+  current: string
+  onClick: () => void
+}) {
+  return (
+    <Link
+      href={href}
+      onClick={onClick}
+      className={cn(
+        "flex items-center gap-2 px-3 py-2 text-sm rounded-lg transition-colors",
+        current === href ? "text-foreground bg-secondary" : "text-muted-foreground hover:text-foreground hover:bg-secondary"
+      )}
+    >
+      {Icon && <Icon className="w-4 h-4" />}
+      {label}
+    </Link>
   )
 }

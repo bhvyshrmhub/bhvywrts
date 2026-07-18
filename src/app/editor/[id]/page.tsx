@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect, use } from "react"
+import { useState, useEffect, use, useMemo } from "react"
 import { useRouter } from "next/navigation"
 import { motion } from "framer-motion"
 import { ArrowLeft, Save, Check } from "lucide-react"
@@ -10,7 +10,7 @@ import { TipTapEditor } from "@/components/TipTapEditor"
 import { CoverImageUpload } from "@/components/CoverImageUpload"
 import { useEditorStore } from "@/lib/store"
 import { calculateReadingTime, calculateWords } from "@/lib/utils"
-import { CATEGORIES } from "@/lib/constants"
+import { CATEGORIES, MOODS, COLLECTIONS, buildTags, parseStoryTags, type Mood, type CollectionType } from "@/lib/constants"
 import { cn } from "@/lib/utils"
 import type { Story } from "@/types"
 
@@ -22,6 +22,8 @@ export default function EditStoryPage({ params }: { params: Promise<{ id: string
   const [title, setTitle] = useState("")
   const [subtitle, setSubtitle] = useState("")
   const [category, setCategory] = useState("Thoughts")
+  const [mood, setMood] = useState<Mood | "">("")
+  const [collection, setCollection] = useState<CollectionType | "">("")
   const [content, setContent] = useState("")
   const [coverImage, setCoverImage] = useState<string | null>(null)
   const [saving, setSaving] = useState(false)
@@ -30,13 +32,16 @@ export default function EditStoryPage({ params }: { params: Promise<{ id: string
   useEffect(() => {
     fetch(`/api/stories/${id}`)
       .then((r) => r.json())
-      .then((data) => {
+      .then((data: Story) => {
         setStory(data)
         setTitle(data.title)
         setSubtitle(data.subtitle)
         setCategory(data.category)
         setContent(data.content)
         setCoverImage(data.coverImage || null)
+        const parsed = parseStoryTags(data.tags)
+        if (parsed.mood) setMood(parsed.mood)
+        if (parsed.collection) setCollection(parsed.collection)
         setLoading(false)
       })
       .catch(() => setLoading(false))
@@ -47,13 +52,14 @@ export default function EditStoryPage({ params }: { params: Promise<{ id: string
     setSaving(true)
     const wordCount = calculateWords(content)
     const excerpt = content.replace(/<[^>]*>/g, "").slice(0, 200)
+    const tags = buildTags(mood || null, collection || null, null)
 
     try {
       const res = await fetch(`/api/stories/${story.slug}`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          title, subtitle, content, excerpt, category, coverImage,
+          title, subtitle, content, excerpt, category, coverImage, tags,
           wordCount, readingTime: calculateReadingTime(content),
           published: publish,
         }),
@@ -81,7 +87,7 @@ export default function EditStoryPage({ params }: { params: Promise<{ id: string
     return (
       <div className="relative min-h-screen">
         <Navbar />
-        <main className="relative pt-16 md:pt-20 max-w-4xl mx-auto px-4 py-6">
+        <main className="relative pt-20 md:pt-20 max-w-4xl mx-auto px-4 py-6">
           <div className="space-y-4">
             <div className="h-4 skeleton rounded w-1/4" />
             <div className="h-10 skeleton rounded w-3/4" />
@@ -95,7 +101,7 @@ export default function EditStoryPage({ params }: { params: Promise<{ id: string
   return (
     <div className="relative min-h-screen">
       <Navbar />
-      <main className="relative pt-16 md:pt-20 pb-24">
+      <main className="relative pt-20 md:pt-20 pb-24">
         <div className="max-w-4xl mx-auto px-4 sm:px-6">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -163,6 +169,26 @@ export default function EditStoryPage({ params }: { params: Promise<{ id: string
                 </div>
 
                 <div className="flex items-center gap-2">
+                  <select
+                    value={mood}
+                    onChange={(e) => setMood(e.target.value as Mood | "")}
+                    className="h-8 text-xs rounded-lg bg-secondary text-secondary-foreground border border-border outline-none appearance-none cursor-pointer px-2"
+                  >
+                    <option value="">Mood</option>
+                    {MOODS.map((m) => (
+                      <option key={m} value={m}>{m}</option>
+                    ))}
+                  </select>
+                  <select
+                    value={collection}
+                    onChange={(e) => setCollection(e.target.value as CollectionType | "")}
+                    className="h-8 text-xs rounded-lg bg-secondary text-secondary-foreground border border-border outline-none appearance-none cursor-pointer px-2"
+                  >
+                    <option value="">Collection</option>
+                    {COLLECTIONS.map((c) => (
+                      <option key={c} value={c}>{c}</option>
+                    ))}
+                  </select>
                   <select
                     value={category}
                     onChange={(e) => setCategory(e.target.value)}

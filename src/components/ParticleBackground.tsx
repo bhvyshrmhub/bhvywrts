@@ -2,7 +2,6 @@
 
 import { useEffect, useRef } from "react"
 import { motion } from "framer-motion"
-import { useThemeStore } from "@/lib/store"
 
 interface Particle {
   x: number

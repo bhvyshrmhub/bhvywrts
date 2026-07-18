@@ -1,10 +1,10 @@
 "use client"
 
-import { useState, useEffect, use } from "react"
+import { useState, useEffect, use, useMemo } from "react"
 import Link from "next/link"
 import { motion } from "framer-motion"
 import {
-  ArrowLeft, Clock, Calendar, Share2, Bookmark,
+  ArrowLeft, Clock, Calendar, Share2, Bookmark, Quote,
 } from "lucide-react"
 import { Navbar } from "@/components/Navbar"
 import { Footer } from "@/components/Footer"
@@ -13,6 +13,7 @@ import { FloatingWriteButton } from "@/components/FloatingWriteButton"
 import { Stars } from "@/components/Stars"
 import { formatDate, cn } from "@/lib/utils"
 import { supabase } from "@/lib/supabase-client"
+import { parseStoryTags, MOOD_COLORS, type Mood } from "@/lib/constants"
 import type { Story } from "@/types"
 
 function ShareButton({ title, slug }: { title: string; slug: string }) {
@@ -74,6 +75,17 @@ function BookmarkButton({ id }: { id: string }) {
   )
 }
 
+function extractQuote(content: string): string | null {
+  const text = content.replace(/<[^>]*>/g, "").trim()
+  const sentences = text.match(/[^.!?]+[.!?]+/g)
+  if (!sentences || sentences.length < 3) return null
+  const mid = Math.floor(sentences.length / 2)
+  const candidates = [sentences[mid], sentences[mid - 1], sentences[mid + 1]].filter(Boolean)
+  const chosen = candidates[Math.floor(Math.random() * candidates.length)]?.trim()
+  if (!chosen || chosen.length < 20) return null
+  return chosen.length > 200 ? chosen.slice(0, 200) + "..." : chosen
+}
+
 export default function StoryPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = use(params)
   const [story, setStory] = useState<Story | null>(null)
@@ -87,6 +99,14 @@ export default function StoryPage({ params }: { params: Promise<{ slug: string }
         const res = await fetch(`/api/stories/${slug}`)
         const data = await res.json()
         setStory(data)
+
+        // Track reading history
+        try {
+          const history: string[] = JSON.parse(localStorage.getItem("bhavy-reading-history") || "[]")
+          const updated = [slug, ...history.filter((s: string) => s !== slug)].slice(0, 10)
+          localStorage.setItem("bhavy-reading-history", JSON.stringify(updated))
+        } catch {}
+
         if (data.category) {
           const { data: relatedData } = await supabase
             .from("Story")
@@ -102,12 +122,17 @@ export default function StoryPage({ params }: { params: Promise<{ slug: string }
     load()
   }, [slug])
 
+  const { mood } = useMemo(() => parseStoryTags(story?.tags || ""), [story?.tags])
+  const moodColor = mood ? MOOD_COLORS[mood as Mood] : undefined
+
+  const quote = useMemo(() => story?.content ? extractQuote(story.content) : null, [story?.content])
+
   if (loading) {
     return (
       <div className="min-h-screen">
         <ReadingProgress />
         <Navbar />
-        <main className="pt-16 md:pt-20 pb-20 md:pb-0 max-w-3xl mx-auto px-6 py-10">
+        <main className="pt-20 md:pt-20 max-w-3xl mx-auto px-6 py-10">
           <div className="space-y-4">
             <div className="h-4 skeleton rounded w-1/4" />
             <div className="h-10 skeleton rounded w-3/4" />
@@ -127,7 +152,7 @@ export default function StoryPage({ params }: { params: Promise<{ slug: string }
     return (
       <div className="min-h-screen">
         <Navbar />
-        <main className="pt-16 md:pt-20 pb-20 md:pb-0 max-w-3xl mx-auto px-6 py-20 text-center">
+        <main className="pt-20 md:pt-20 max-w-3xl mx-auto px-6 py-20 text-center">
           <h1 className="text-2xl font-[var(--font-serif)] text-muted-foreground/60">Story not found</h1>
           <Link href="/stories" className="text-sm text-muted-foreground hover:text-foreground mt-2 inline-block underline-animate">
             Back to stories
@@ -141,7 +166,7 @@ export default function StoryPage({ params }: { params: Promise<{ slug: string }
     <div className="min-h-screen">
       <ReadingProgress />
       <Navbar />
-      <main className="pt-0 md:pt-16 pb-20 md:pb-0">
+      <main className="pt-0 md:pt-16">
         {/* Hero Cover */}
         {story.coverImage ? (
           <div className="relative h-[45vh] md:h-[60vh] min-h-[350px] overflow-hidden">
@@ -159,9 +184,18 @@ export default function StoryPage({ params }: { params: Promise<{ slug: string }
             <Stars count={30} />
           </div>
         ) : (
-          <div className="relative h-[30vh] min-h-[200px] gradient-bg flex items-center justify-center">
+          <div
+            className="relative h-[30vh] min-h-[200px] flex items-center justify-center"
+            style={moodColor ? { background: `linear-gradient(135deg, ${moodColor}20, ${moodColor}05)` } : undefined}
+          >
+            <div
+              className={!moodColor ? "gradient-bg absolute inset-0" : "absolute inset-0"}
+            />
             <Stars count={30} />
-            <div className="w-16 h-16 rounded-full bg-gradient-to-br from-purple-200/30 to-purple-100/20 moon-glow animate-moon-glow" />
+            <div
+              className="w-16 h-16 rounded-full moon-glow animate-moon-glow"
+              style={moodColor ? { boxShadow: `0 0 60px ${moodColor}40, 0 0 120px ${moodColor}20` } : undefined}
+            />
           </div>
         )}
 
@@ -187,11 +221,18 @@ export default function StoryPage({ params }: { params: Promise<{ slug: string }
             className="mb-8"
           >
             {!story.coverImage && <div className="h-8" />}
-            {story.category && (
-              <span className="inline-block text-[10px] font-medium text-accent uppercase tracking-[0.2em] mb-3">
-                {story.category}
-              </span>
-            )}
+            <div className="flex items-center gap-3 mb-3">
+              {story.category && (
+                <span className="inline-block text-[10px] font-medium uppercase tracking-[0.2em]" style={{ color: moodColor || "var(--accent)" }}>
+                  {story.category}
+                </span>
+              )}
+              {mood && (
+                <span className="text-[10px] glass px-2 py-0.5 rounded uppercase tracking-wider" style={{ color: moodColor, borderColor: `${moodColor}40` }}>
+                  {mood}
+                </span>
+              )}
+            </div>
             <h1 className="text-3xl md:text-5xl font-[var(--font-serif)] text-foreground leading-tight mb-4">
               {story.title}
             </h1>
@@ -216,6 +257,22 @@ export default function StoryPage({ params }: { params: Promise<{ slug: string }
             </div>
           </motion.header>
 
+          {/* Highlighted Quote */}
+          {quote && (
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8, delay: 0.15 }}
+              className="glass-strong rounded-2xl p-6 md:p-8 mb-10 text-center"
+              style={moodColor ? { borderColor: `${moodColor}30` } : undefined}
+            >
+              <Quote className="w-5 h-5 mx-auto mb-3" style={{ color: moodColor || "var(--accent)" }} />
+              <p className="text-lg md:text-xl font-[var(--font-serif)] italic text-foreground/90 leading-relaxed">
+                &ldquo;{quote}&rdquo;
+              </p>
+            </motion.div>
+          )}
+
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -237,7 +294,19 @@ export default function StoryPage({ params }: { params: Promise<{ slug: string }
             dangerouslySetInnerHTML={{ __html: story.content }}
           />
 
-          <div className="flex items-center justify-between mt-12 pt-6 border-t border-border/50">
+          {/* Handwritten Signature */}
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.6, delay: 0.5 }}
+            className="mt-12 pt-8 border-t border-border/50 text-right"
+          >
+            <p className="font-[var(--font-brand)] text-lg md:text-xl text-accent">
+              &mdash; Bhavya
+            </p>
+          </motion.div>
+
+          <div className="flex items-center justify-between mt-8 pt-4">
             <div className="flex items-center gap-2">
               <ShareButton title={story.title} slug={story.slug} />
               <BookmarkButton id={story.id} />

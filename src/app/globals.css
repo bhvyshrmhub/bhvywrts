@@ -8,7 +8,7 @@
   --radius: 0.625rem;
 }
 
-.moonlight {
+.dark {
   --background: #0b0d1a;
   --background-secondary: #11132a;
   --foreground: #e8e4f0;
@@ -35,15 +35,23 @@
   --moon-glow: rgba(200, 180, 255, 0.15);
   --star-color: rgba(200, 180, 255, 0.6);
   --glass-blur: 12px;
+  --mood-dreamy: #a78bfa;
+  --mood-calm: #60a5fa;
+  --mood-mystery: #c084fc;
+  --mood-romantic: #f472b6;
+  --mood-nature: #34d399;
+  --mood-adventure: #fbbf24;
+  --mood-hope: #f59e0b;
+  --mood-nostalgia: #f97316;
 }
 
-.aurora {
-  --background: #f0f4ff;
-  --background-secondary: #e8eeff;
-  --foreground: #1e1b3a;
-  --card: rgba(255, 255, 255, 0.7);
+.light {
+  --background: #faf6f0;
+  --background-secondary: #f5eee6;
+  --foreground: #1a1a2e;
+  --card: rgba(255, 255, 255, 0.75);
   --card-border: rgba(139, 92, 246, 0.12);
-  --card-foreground: #1e1b3a;
+  --card-foreground: #1a1a2e;
   --primary: #7c3aed;
   --primary-foreground: #ffffff;
   --secondary: rgba(124, 58, 237, 0.08);
@@ -54,45 +62,24 @@
   --accent-foreground: #ffffff;
   --border: rgba(124, 58, 237, 0.12);
   --ring: #7c3aed;
-  --glass-bg: rgba(255, 255, 255, 0.6);
+  --glass-bg: rgba(255, 255, 255, 0.65);
   --glass-border: rgba(124, 58, 237, 0.1);
   --glass-shadow: rgba(124, 58, 237, 0.06);
-  --gradient-1: linear-gradient(135deg, #e0e7ff 0%, #f0f4ff 50%, #fce7f3 100%);
+  --gradient-1: linear-gradient(135deg, #f5eee6 0%, #faf6f0 50%, #f0f0fa 100%);
   --gradient-2: linear-gradient(135deg, rgba(124, 58, 237, 0.08) 0%, rgba(59, 130, 246, 0.05) 50%, rgba(236, 72, 153, 0.08) 100%);
   --gradient-3: linear-gradient(135deg, #7c3aed 0%, #3b82f6 50%, #ec4899 100%);
   --glow: rgba(124, 58, 237, 0.2);
   --moon-glow: rgba(124, 58, 237, 0.1);
   --star-color: rgba(124, 58, 237, 0.3);
   --glass-blur: 10px;
-}
-
-.blossom {
-  --background: #fdf2f8;
-  --background-secondary: #fce7f3;
-  --foreground: #2d1b2e;
-  --card: rgba(255, 255, 255, 0.7);
-  --card-border: rgba(244, 114, 182, 0.15);
-  --card-foreground: #2d1b2e;
-  --primary: #d946ef;
-  --primary-foreground: #ffffff;
-  --secondary: rgba(217, 70, 239, 0.08);
-  --secondary-foreground: #c026d3;
-  --muted: rgba(0, 0, 0, 0.03);
-  --muted-foreground: #7d6b7d;
-  --accent: #f472b6;
-  --accent-foreground: #ffffff;
-  --border: rgba(244, 114, 182, 0.12);
-  --ring: #d946ef;
-  --glass-bg: rgba(255, 255, 255, 0.55);
-  --glass-border: rgba(244, 114, 182, 0.1);
-  --glass-shadow: rgba(244, 114, 182, 0.06);
-  --gradient-1: linear-gradient(135deg, #fdf2f8 0%, #fff7ed 50%, #fef3c7 100%);
-  --gradient-2: linear-gradient(135deg, rgba(244, 114, 182, 0.08) 0%, rgba(251, 191, 36, 0.05) 50%, rgba(217, 70, 239, 0.08) 100%);
-  --gradient-3: linear-gradient(135deg, #d946ef 0%, #f472b6 50%, #fbbf24 100%);
-  --glow: rgba(217, 70, 239, 0.2);
-  --moon-glow: rgba(244, 114, 182, 0.1);
-  --star-color: rgba(244, 114, 182, 0.25);
-  --glass-blur: 10px;
+  --mood-dreamy: #7c3aed;
+  --mood-calm: #2563eb;
+  --mood-mystery: #9333ea;
+  --mood-romantic: #ec4899;
+  --mood-nature: #10b981;
+  --mood-adventure: #f59e0b;
+  --mood-hope: #d97706;
+  --mood-nostalgia: #ea580c;
 }
 
 @theme inline {
@@ -226,6 +213,15 @@
   box-shadow: 0 0 60px var(--moon-glow), 0 0 120px var(--moon-glow);
 }
 
+.mood-dreamy { --mood-color: var(--mood-dreamy); }
+.mood-calm { --mood-color: var(--mood-calm); }
+.mood-mystery { --mood-color: var(--mood-mystery); }
+.mood-romantic { --mood-color: var(--mood-romantic); }
+.mood-nature { --mood-color: var(--mood-nature); }
+.mood-adventure { --mood-color: var(--mood-adventure); }
+.mood-hope { --mood-color: var(--mood-hope); }
+.mood-nostalgia { --mood-color: var(--mood-nostalgia); }
+
 /* Stars */
 .star {
   position: absolute;
@@ -317,6 +313,17 @@
   to { opacity: 1; transform: translateY(0) scale(1); }
 }
 
+@keyframes float-slow {
+  0%, 100% { transform: translateY(0px) rotate(0deg); }
+  33% { transform: translateY(-8px) rotate(1deg); }
+  66% { transform: translateY(-4px) rotate(-1deg); }
+}
+
+@keyframes shimmer-glow {
+  0%, 100% { opacity: 0.5; }
+  50% { opacity: 1; }
+}
+
 .animate-fade-in {
   animation: fade-in 0.6s ease forwards;
 }
@@ -339,6 +346,10 @@
 
 .animate-float {
   animation: float 4s ease-in-out infinite;
+}
+
+.animate-float-slow {
+  animation: float-slow 6s ease-in-out infinite;
 }
 
 .animate-moon-glow {

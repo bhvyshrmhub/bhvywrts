@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useState } from "react"
+import { useEffect, useState, useMemo } from "react"
 import { motion } from "framer-motion"
 import { supabase } from "@/lib/supabase-client"
 import { Navbar } from "./Navbar"
@@ -10,14 +10,32 @@ import { FloatingWriteButton } from "./FloatingWriteButton"
 import { ReadingProgress } from "./ReadingProgress"
 import { Stars } from "./Stars"
 import { Butterfly } from "./Butterfly"
-import { ArrowRight, TrendingUp, Clock, Sparkles, BookOpen } from "lucide-react"
+import { ArrowRight, Clock, BookOpen, Sparkles, Moon, Quote } from "lucide-react"
 import Link from "next/link"
+import { DAILY_THOUGHTS, COLLECTIONS, parseStoryTags, type CollectionType } from "@/lib/constants"
 import type { Story } from "@/types"
+
+function getDailyThought(): string {
+  const today = new Date()
+  const dayOfYear = Math.floor((today.getTime() - new Date(today.getFullYear(), 0, 0).getTime()) / 86400000)
+  return DAILY_THOUGHTS[dayOfYear % DAILY_THOUGHTS.length]
+}
+
+function getReadingHistory(): string[] {
+  if (typeof window === "undefined") return []
+  return JSON.parse(localStorage.getItem("bhavy-reading-history") || "[]")
+}
 
 export function HomeContent() {
   const [stories, setStories] = useState<Story[]>([])
   const [featured, setFeatured] = useState<Story | null>(null)
   const [loading, setLoading] = useState(true)
+  const dailyThought = useMemo(() => getDailyThought(), [])
+  const [readingHistory, setReadingHistory] = useState<string[]>([])
+
+  useEffect(() => {
+    setReadingHistory(getReadingHistory())
+  }, [])
 
   useEffect(() => {
     async function load() {
@@ -34,15 +52,29 @@ export function HomeContent() {
     load()
   }, [])
 
-  const categories = [...new Set(stories.map(s => s.category).filter(Boolean))] as string[]
   const latest = stories.slice(1, 7)
-  const editorsPicks = stories.filter(s => s.category === "Poetry" || s.category === "Philosophy").slice(0, 3)
+  const featuredStories = stories.filter((s) => s.featured && s.slug !== featured?.slug).slice(0, 3)
+  const continueReading = readingHistory.length > 0
+    ? stories.filter((s) => readingHistory.includes(s.slug)).slice(0, 3)
+    : []
+
+  const collections = useMemo(() => {
+    const map = new Map<CollectionType, Story[]>()
+    for (const story of stories) {
+      const { collection } = parseStoryTags(story.tags)
+      if (collection) {
+        if (!map.has(collection)) map.set(collection, [])
+        map.get(collection)!.push(story)
+      }
+    }
+    return map
+  }, [stories])
 
   if (loading) {
     return (
       <>
         <Navbar />
-        <main className="min-h-screen pt-16 pb-20">
+        <main className="min-h-screen pt-20">
           <div className="max-w-6xl mx-auto px-6 py-12">
             {[...Array(6)].map((_, i) => (
               <div key={i} className="h-48 rounded-xl skeleton mb-6" />
@@ -58,14 +90,13 @@ export function HomeContent() {
     <>
       <Navbar />
       <ReadingProgress />
-      <main className="min-h-screen pb-20 md:pb-0">
+      <main className="min-h-screen">
         {/* Featured Hero */}
         {featured && (
           <section className="relative min-h-[70vh] flex items-end overflow-hidden gradient-bg">
             <Stars count={40} className="z-0" />
             <Butterfly className="absolute z-10" style={{ left: "15%", top: "25%" }} delay={2} size={16} />
 
-            {/* Moon */}
             <div className="absolute top-20 right-[15%] z-0 pointer-events-none">
               <div className="relative">
                 <div className="w-24 h-24 md:w-32 md:h-32 rounded-full bg-gradient-to-br from-purple-200/40 via-purple-100/30 to-white/20 moon-glow animate-moon-glow" />
@@ -140,6 +171,134 @@ export function HomeContent() {
           </section>
         )}
 
+        {/* About Bhavy Writes */}
+        <section className="max-w-6xl mx-auto px-6 py-16 md:py-20 text-center">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: "-100px" }}
+            transition={{ duration: 0.8 }}
+          >
+            <Moon className="w-6 h-6 text-accent/60 mx-auto mb-4" />
+            <h2 className="text-3xl md:text-4xl font-[var(--font-serif)] text-foreground mb-4">
+              Welcome to{" "}
+              <span className="font-[var(--font-brand)] text-2xl md:text-3xl gradient-text">
+                Bhavy Writes
+              </span>
+            </h2>
+            <p className="text-sm md:text-base text-muted-foreground max-w-xl mx-auto leading-relaxed">
+              A personal sanctuary where stories come alive under the moonlight.
+              Every page holds a piece of imagination, every word dances with dreams.
+              Here, thoughts become tales, and the quiet hours find their voice.
+            </p>
+          </motion.div>
+        </section>
+
+        {/* Daily Thought */}
+        <section className="border-t border-border/50">
+          <div className="max-w-3xl mx-auto px-6 py-16 md:py-20 text-center">
+            <motion.div
+              initial={{ opacity: 0 }}
+              whileInView={{ opacity: 1 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.6 }}
+              className="glass-strong rounded-2xl p-8 md:p-12"
+            >
+              <Quote className="w-5 h-5 text-accent/40 mx-auto mb-4" />
+              <p className="text-lg md:text-xl font-[var(--font-serif)] text-foreground leading-relaxed italic">
+                &ldquo;{dailyThought}&rdquo;
+              </p>
+              <p className="text-xs text-muted-foreground/60 mt-4">Daily Thought</p>
+            </motion.div>
+          </div>
+        </section>
+
+        {/* Moon of the Day */}
+        <section className="py-16 md:py-20 relative overflow-hidden gradient-bg">
+          <Stars count={30} />
+          <div className="max-w-6xl mx-auto px-6 text-center relative z-10">
+            <motion.div
+              initial={{ opacity: 0, scale: 0.9 }}
+              whileInView={{ opacity: 1, scale: 1 }}
+              viewport={{ once: true }}
+              transition={{ duration: 1 }}
+            >
+              <div className="w-20 h-20 md:w-28 md:h-28 rounded-full bg-gradient-to-br from-purple-200/30 via-purple-100/20 to-white/10 moon-glow animate-moon-glow mx-auto mb-6" />
+              <h2 className="text-2xl md:text-3xl font-[var(--font-serif)] text-foreground">Moon of the Day</h2>
+              <p className="text-sm text-muted-foreground mt-2">
+                The moon watches over every story written tonight.
+              </p>
+            </motion.div>
+          </div>
+        </section>
+
+        {/* Continue Reading */}
+        {continueReading.length > 0 && (
+          <section className="max-w-6xl mx-auto px-6 py-12 md:py-16">
+            <div className="flex items-center gap-2 mb-8">
+              <BookOpen className="w-4 h-4 text-accent" />
+              <h2 className="text-2xl font-[var(--font-serif)] text-foreground">Continue Reading</h2>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              {continueReading.map((story, i) => (
+                <StoryCard key={story.id} story={story} index={i} />
+              ))}
+            </div>
+          </section>
+        )}
+
+        {/* Story Collections */}
+        {collections.size > 0 && (
+          <section className="border-t border-border/50">
+            <div className="max-w-6xl mx-auto px-6 py-12 md:py-16">
+              <h2 className="text-2xl font-[var(--font-serif)] text-foreground mb-8">Story Collections</h2>
+              <div className="space-y-8">
+                {Array.from(collections.entries()).map(([collection, collectionStories], ci) => (
+                  <motion.div
+                    key={collection}
+                    initial={{ opacity: 0, y: 20 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ delay: ci * 0.1 }}
+                  >
+                    <div className="flex items-center justify-between mb-4">
+                      <h3 className="text-lg font-[var(--font-serif)] text-foreground">{collection}</h3>
+                      <Link
+                        href={`/stories?collection=${encodeURIComponent(collection)}`}
+                        className="text-xs text-muted-foreground hover:text-foreground transition-colors"
+                      >
+                        View all <ArrowRight className="w-3 h-3 inline" />
+                      </Link>
+                    </div>
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                      {collectionStories.slice(0, 3).map((story, i) => (
+                        <StoryCard key={story.id} story={story} index={i} />
+                      ))}
+                    </div>
+                  </motion.div>
+                ))}
+              </div>
+            </div>
+          </section>
+        )}
+
+        {/* Featured Stories */}
+        {featuredStories.length > 0 && (
+          <section className="border-t border-border/50">
+            <div className="max-w-6xl mx-auto px-6 py-12 md:py-16">
+              <div className="flex items-center gap-2 mb-8">
+                <Sparkles className="w-4 h-4 text-accent" />
+                <h2 className="text-2xl font-[var(--font-serif)] text-foreground">Featured Stories</h2>
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                {featuredStories.map((story, i) => (
+                  <StoryCard key={story.id} story={story} index={i} />
+                ))}
+              </div>
+            </div>
+          </section>
+        )}
+
         {/* Latest Stories */}
         <section className="max-w-6xl mx-auto px-6 py-12 md:py-16">
           <div className="flex items-center justify-between mb-8">
@@ -158,49 +317,7 @@ export function HomeContent() {
           </div>
         </section>
 
-        {/* Editor's Picks */}
-        {editorsPicks.length > 0 && (
-          <section className="border-t border-border/50">
-            <div className="max-w-6xl mx-auto px-6 py-12 md:py-16">
-              <div className="flex items-center gap-2 mb-8">
-                <Sparkles className="w-4 h-4 text-accent" />
-                <h2 className="text-2xl font-[var(--font-serif)] text-foreground">Editor&apos;s Picks</h2>
-              </div>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                {editorsPicks.map((story, i) => (
-                  <StoryCard key={story.id} story={story} index={i} />
-                ))}
-              </div>
-            </div>
-          </section>
-        )}
-
-        {/* Categories */}
-        {categories.length > 0 && (
-          <section className="border-t border-border/50">
-            <div className="max-w-6xl mx-auto px-6 py-12 md:py-16">
-              <h2 className="text-2xl font-[var(--font-serif)] text-foreground mb-8">Browse by Category</h2>
-              <div className="flex flex-wrap gap-2">
-                {categories.map((cat, i) => (
-                  <motion.div
-                    key={cat}
-                    initial={{ opacity: 0, y: 10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: i * 0.05 }}
-                  >
-                    <Link
-                      href={`/stories?category=${encodeURIComponent(cat)}`}
-                      className="px-4 py-2 text-sm rounded-xl glass hover:bg-secondary transition-colors"
-                    >
-                      {cat}
-                    </Link>
-                  </motion.div>
-                ))}
-              </div>
-            </div>
-          </section>
-        )}
-
+        {/* Empty State */}
         {stories.length === 0 && !loading && (
           <div className="max-w-6xl mx-auto px-6 py-24 text-center relative">
             <Stars count={20} />

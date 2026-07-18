@@ -1,10 +1,11 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useMemo } from "react"
 import Link from "next/link"
 import { motion } from "framer-motion"
 import { Clock, Bookmark, Share2 } from "lucide-react"
 import { cn } from "@/lib/utils"
+import { parseStoryTags, MOOD_COLORS } from "@/lib/constants"
 
 interface StoryCardProps {
   story: {
@@ -14,6 +15,7 @@ interface StoryCardProps {
     excerpt: string | null
     coverImage: string | null
     category: string | null
+    tags?: string | null
     createdAt: string
     author?: string | null
     readingTime?: string | number | null
@@ -30,6 +32,9 @@ export function StoryCard({ story, index = 0 }: StoryCardProps) {
       ? Math.max(1, Math.ceil(story.content.split(/\s+/).length / 200)) + " min read"
       : "5 min read"
   )
+
+  const { mood, accent } = useMemo(() => parseStoryTags(story.tags || ""), [story.tags])
+  const moodColor = mood ? MOOD_COLORS[mood] : undefined
 
   const toggleBookmark = (e: React.MouseEvent) => {
     e.preventDefault()
@@ -62,7 +67,10 @@ export function StoryCard({ story, index = 0 }: StoryCardProps) {
       transition={{ duration: 0.5, delay: index * 0.08, ease: [0.16, 1, 0.3, 1] }}
     >
       <Link href={`/stories/${story.slug}`} className="group block">
-        <div className="glass-card rounded-xl overflow-hidden hover-lift">
+        <div
+          className="glass-card rounded-xl overflow-hidden hover-lift"
+          style={moodColor ? { borderColor: moodColor } : undefined}
+        >
           {/* Cover Image */}
           <div className="aspect-[16/9] relative overflow-hidden bg-secondary">
             {story.coverImage ? (
@@ -89,13 +97,27 @@ export function StoryCard({ story, index = 0 }: StoryCardProps) {
               </div>
             )}
 
-            {/* Glass overlay on hover */}
             <div className="absolute inset-0 bg-gradient-to-t from-black/30 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
 
-            {/* Category badge */}
             {story.category && (
-              <span className="absolute top-3 left-3 px-2.5 py-1 rounded-full text-[10px] font-medium glass backdrop-blur-md text-foreground/80">
+              <span
+                className="absolute top-3 left-3 px-2.5 py-1 rounded-full text-[10px] font-medium glass backdrop-blur-md text-foreground/80"
+                style={moodColor ? { borderColor: moodColor } : undefined}
+              >
                 {story.category}
+              </span>
+            )}
+
+            {mood && (
+              <span
+                className="absolute top-3 right-3 px-2 py-0.5 rounded-full text-[9px] font-medium uppercase tracking-wider glass"
+                style={{
+                  color: moodColor,
+                  borderColor: moodColor ? `${moodColor}40` : undefined,
+                  background: moodColor ? `${moodColor}15` : undefined,
+                }}
+              >
+                {mood}
               </span>
             )}
           </div>
@@ -109,7 +131,10 @@ export function StoryCard({ story, index = 0 }: StoryCardProps) {
               </span>
             </div>
 
-            <h3 className="text-lg font-[var(--font-serif)] text-foreground leading-snug group-hover:text-accent transition-colors duration-300 line-clamp-2">
+            <h3
+              className="text-lg font-[var(--font-serif)] text-foreground leading-snug group-hover:text-accent transition-colors duration-300 line-clamp-2"
+              style={moodColor ? { color: `var(--foreground)` } : undefined}
+            >
               {story.title}
             </h3>
 

@@ -3,21 +3,6 @@
 import { create } from "zustand"
 import type { Theme, WritingMode } from "@/types"
 
-interface ThemeStore {
-  theme: Theme
-  setTheme: (theme: Theme) => void
-}
-
-export const useThemeStore = create<ThemeStore>((set) => ({
-  theme: "midnight",
-  setTheme: (theme) => {
-    set({ theme })
-    if (typeof window !== "undefined") {
-      localStorage.setItem("bhavy-theme", theme)
-    }
-  },
-}))
-
 interface EditorStore {
   mode: WritingMode
   setMode: (mode: WritingMode) => void
@@ -32,40 +17,18 @@ export const useEditorStore = create<EditorStore>((set) => ({
   setMetrics: (metrics) => set({ metrics }),
 }))
 
-interface UIStore {
-  showIntro: boolean
-  setShowIntro: (show: boolean) => void
-  sidebarOpen: boolean
-  setSidebarOpen: (open: boolean) => void
-}
-
-export const useUIStore = create<UIStore>((set) => ({
-  showIntro: true,
-  setShowIntro: (show) => set({ showIntro: show }),
-  sidebarOpen: false,
-  setSidebarOpen: (open) => set({ sidebarOpen: open }),
-}))
-
 interface AuthStore {
   isAdmin: boolean
   checking: boolean
-  checkAuth: () => Promise<void>
   login: (username: string, password: string) => Promise<boolean>
   logout: () => Promise<void>
+  checkAuth: () => Promise<void>
 }
 
 export const useAuthStore = create<AuthStore>((set) => ({
   isAdmin: false,
   checking: true,
-  checkAuth: async () => {
-    try {
-      const res = await fetch("/api/auth/verify")
-      set({ isAdmin: res.ok, checking: false })
-    } catch {
-      set({ isAdmin: false, checking: false })
-    }
-  },
-  login: async (username: string, password: string) => {
+  login: async (username, password) => {
     try {
       const res = await fetch("/api/auth/login", {
         method: "POST",
@@ -82,7 +45,15 @@ export const useAuthStore = create<AuthStore>((set) => ({
     }
   },
   logout: async () => {
-    await fetch("/api/auth/logout", { method: "POST" })
+    await fetch("/api/auth/logout")
     set({ isAdmin: false })
+  },
+  checkAuth: async () => {
+    try {
+      const res = await fetch("/api/auth/verify")
+      set({ isAdmin: res.ok, checking: false })
+    } catch {
+      set({ isAdmin: false, checking: false })
+    }
   },
 }))
