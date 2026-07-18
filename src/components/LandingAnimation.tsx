@@ -23,7 +23,7 @@ export function LandingAnimation({ onComplete }: { onComplete: () => void }) {
   }, [onComplete])
 
   return (
-    <div className="fixed inset-0 z-[100] flex items-center justify-center overflow-hidden moonlight"
+    <div className="fixed inset-0 z-[100] flex items-center justify-center overflow-hidden"
       style={{ background: "linear-gradient(135deg, #0b0d1a 0%, #11132a 40%, #1a1040 70%, #0b0d1a 100%)" }}
     >
       {/* Stars background */}

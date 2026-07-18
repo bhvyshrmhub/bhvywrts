@@ -93,81 +93,96 @@ export function HomeContent() {
       <main className="min-h-screen">
         {/* Featured Hero */}
         {featured && (
-          <section className="relative min-h-[70vh] flex items-end overflow-hidden gradient-bg">
-            <Stars count={40} className="z-0" />
-            <Butterfly className="absolute z-10" style={{ left: "15%", top: "25%" }} delay={2} size={16} />
+          <section className="relative min-h-[80vh] flex items-end overflow-hidden">
+            <Stars count={50} className="z-0" />
+            <Butterfly className="absolute z-10" style={{ left: "15%", top: "20%" }} delay={2} size={16} />
 
-            <div className="absolute top-20 right-[15%] z-0 pointer-events-none">
+            <div className="absolute top-20 right-[10%] z-0 pointer-events-none">
               <div className="relative">
-                <div className="w-24 h-24 md:w-32 md:h-32 rounded-full bg-gradient-to-br from-purple-200/40 via-purple-100/30 to-white/20 moon-glow animate-moon-glow" />
+                <div className="w-32 h-32 md:w-40 md:h-40 rounded-full bg-gradient-to-br from-purple-300/20 via-blue-200/15 to-pink-200/10 moon-glow animate-moon-glow" />
               </div>
             </div>
 
-            <Link href={`/stories/${featured.slug}`} className="group relative z-10 w-full">
-              <div className="relative w-full">
-                {featured.coverImage ? (
-                  <div className="absolute inset-0">
-                    <img
-                      src={featured.coverImage}
-                      alt={featured.title}
-                      className="w-full h-full object-cover opacity-40 group-hover:opacity-50 transition-opacity duration-700"
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-t from-background via-background/70 to-background/30" />
-                  </div>
-                ) : (
-                  <div className="absolute inset-0 bg-gradient-to-t from-background via-background/50 to-transparent" />
-                )}
-                <div className="max-w-6xl mx-auto px-6 py-20 md:py-32 relative">
-                  <div className="max-w-2xl">
-                    <motion.span
-                      initial={{ opacity: 0, y: 10 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ delay: 0.2 }}
-                      className="inline-block text-[10px] font-medium text-accent uppercase tracking-[0.25em] mb-4"
-                    >
-                      {featured.category || "Featured Story"}
-                    </motion.span>
-                    <motion.h1
-                      initial={{ opacity: 0, y: 20 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ delay: 0.3, duration: 0.8 }}
-                      className="text-4xl md:text-6xl font-[var(--font-serif)] text-foreground leading-tight mb-4"
-                    >
-                      {featured.title}
-                    </motion.h1>
-                    {featured.excerpt && (
-                      <motion.p
-                        initial={{ opacity: 0, y: 20 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ delay: 0.4, duration: 0.8 }}
-                        className="text-sm md:text-base text-muted-foreground max-w-lg line-clamp-2 leading-relaxed"
-                      >
-                        {featured.excerpt}
-                      </motion.p>
+            <div className="relative z-10 w-full max-w-6xl mx-auto px-6 pb-12 md:pb-20">
+              <motion.div
+                initial={{ opacity: 0, y: 30 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+                className="relative"
+                style={{ borderRadius: 32 }}
+              >
+                <Link href={`/stories/${featured.slug}`} className="group block">
+                  <div
+                    className="relative overflow-hidden"
+                    style={{ borderRadius: 32, boxShadow: "0 8px 40px rgba(139, 92, 246, 0.12), 0 2px 8px rgba(0,0,0,0.3)" }}
+                  >
+                    {featured.coverImage ? (
+                      <>
+                        <div className="aspect-[21/9] md:aspect-[3/1] relative">
+                          <img
+                            src={featured.coverImage}
+                            alt={featured.title}
+                            className="w-full h-full object-cover transition-all duration-700 group-hover:scale-[1.03]"
+                          />
+                          <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-black/10" />
+                        </div>
+                      </>
+                    ) : (
+                      <div className="aspect-[21/9] md:aspect-[3/1] relative bg-gradient-to-br from-purple-900/30 via-blue-900/20 to-pink-900/30">
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent" />
+                      </div>
                     )}
-                    <motion.div
-                      initial={{ opacity: 0, y: 20 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ delay: 0.5, duration: 0.8 }}
-                      className="flex items-center gap-3 mt-6"
-                    >
-                      <span className="inline-flex items-center gap-1.5 text-xs text-muted-foreground">
-                        <Clock className="w-3.5 h-3.5" />
-                        {featured.readingTime || "5"} min read
-                      </span>
-                      <span className="text-muted-foreground/40">&middot;</span>
-                      <span className="text-xs text-muted-foreground">
-                        {new Date(featured.createdAt).toLocaleDateString("en-US", {
-                          month: "long", day: "numeric", year: "numeric"
-                        })}
-                      </span>
-                    </motion.div>
+                    <div className="absolute inset-0 flex items-end">
+                      <div className="p-6 md:p-10 lg:p-14 w-full">
+                        <motion.span
+                          initial={{ opacity: 0, y: 10 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          transition={{ delay: 0.2 }}
+                          className="inline-block text-[10px] font-medium text-purple-300 uppercase tracking-[0.25em] mb-3"
+                        >
+                          {featured.category || "Featured Story"}
+                        </motion.span>
+                        <motion.h1
+                          initial={{ opacity: 0, y: 20 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          transition={{ delay: 0.3, duration: 0.8 }}
+                          className="text-3xl md:text-5xl lg:text-6xl font-[var(--font-serif)] text-white leading-tight mb-3 max-w-3xl"
+                        >
+                          {featured.title}
+                        </motion.h1>
+                        {featured.excerpt && (
+                          <motion.p
+                            initial={{ opacity: 0, y: 20 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ delay: 0.4, duration: 0.8 }}
+                            className="text-sm md:text-base text-white/60 max-w-lg line-clamp-2 leading-relaxed"
+                          >
+                            {featured.excerpt}
+                          </motion.p>
+                        )}
+                        <motion.div
+                          initial={{ opacity: 0, y: 20 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          transition={{ delay: 0.5, duration: 0.8 }}
+                          className="flex items-center gap-3 mt-4"
+                        >
+                          <span className="inline-flex items-center gap-1.5 text-xs text-white/50">
+                            <Clock className="w-3.5 h-3.5" />
+                            {featured.readingTime || "5"} min read
+                          </span>
+                          <span className="text-white/30">&middot;</span>
+                          <span className="text-xs text-white/50">
+                            {new Date(featured.createdAt).toLocaleDateString("en-US", {
+                              month: "long", day: "numeric", year: "numeric"
+                            })}
+                          </span>
+                        </motion.div>
+                      </div>
+                    </div>
                   </div>
-                </div>
-              </div>
-            </Link>
-
-            <div className="absolute bottom-0 left-0 right-0 h-20 bg-gradient-to-t from-background to-transparent z-10" />
+                </Link>
+              </motion.div>
+            </div>
           </section>
         )}
 

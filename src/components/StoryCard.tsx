@@ -35,6 +35,7 @@ export function StoryCard({ story, index = 0 }: StoryCardProps) {
 
   const { mood, accent } = useMemo(() => parseStoryTags(story.tags || ""), [story.tags])
   const moodColor = mood ? MOOD_COLORS[mood] : undefined
+  const borderGlow = moodColor || "rgba(139, 92, 246, 0.15)"
 
   const toggleBookmark = (e: React.MouseEvent) => {
     e.preventDefault()
@@ -68,84 +69,82 @@ export function StoryCard({ story, index = 0 }: StoryCardProps) {
     >
       <Link href={`/stories/${story.slug}`} className="group block">
         <div
-          className="glass-card rounded-xl overflow-hidden hover-lift"
-          style={moodColor ? { borderColor: moodColor } : undefined}
+          className="glass-card overflow-hidden hover-lift"
+          style={{
+            borderRadius: 32,
+            boxShadow: `0 4px 24px ${borderGlow}15, 0 1px 3px rgba(0,0,0,0.2)`,
+          }}
         >
-          {/* Cover Image */}
-          <div className="aspect-[16/9] relative overflow-hidden bg-secondary">
-            {story.coverImage ? (
-              <>
-                {!imageLoaded && <div className="absolute inset-0 skeleton" />}
-                <img
-                  src={story.coverImage}
-                  alt={story.title}
-                  onLoad={() => setImageLoaded(true)}
-                  className={cn(
-                    "w-full h-full object-cover transition-all duration-700 group-hover:scale-[1.05]",
-                    imageLoaded ? "opacity-100" : "opacity-0"
-                  )}
-                />
-              </>
-            ) : (
-              <div className="absolute inset-0 flex items-center justify-center">
-                <div className="text-center">
-                  <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1" className="text-muted-foreground/20 mx-auto mb-2">
-                    <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" />
-                    <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" />
-                  </svg>
+          {/* Cover Image - dominates the card */}
+          <div className="relative overflow-hidden" style={{ borderRadius: 0 }}>
+            <div className="aspect-[4/3] md:aspect-[16/10] relative bg-secondary">
+              {story.coverImage ? (
+                <>
+                  {!imageLoaded && <div className="absolute inset-0 skeleton" />}
+                  <img
+                    src={story.coverImage}
+                    alt={story.title}
+                    onLoad={() => setImageLoaded(true)}
+                    className={cn(
+                      "w-full h-full object-cover transition-all duration-700 group-hover:scale-[1.05]",
+                      imageLoaded ? "opacity-100" : "opacity-0"
+                    )}
+                  />
+                </>
+              ) : (
+                <div className="absolute inset-0 flex items-center justify-center bg-gradient-to-br from-purple-900/20 via-blue-900/10 to-pink-900/20">
+                  <div className="w-12 h-12 rounded-full bg-gradient-to-br from-purple-400/20 to-pink-400/20 moon-glow" />
                 </div>
-              </div>
-            )}
+              )}
 
-            <div className="absolute inset-0 bg-gradient-to-t from-black/30 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+              {/* Gradient overlay at bottom */}
+              <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
 
-            {story.category && (
-              <span
-                className="absolute top-3 left-3 px-2.5 py-1 rounded-full text-[10px] font-medium glass backdrop-blur-md text-foreground/80"
-                style={moodColor ? { borderColor: moodColor } : undefined}
-              >
-                {story.category}
-              </span>
-            )}
+              {/* Category badge */}
+              {story.category && (
+                <span
+                  className="absolute top-4 left-4 px-3 py-1 rounded-full text-[10px] font-medium glass backdrop-blur-md text-foreground/90"
+                >
+                  {story.category}
+                </span>
+              )}
 
-            {mood && (
-              <span
-                className="absolute top-3 right-3 px-2 py-0.5 rounded-full text-[9px] font-medium uppercase tracking-wider glass"
-                style={{
-                  color: moodColor,
-                  borderColor: moodColor ? `${moodColor}40` : undefined,
-                  background: moodColor ? `${moodColor}15` : undefined,
-                }}
-              >
-                {mood}
-              </span>
-            )}
+              {mood && (
+                <span
+                  className="absolute top-4 right-4 px-2.5 py-0.5 rounded-full text-[9px] font-medium uppercase tracking-wider glass"
+                  style={{
+                    color: moodColor,
+                    borderColor: `${moodColor}40`,
+                    background: `${moodColor}15`,
+                  }}
+                >
+                  {mood}
+                </span>
+              )}
+            </div>
           </div>
 
           {/* Content */}
-          <div className="p-5">
-            <div className="flex items-center gap-2 mb-2">
-              <span className="text-[11px] text-muted-foreground flex items-center gap-1">
+          <div className="p-5 md:p-6">
+            <div className="flex items-center gap-2 mb-3">
+              <span className="text-xs text-muted-foreground/60 flex items-center gap-1">
                 <Clock className="w-3 h-3" />
                 {readingTime}
               </span>
             </div>
 
-            <h3
-              className="text-lg font-[var(--font-serif)] text-foreground leading-snug group-hover:text-accent transition-colors duration-300 line-clamp-2"
-              style={moodColor ? { color: `var(--foreground)` } : undefined}
-            >
+            <h3 className="text-lg md:text-xl font-[var(--font-serif)] text-foreground leading-snug group-hover:text-accent transition-colors duration-300 line-clamp-2">
               {story.title}
             </h3>
 
             {story.excerpt && (
-              <p className="text-sm text-muted-foreground mt-2 line-clamp-2 leading-relaxed">
+              <p className="text-sm text-muted-foreground/70 mt-2 line-clamp-2 leading-relaxed">
                 {story.excerpt}
               </p>
             )}
 
-            <div className="flex items-center justify-between mt-4 pt-3 border-t border-border/50">
-              <span className="text-xs text-muted-foreground">
+            <div className="flex items-center justify-between mt-5 pt-4 border-t border-border/30">
+              <span className="text-xs text-muted-foreground/50">
                 {new Date(story.createdAt).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}
               </span>
               <div className="flex items-center gap-1">
@@ -153,16 +152,17 @@ export function StoryCard({ story, index = 0 }: StoryCardProps) {
                   onClick={toggleBookmark}
                   className={cn(
                     "p-1.5 rounded-lg transition-colors",
-                    bookmarked ? "text-accent" : "text-muted-foreground/50 hover:text-foreground"
+                    bookmarked ? "text-accent" : "text-muted-foreground/40 hover:text-foreground"
                   )}
+                  style={bookmarked && moodColor ? { color: moodColor } : undefined}
                 >
-                  <Bookmark className="w-3.5 h-3.5" fill={bookmarked ? "currentColor" : "none"} />
+                  <Bookmark className="w-4 h-4" fill={bookmarked ? "currentColor" : "none"} />
                 </button>
                 <button
                   onClick={handleShare}
-                  className="p-1.5 rounded-lg text-muted-foreground/50 hover:text-foreground transition-colors"
+                  className="p-1.5 rounded-lg text-muted-foreground/40 hover:text-foreground transition-colors"
                 >
-                  <Share2 className="w-3.5 h-3.5" />
+                  <Share2 className="w-4 h-4" />
                 </button>
               </div>
             </div>

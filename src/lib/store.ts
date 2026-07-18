@@ -1,7 +1,7 @@
 "use client"
 
 import { create } from "zustand"
-import type { Theme, WritingMode } from "@/types"
+import type { WritingMode } from "@/types"
 
 interface EditorStore {
   mode: WritingMode

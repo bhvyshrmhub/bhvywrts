@@ -16,21 +16,6 @@ export interface Story {
   updatedAt: string
 }
 
-export type Theme = "light" | "dark"
-
-export interface ThemeConfig {
-  id: Theme
-  name: string
-  bg: string
-  cardBg: string
-  text: string
-  accent: string
-  muted: string
-  border: string
-  glow: string
-  gradient: string
-}
-
 export interface EditorMetrics {
   words: number
   characters: number

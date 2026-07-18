@@ -4,9 +4,8 @@ import { useState, useEffect, useRef } from "react"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { motion, AnimatePresence } from "framer-motion"
-import { Search, User, LogOut, Menu, X, Bookmark } from "lucide-react"
+import { Search, LogOut, Menu, X, Bookmark } from "lucide-react"
 import { SearchOverlay } from "./SearchOverlay"
-import { ThemeToggle } from "./ThemeToggle"
 import { useAuthStore } from "@/lib/store"
 import { cn } from "@/lib/utils"
 
@@ -17,14 +16,12 @@ export function Navbar() {
   const [compact, setCompact] = useState(false)
   const [searchOpen, setSearchOpen] = useState(false)
   const [menuOpen, setMenuOpen] = useState(false)
-  const lastScroll = useRef(0)
 
   useEffect(() => {
     const onScroll = () => {
       const current = window.scrollY
       setScrolled(current > 40)
       setCompact(current > 120)
-      lastScroll.current = current
     }
     window.addEventListener("scroll", onScroll, { passive: true })
     return () => window.removeEventListener("scroll", onScroll)
@@ -83,23 +80,24 @@ export function Navbar() {
                 {pathname === "/stories" && (
                   <motion.div
                     layoutId="nav-indicator"
-                    className="absolute -bottom-1 left-0 right-0 h-[2px] bg-foreground"
+                    className="absolute -bottom-1 left-0 right-0 h-[2px] bg-gradient-to-r from-purple-400 via-blue-400 to-pink-400"
                     transition={{ type: "spring", stiffness: 380, damping: 30 }}
                   />
                 )}
               </Link>
             </div>
 
-            {/* Center */}
+            {/* Center - Animated Gradient Logo */}
             <Link
               href="/"
               className={cn(
-                "font-[var(--font-brand)] text-foreground hover:text-accent transition-colors whitespace-nowrap",
+                "font-[var(--font-brand)] gradient-logo relative",
                 compact ? "text-lg" : "text-xl"
               )}
               id="nav-logo"
             >
               Bhavy Writes
+              <span className="absolute inset-0 animate-logo-shine pointer-events-none" />
             </Link>
 
             {/* Right */}
@@ -119,7 +117,6 @@ export function Navbar() {
               >
                 <Search className="w-4 h-4" />
               </button>
-              <ThemeToggle />
             </div>
           </div>
         </nav>
@@ -135,7 +132,8 @@ export function Navbar() {
               className="md:hidden overflow-hidden glass-strong border-t border-glass-border"
             >
               <div className="px-5 py-3 space-y-1">
-                <MobileLink href="/stories" label="Stories" icon={null} current={pathname} onClick={() => setMenuOpen(false)} />
+                <MobileLink href="/stories" label="Stories" current={pathname} onClick={() => setMenuOpen(false)} />
+                <MobileLink href="/stories?bookmarked=true" label="Bookmarks" icon={Bookmark} current={pathname} onClick={() => setMenuOpen(false)} />
                 <button
                   onClick={() => { setSearchOpen(true); setMenuOpen(false) }}
                   className="flex items-center gap-2 w-full px-3 py-2 text-sm rounded-lg text-muted-foreground hover:text-foreground hover:bg-secondary transition-colors"
@@ -143,9 +141,8 @@ export function Navbar() {
                   <Search className="w-4 h-4" />
                   Search
                 </button>
-                <MobileLink href="/stories?bookmarked=true" label="Bookmarks" icon={Bookmark} current={pathname} onClick={() => setMenuOpen(false)} />
                 {extraLinks.map((link) => (
-                  <MobileLink key={link.href} href={link.href} label={link.label} icon={null} current={pathname} onClick={() => setMenuOpen(false)} />
+                  <MobileLink key={link.href} href={link.href} label={link.label} current={pathname} onClick={() => setMenuOpen(false)} />
                 ))}
                 {isAdmin && !checking && (
                   <button
@@ -168,7 +165,7 @@ export function Navbar() {
 function MobileLink({ href, label, icon: Icon, current, onClick }: {
   href: string
   label: string
-  icon: React.ElementType | null
+  icon?: React.ElementType
   current: string
   onClick: () => void
 }) {

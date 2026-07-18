@@ -2,39 +2,35 @@
 
 @plugin "tailwindcss-animate";
 
-@custom-variant dark (&:is(.dark *));
-
 :root {
   --radius: 0.625rem;
-}
-
-.dark {
-  --background: #0b0d1a;
-  --background-secondary: #11132a;
+  --background: #000000;
+  --background-secondary: #0a0a0f;
   --foreground: #e8e4f0;
-  --card: rgba(20, 22, 50, 0.6);
-  --card-border: rgba(139, 92, 246, 0.15);
+  --card: rgba(12, 12, 24, 0.7);
+  --card-border: rgba(139, 92, 246, 0.12);
   --card-foreground: #e8e4f0;
   --primary: #8b5cf6;
   --primary-foreground: #ffffff;
-  --secondary: rgba(139, 92, 246, 0.1);
+  --secondary: rgba(139, 92, 246, 0.08);
   --secondary-foreground: #c4b5fd;
-  --muted: rgba(255, 255, 255, 0.05);
+  --muted: rgba(255, 255, 255, 0.04);
   --muted-foreground: #8b8fa8;
   --accent: #a78bfa;
   --accent-foreground: #ffffff;
-  --border: rgba(139, 92, 246, 0.15);
+  --border: rgba(139, 92, 246, 0.12);
   --ring: #8b5cf6;
-  --glass-bg: rgba(20, 22, 50, 0.5);
-  --glass-border: rgba(139, 92, 246, 0.12);
-  --glass-shadow: rgba(139, 92, 246, 0.08);
-  --gradient-1: linear-gradient(135deg, #1a1040 0%, #0b0d1a 50%, #1a1040 100%);
-  --gradient-2: linear-gradient(135deg, rgba(139, 92, 246, 0.15) 0%, rgba(59, 130, 246, 0.1) 50%, rgba(139, 92, 246, 0.15) 100%);
-  --gradient-3: linear-gradient(135deg, #8b5cf6 0%, #6366f1 50%, #3b82f6 100%);
+  --glass-bg: rgba(12, 12, 24, 0.6);
+  --glass-border: rgba(139, 92, 246, 0.1);
+  --glass-shadow: rgba(139, 92, 246, 0.06);
+  --gradient-1: linear-gradient(135deg, #0a0a0f 0%, #000000 50%, #0a0a12 100%);
+  --gradient-2: linear-gradient(135deg, rgba(139, 92, 246, 0.12) 0%, rgba(59, 130, 246, 0.08) 50%, rgba(236, 72, 153, 0.12) 100%);
+  --gradient-3: linear-gradient(135deg, #8b5cf6 0%, #3b82f6 50%, #ec4899 100%);
+  --gradient-logo: linear-gradient(135deg, #a78bfa, #60a5fa, #f472b6, #22d3ee);
   --glow: rgba(139, 92, 246, 0.3);
-  --moon-glow: rgba(200, 180, 255, 0.15);
-  --star-color: rgba(200, 180, 255, 0.6);
-  --glass-blur: 12px;
+  --moon-glow: rgba(167, 139, 250, 0.15);
+  --star-color: rgba(167, 139, 250, 0.5);
+  --glass-blur: 16px;
   --mood-dreamy: #a78bfa;
   --mood-calm: #60a5fa;
   --mood-mystery: #c084fc;
@@ -43,43 +39,6 @@
   --mood-adventure: #fbbf24;
   --mood-hope: #f59e0b;
   --mood-nostalgia: #f97316;
-}
-
-.light {
-  --background: #faf6f0;
-  --background-secondary: #f5eee6;
-  --foreground: #1a1a2e;
-  --card: rgba(255, 255, 255, 0.75);
-  --card-border: rgba(139, 92, 246, 0.12);
-  --card-foreground: #1a1a2e;
-  --primary: #7c3aed;
-  --primary-foreground: #ffffff;
-  --secondary: rgba(124, 58, 237, 0.08);
-  --secondary-foreground: #6d28d9;
-  --muted: rgba(0, 0, 0, 0.04);
-  --muted-foreground: #6b6e85;
-  --accent: #8b5cf6;
-  --accent-foreground: #ffffff;
-  --border: rgba(124, 58, 237, 0.12);
-  --ring: #7c3aed;
-  --glass-bg: rgba(255, 255, 255, 0.65);
-  --glass-border: rgba(124, 58, 237, 0.1);
-  --glass-shadow: rgba(124, 58, 237, 0.06);
-  --gradient-1: linear-gradient(135deg, #f5eee6 0%, #faf6f0 50%, #f0f0fa 100%);
-  --gradient-2: linear-gradient(135deg, rgba(124, 58, 237, 0.08) 0%, rgba(59, 130, 246, 0.05) 50%, rgba(236, 72, 153, 0.08) 100%);
-  --gradient-3: linear-gradient(135deg, #7c3aed 0%, #3b82f6 50%, #ec4899 100%);
-  --glow: rgba(124, 58, 237, 0.2);
-  --moon-glow: rgba(124, 58, 237, 0.1);
-  --star-color: rgba(124, 58, 237, 0.3);
-  --glass-blur: 10px;
-  --mood-dreamy: #7c3aed;
-  --mood-calm: #2563eb;
-  --mood-mystery: #9333ea;
-  --mood-romantic: #ec4899;
-  --mood-nature: #10b981;
-  --mood-adventure: #f59e0b;
-  --mood-hope: #d97706;
-  --mood-nostalgia: #ea580c;
 }
 
 @theme inline {
@@ -157,8 +116,8 @@
 
 .glass-strong {
   background: color-mix(in srgb, var(--glass-bg) 85%, transparent);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
   border: 1px solid var(--glass-border);
   box-shadow: 0 8px 32px var(--glass-shadow);
 }
@@ -169,11 +128,11 @@
   -webkit-backdrop-filter: blur(var(--glass-blur));
   border: 1px solid var(--card-border);
   box-shadow: 0 4px 24px var(--glass-shadow);
-  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .glass-card:hover {
-  box-shadow: 0 8px 40px var(--glass-shadow);
+  box-shadow: 0 12px 48px var(--glass-shadow);
   border-color: var(--glass-border);
 }
 
@@ -186,6 +145,16 @@
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
+}
+
+.gradient-logo {
+  background: var(--gradient-logo);
+  background-size: 200% 200%;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  animation: logo-shift 4s ease infinite;
+  filter: drop-shadow(0 0 12px rgba(167, 139, 250, 0.3));
 }
 
 .gradient-border {
@@ -222,7 +191,6 @@
 .mood-hope { --mood-color: var(--mood-hope); }
 .mood-nostalgia { --mood-color: var(--mood-nostalgia); }
 
-/* Stars */
 .star {
   position: absolute;
   width: 2px;
@@ -233,10 +201,9 @@
   animation-delay: var(--delay, 0s);
 }
 
-/* Animations */
 @keyframes twinkle {
-  0%, 100% { opacity: 0.3; transform: scale(1); }
-  50% { opacity: 1; transform: scale(1.2); }
+  0%, 100% { opacity: 0.2; transform: scale(1); }
+  50% { opacity: 1; transform: scale(1.5); }
 }
 
 @keyframes fade-in {
@@ -280,7 +247,7 @@
 }
 
 @keyframes moon-glow-pulse {
-  0%, 100% { opacity: 0.6; transform: scale(1); }
+  0%, 100% { opacity: 0.5; transform: scale(1); }
   50% { opacity: 1; transform: scale(1.05); }
 }
 
@@ -288,6 +255,18 @@
   0% { background-position: 0% 50%; }
   50% { background-position: 100% 50%; }
   100% { background-position: 0% 50%; }
+}
+
+@keyframes logo-shift {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+@keyframes logo-shine {
+  0% { background-position: -200% center; }
+  40% { background-position: 200% center; }
+  100% { background-position: 200% center; }
 }
 
 @keyframes glass-ripple {
@@ -320,8 +299,15 @@
 }
 
 @keyframes shimmer-glow {
-  0%, 100% { opacity: 0.5; }
-  50% { opacity: 1; }
+  0%, 100% { opacity: 0.4; }
+  50% { opacity: 0.8; }
+}
+
+@keyframes glass-reflection {
+  0% { transform: translateX(-100%) rotate(15deg); opacity: 0; }
+  20% { opacity: 0.15; }
+  40% { transform: translateX(100%) rotate(15deg); opacity: 0; }
+  100% { transform: translateX(100%) rotate(15deg); opacity: 0; }
 }
 
 .animate-fade-in {
@@ -361,6 +347,21 @@
   animation: gradient-shift 8s ease infinite;
 }
 
+.animate-logo-shine {
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(255, 255, 255, 0.15) 30%,
+    rgba(255, 255, 255, 0.3) 50%,
+    rgba(255, 255, 255, 0.15) 70%,
+    transparent 100%
+  );
+  background-size: 200% 100%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  animation: logo-shine 4s ease-in-out infinite;
+}
+
 .animate-butterfly {
   animation: butterfly-fly 8s ease-in-out infinite;
 }
@@ -388,9 +389,9 @@
   background: linear-gradient(
     90deg,
     transparent 0%,
-    var(--glass-shadow) 40%,
-    var(--glass-border) 50%,
-    var(--glass-shadow) 60%,
+    rgba(139, 92, 246, 0.06) 40%,
+    rgba(139, 92, 246, 0.1) 50%,
+    rgba(139, 92, 246, 0.06) 60%,
     transparent 100%
   );
   background-size: 200% 100%;
@@ -398,13 +399,13 @@
 }
 
 .hover-lift {
-  transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1),
-              box-shadow 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1),
+              box-shadow 0.5s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .hover-lift:hover {
-  transform: translateY(-6px);
-  box-shadow: 0 20px 40px var(--glass-shadow);
+  transform: translateY(-8px);
+  box-shadow: 0 24px 48px rgba(139, 92, 246, 0.1);
 }
 
 .hover-glow:hover {

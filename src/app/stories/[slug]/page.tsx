@@ -277,7 +277,7 @@ export default function StoryPage({ params }: { params: Promise<{ slug: string }
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.2 }}
-            className="prose prose-neutral dark:prose-invert max-w-none
+            className="prose prose-invert max-w-none
               prose-headings:font-[var(--font-serif)] prose-headings:text-foreground prose-headings:leading-tight
               prose-p:text-foreground/80 prose-p:leading-relaxed prose-p:text-base md:prose-p:text-lg
               prose-a:text-accent prose-a:no-underline hover:prose-a:underline
@@ -320,19 +320,22 @@ export default function StoryPage({ params }: { params: Promise<{ slug: string }
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               {related.map((relatedStory) => (
                 <Link key={relatedStory.id} href={`/stories/${relatedStory.slug}`} className="group block">
-                  <div className="glass-card rounded-xl overflow-hidden hover-lift">
+                  <div
+                    className="glass-card overflow-hidden hover-lift"
+                    style={{ borderRadius: 28 }}
+                  >
                     <div className="aspect-[16/9] bg-secondary overflow-hidden">
                       {relatedStory.coverImage ? (
                         <img src={relatedStory.coverImage} alt={relatedStory.title} className="w-full h-full object-cover transition-all duration-500 group-hover:scale-[1.05]" />
                       ) : (
-                        <div className="w-full h-full flex items-center justify-center">
-                          <Bookmark className="w-6 h-6 text-muted-foreground/20" />
+                        <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-purple-900/20 via-blue-900/10 to-pink-900/20">
+                          <div className="w-8 h-8 rounded-full bg-gradient-to-br from-purple-400/20 to-pink-400/20 moon-glow" />
                         </div>
                       )}
                     </div>
-                    <div className="p-4">
-                      <h3 className="text-sm font-[var(--font-serif)] text-foreground group-hover:text-accent transition-colors">{relatedStory.title}</h3>
-                      <p className="text-xs text-muted-foreground mt-1">{relatedStory.readingTime || "5"} min read</p>
+                    <div className="p-5">
+                      <h3 className="text-base font-[var(--font-serif)] text-foreground group-hover:text-accent transition-colors leading-snug">{relatedStory.title}</h3>
+                      <p className="text-xs text-muted-foreground/60 mt-1.5">{relatedStory.readingTime || "5"} min read</p>
                     </div>
                   </div>
                 </Link>
