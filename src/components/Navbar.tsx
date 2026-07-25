@@ -50,6 +50,7 @@ export function Navbar() {
     ...(isAdmin && !checking
       ? [
           { href: "/dashboard", label: "Dashboard" },
+          { href: "/admin/analytics", label: "Analytics" },
           { href: "/editor", label: "Write" },
         ]
       : []),

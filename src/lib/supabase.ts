@@ -20,3 +20,7 @@ export function getSupabaseAdmin() {
 export function sb() {
   return getSupabaseAdmin().from("Story") as any
 }
+
+export function visitDb() {
+  return getSupabaseAdmin().from("Visit") as any
+}

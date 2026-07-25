@@ -2,7 +2,7 @@ import { NextResponse } from "next/server"
 import type { NextRequest } from "next/server"
 import { isAuthenticated } from "@/lib/auth"
 
-const protectedRoutes = ["/dashboard", "/editor"]
+const protectedRoutes = ["/dashboard", "/editor", "/admin/analytics"]
 
 export async function middleware(req: NextRequest) {
   const { pathname } = new URL(req.url)
@@ -19,5 +19,5 @@ export async function middleware(req: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/dashboard/:path*", "/editor/:path*"],
+  matcher: ["/dashboard/:path*", "/editor/:path*", "/admin/analytics/:path*"],
 }

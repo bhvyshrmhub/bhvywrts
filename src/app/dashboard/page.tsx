@@ -5,7 +5,7 @@ import Link from "next/link"
 import { motion } from "framer-motion"
 import {
   Plus, Edit, Trash2, ExternalLink, FileText, BookOpen,
-  PenSquare, Archive, Eye, EyeOff,
+  PenSquare, Archive, Eye, EyeOff, BarChart3,
 } from "lucide-react"
 import { Navbar } from "@/components/Navbar"
 import { Footer } from "@/components/Footer"
@@ -67,13 +67,16 @@ export default function DashboardPage() {
                 <h1 className="text-3xl font-[var(--font-serif)] text-foreground">Dashboard</h1>
                 <p className="text-sm text-muted-foreground mt-1">Manage your stories</p>
               </div>
-              <Link
-                href="/editor"
-                className="inline-flex items-center gap-2 px-4 py-2 text-sm rounded-xl glass hover:bg-secondary transition-colors"
-              >
-                <Plus className="w-4 h-4" />
-                New Story
-              </Link>
+              <div className="flex items-center gap-2">
+                <Link href="/admin/analytics" className="inline-flex items-center gap-2 px-4 py-2 text-sm rounded-xl glass hover:bg-secondary transition-colors">
+                  <BarChart3 className="w-4 h-4" />
+                  Analytics
+                </Link>
+                <Link href="/editor" className="inline-flex items-center gap-2 px-4 py-2 text-sm rounded-xl glass hover:bg-secondary transition-colors">
+                  <Plus className="w-4 h-4" />
+                  New Story
+                </Link>
+              </div>
             </div>
 
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-8">

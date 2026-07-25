@@ -8,6 +8,7 @@ import {
   IBM_Plex_Mono,
 } from "next/font/google"
 import { GlitterCursor } from "@/components/GlitterCursor"
+import { VisitTracker } from "@/components/VisitTracker"
 import "./globals.css"
 
 const geistSans = Geist({
@@ -60,6 +61,7 @@ export default function RootLayout({
     <html lang="en" className={`${geistSans.variable} ${geistMono.variable} ${playfair.variable} ${sourceSerif.variable} ${dancingScript.variable} ${ibmPlexMono.variable}`} suppressHydrationWarning>
       <body className="min-h-screen antialiased">
         <GlitterCursor />
+        <VisitTracker />
         {children}
       </body>
     </html>
