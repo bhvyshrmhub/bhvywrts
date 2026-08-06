@@ -1,28 +1,31 @@
-import type { Metadata } from "next"
+import type { Metadata, Viewport } from "next"
 import {
-  Geist,
   Geist_Mono,
-  Playfair_Display,
+  Instrument_Serif,
+  Inter,
+  Space_Grotesk,
   Source_Serif_4,
-  Dancing_Script,
-  IBM_Plex_Mono,
+  Great_Vibes,
 } from "next/font/google"
-import { GlitterCursor } from "@/components/GlitterCursor"
+import { Background } from "@/components/Background"
+import { CursorWrapper } from "@/components/CursorWrapper"
 import { VisitTracker } from "@/components/VisitTracker"
 import "./globals.css"
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
+const inter = Inter({
+  variable: "--font-inter",
   subsets: ["latin"],
 })
 
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
+const instrumentSerif = Instrument_Serif({
+  variable: "--font-instrument-serif",
+  weight: "400",
+  style: ["normal", "italic"],
   subsets: ["latin"],
 })
 
-const playfair = Playfair_Display({
-  variable: "--font-playfair",
+const spaceGrotesk = Space_Grotesk({
+  variable: "--font-space-grotesk",
   subsets: ["latin"],
 })
 
@@ -31,25 +34,45 @@ const sourceSerif = Source_Serif_4({
   subsets: ["latin"],
 })
 
-const dancingScript = Dancing_Script({
-  variable: "--font-dancing-script",
+const greatVibes = Great_Vibes({
+  variable: "--font-great-vibes",
+  weight: "400",
   subsets: ["latin"],
 })
 
-const ibmPlexMono = IBM_Plex_Mono({
-  variable: "--font-ibm-plex-mono",
-  weight: ["300", "400", "500"],
+const geistMono = Geist_Mono({
+  variable: "--font-geist-mono",
   subsets: ["latin"],
 })
 
 export const metadata: Metadata = {
-  title: "Bhavy Writes | Stories, thoughts, and worlds crafted by Bhavy.",
-  description:
-    "A collection of stories, reflections, and imagination. A personal digital writing sanctuary.",
-  openGraph: {
-    title: "Bhavy Writes",
-    description: "Stories, thoughts, and worlds crafted by Bhavy.",
+  title: {
+    default: "Bhavya Writes — A Digital Journal",
+    template: "%s — Bhavya Writes",
   },
+  description:
+    "A personal writing sanctuary. Stories, thoughts, and worlds crafted by Bhavya — written under the moonlight.",
+  keywords: ["Bhavya Writes", "stories", "journal", "writing", "poetry", "thoughts"],
+  openGraph: {
+    type: "website",
+    siteName: "Bhavya Writes",
+    title: "Bhavya Writes",
+    description: "A personal writing sanctuary. Stories and thoughts written under the moonlight.",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Bhavya Writes",
+    description: "A personal writing sanctuary.",
+  },
+}
+
+export const viewport: Viewport = {
+  themeColor: "#000000",
+  colorScheme: "dark",
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 1,
+  viewportFit: "cover",
 }
 
 export default function RootLayout({
@@ -58,9 +81,15 @@ export default function RootLayout({
   children: React.ReactNode
 }>) {
   return (
-    <html lang="en" className={`${geistSans.variable} ${geistMono.variable} ${playfair.variable} ${sourceSerif.variable} ${dancingScript.variable} ${ibmPlexMono.variable}`} suppressHydrationWarning>
-      <body className="min-h-screen antialiased">
-        <GlitterCursor />
+    <html
+      lang="en"
+      data-scroll-behavior="smooth"
+      suppressHydrationWarning
+      className={`${inter.variable} ${instrumentSerif.variable} ${spaceGrotesk.variable} ${sourceSerif.variable} ${greatVibes.variable} ${geistMono.variable}`}
+    >
+      <body className="min-h-screen antialiased bg-[#000000]">
+        <Background />
+        <CursorWrapper />
         <VisitTracker />
         {children}
       </body>

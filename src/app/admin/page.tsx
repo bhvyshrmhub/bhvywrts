@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
 import { motion } from "framer-motion"
-import { Lock, Eye, EyeOff, ArrowRight } from "lucide-react"
+import { Lock, Eye, EyeOff, ArrowRight, Moon } from "lucide-react"
 import { useAuthStore } from "@/lib/store"
 import { Stars } from "@/components/Stars"
 
@@ -42,31 +42,33 @@ export default function AdminLoginPage() {
 
   if (checking) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-background">
+      <div className="min-h-screen flex items-center justify-center bg-black">
         <div className="flex flex-col items-center gap-3">
-          <div className="w-6 h-6 border-2 border-foreground border-t-transparent rounded-full animate-spin" />
-          <p className="text-xs text-muted-foreground">Verifying...</p>
+          <div className="w-6 h-6 border-2 border-white/20 border-t-white rounded-full animate-spin" />
+          <p className="text-xs text-[var(--muted)] font-[var(--font-grotesk)]">Verifying...</p>
         </div>
       </div>
     )
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-4 relative overflow-hidden gradient-bg">
-      <Stars count={30} />
+    <div className="min-h-screen flex items-center justify-center p-4 relative overflow-hidden">
+      <Stars count={26} />
       <motion.div
-        initial={{ opacity: 0, y: 20 }}
+        initial={{ opacity: 0, y: 24 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
+        transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
         className="w-full max-w-sm relative z-10"
       >
-        <div className="glass-strong rounded-2xl p-8">
-          <div className="text-center mb-8">
-            <div className="w-12 h-12 rounded-full glass flex items-center justify-center mx-auto mb-4">
-              <Lock className="w-5 h-5 text-accent" />
+        <div className="glass-strong rounded-[28px] p-8 md:p-9">
+          <div className="text-center mb-9">
+            <div className="w-12 h-12 rounded-full glass flex items-center justify-center mx-auto mb-5">
+              <Moon className="w-5 h-5 text-[var(--lavender)]" />
             </div>
-            <h1 className="text-2xl font-[var(--font-serif)] text-foreground">Admin</h1>
-            <p className="text-sm text-muted-foreground mt-1">Sign in to manage stories</p>
+            <h1 className="font-[var(--font-great-vibes)] text-3xl gradient-logo">Bhavya Writes</h1>
+            <p className="text-xs text-[var(--muted)] mt-2 font-[var(--font-grotesk)] tracking-wide">
+              Sign in to manage the journal
+            </p>
           </div>
 
           <form onSubmit={handleLogin} className="space-y-4">
@@ -76,8 +78,10 @@ export default function AdminLoginPage() {
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
                 placeholder="Username"
-                className="w-full px-4 py-2.5 rounded-xl bg-card border border-border text-foreground placeholder:text-muted-foreground/40 outline-none focus:border-accent/30 transition-colors text-sm"
+                aria-label="Username"
+                className="w-full px-4 py-3 rounded-2xl bg-white/[0.03] border border-white/[0.07] text-foreground placeholder:text-[var(--muted)] outline-none focus:border-[var(--orchid)]/40 transition-colors text-sm"
                 autoFocus
+                autoComplete="username"
               />
             </div>
 
@@ -87,12 +91,15 @@ export default function AdminLoginPage() {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="Password"
-                className="w-full px-4 py-2.5 rounded-xl bg-card border border-border text-foreground placeholder:text-muted-foreground/40 outline-none focus:border-accent/30 transition-colors text-sm pr-10"
+                aria-label="Password"
+                className="w-full px-4 py-3 rounded-2xl bg-white/[0.03] border border-white/[0.07] text-foreground placeholder:text-[var(--muted)] outline-none focus:border-[var(--orchid)]/40 transition-colors text-sm pr-11"
+                autoComplete="current-password"
               />
               <button
                 type="button"
                 onClick={() => setShowPassword(!showPassword)}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground/40 hover:text-muted-foreground transition-colors"
+                aria-label={showPassword ? "Hide password" : "Show password"}
+                className="absolute right-3.5 top-1/2 -translate-y-1/2 text-[var(--muted)] hover:text-foreground transition-colors"
               >
                 {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
               </button>
@@ -102,7 +109,7 @@ export default function AdminLoginPage() {
               <motion.p
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
-                className="text-sm text-destructive text-center"
+                className="text-xs text-[var(--destructive)] text-center"
               >
                 {error}
               </motion.p>
@@ -111,10 +118,10 @@ export default function AdminLoginPage() {
             <button
               type="submit"
               disabled={loading || !username || !password}
-              className="w-full py-2.5 rounded-xl bg-primary text-primary-foreground text-sm font-medium hover:opacity-90 transition-opacity disabled:opacity-40 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+              className="w-full py-3 rounded-2xl bg-white text-black text-sm font-medium hover:bg-white/90 transition-all disabled:opacity-40 disabled:cursor-not-allowed flex items-center justify-center gap-2"
             >
               {loading ? (
-                <div className="w-4 h-4 border-2 border-background border-t-transparent rounded-full animate-spin" />
+                <div className="w-4 h-4 border-2 border-black border-t-transparent rounded-full animate-spin" />
               ) : (
                 <>
                   Sign In <ArrowRight className="w-4 h-4" />
@@ -123,6 +130,11 @@ export default function AdminLoginPage() {
             </button>
           </form>
         </div>
+
+        <p className="text-center text-[11px] text-[var(--muted)] mt-6 font-[var(--font-grotesk)]">
+          <Lock className="w-3 h-3 inline mr-1" />
+          Private access — authorized only
+        </p>
       </motion.div>
     </div>
   )

@@ -44,17 +44,25 @@ export function VisitTracker() {
       setCookie(VISITED_COOKIE, "1", 365)
     }
 
-    const page = pathname || "/"
-    const referrer = document.referrer || ""
+    const path = pathname || "/"
+    let page = path
+    let storySlug: string | null = null
+    if (path === "/") page = "homepage"
+    else if (path === "/stories") page = "stories"
+    else if (path.startsWith("/stories/")) {
+      page = "story"
+      storySlug = path.replace("/stories/", "").split("/")[0] || null
+    }
 
-    fetch("/api/analytics/visit", {
+    fetch("/api/track", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         page,
-        referrer,
+        path,
+        storySlug,
         visitorId,
-        isNewVisitor: isNewVisitor || !hasVisitedBefore,
+        isReturning: !(isNewVisitor || !hasVisitedBefore),
       }),
     }).catch(() => {})
 

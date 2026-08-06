@@ -2,69 +2,106 @@
 
 import { useEffect, useRef } from "react"
 
+interface Sparkle {
+  x: number
+  y: number
+  life: number
+  maxLife: number
+  size: number
+  vx: number
+  vy: number
+}
+
 export function CursorEffect() {
-  const cursorRef = useRef<HTMLDivElement>(null)
-  const ringRef = useRef<HTMLDivElement>(null)
-  const posRef = useRef({ x: 0, y: 0 })
-  const ringPosRef = useRef({ x: 0, y: 0 })
+  const canvasRef = useRef<HTMLCanvasElement>(null)
+  const sparklesRef = useRef<Sparkle[]>([])
+  const mouseRef = useRef({ x: -2000, y: -2000 })
+  const rafRef = useRef<number>(0)
 
   useEffect(() => {
-    const updateRing = () => {
-      if (!ringRef.current) return
-      ringPosRef.current.x += (posRef.current.x - ringPosRef.current.x) * 0.12
-      ringPosRef.current.y += (posRef.current.y - ringPosRef.current.y) * 0.12
-      ringRef.current.style.transform = `translate(${ringPosRef.current.x - 16}px, ${ringPosRef.current.y - 16}px)`
-      requestAnimationFrame(updateRing)
+    const canvas = canvasRef.current
+    if (!canvas) return
+
+    if (window.matchMedia("(max-width: 768px)").matches) return
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return
+
+    const ctx = canvas.getContext("2d")
+    if (!ctx) return
+
+    const resize = () => {
+      canvas.width = window.innerWidth
+      canvas.height = window.innerHeight
     }
+    resize()
+    window.addEventListener("resize", resize)
 
     const onMove = (e: MouseEvent) => {
-      posRef.current = { x: e.clientX, y: e.clientY }
-      if (cursorRef.current) {
-        cursorRef.current.style.transform = `translate(${e.clientX - 4}px, ${e.clientY - 4}px)`
+      mouseRef.current = { x: e.clientX, y: e.clientY }
+      // Tiny, sparse sparkles only
+      if (Math.random() < 0.35) {
+        const angle = Math.random() * Math.PI * 2
+        const speed = 0.15 + Math.random() * 0.25
+        sparklesRef.current.push({
+          x: e.clientX,
+          y: e.clientY,
+          life: 0,
+          maxLife: 14 + Math.random() * 10,
+          size: 0.8 + Math.random() * 1.2,
+          vx: Math.cos(angle) * speed,
+          vy: Math.sin(angle) * speed - 0.15,
+        })
       }
     }
 
-    const onLeave = () => {
-      if (cursorRef.current) cursorRef.current.style.opacity = "0"
-      if (ringRef.current) ringRef.current.style.opacity = "0"
+    window.addEventListener("mousemove", onMove, { passive: true })
+
+    const animate = () => {
+      ctx.clearRect(0, 0, canvas.width, canvas.height)
+
+      // Soft spotlight following cursor
+      const { x, y } = mouseRef.current
+      const grad = ctx.createRadialGradient(x, y, 0, x, y, 240)
+      grad.addColorStop(0, "rgba(177, 108, 234, 0.045)")
+      grad.addColorStop(0.5, "rgba(167, 139, 250, 0.02)")
+      grad.addColorStop(1, "rgba(0, 0, 0, 0)")
+      ctx.fillStyle = grad
+      ctx.fillRect(0, 0, canvas.width, canvas.height)
+
+      // Sparkles
+      const sparks = sparklesRef.current
+      for (let i = sparks.length - 1; i >= 0; i--) {
+        const p = sparks[i]
+        p.life++
+        p.x += p.vx
+        p.y += p.vy
+        const t = 1 - p.life / p.maxLife
+        if (p.life > p.maxLife || t <= 0) {
+          sparks.splice(i, 1)
+          continue
+        }
+        ctx.beginPath()
+        ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2)
+        ctx.fillStyle = `rgba(220, 200, 255, ${t * 0.5})`
+        ctx.fill()
+      }
+
+      rafRef.current = requestAnimationFrame(animate)
     }
 
-    const onEnter = () => {
-      if (cursorRef.current) cursorRef.current.style.opacity = "1"
-      if (ringRef.current) ringRef.current.style.opacity = "1"
-    }
-
-    window.addEventListener("mousemove", onMove)
-    document.addEventListener("mouseleave", onLeave)
-    document.addEventListener("mouseenter", onEnter)
-    requestAnimationFrame(updateRing)
+    animate()
 
     return () => {
+      window.removeEventListener("resize", resize)
       window.removeEventListener("mousemove", onMove)
-      document.removeEventListener("mouseleave", onLeave)
-      document.removeEventListener("mouseenter", onEnter)
+      cancelAnimationFrame(rafRef.current)
     }
   }, [])
 
   return (
-    <>
-      <div
-        ref={cursorRef}
-        className="fixed top-0 left-0 w-2 h-2 rounded-full bg-primary pointer-events-none z-[9999] hidden md:block"
-        style={{
-          willChange: "transform",
-          transition: "opacity 0.3s",
-          boxShadow: "0 0 8px rgba(139, 92, 246, 0.5)",
-        }}
-      />
-      <div
-        ref={ringRef}
-        className="fixed top-0 left-0 w-8 h-8 rounded-full border border-primary/30 pointer-events-none z-[9999] hidden md:block"
-        style={{
-          willChange: "transform",
-          transition: "opacity 0.3s, width 0.3s, height 0.3s, border-color 0.3s",
-        }}
-      />
-    </>
+    <canvas
+      ref={canvasRef}
+      className="fixed inset-0 pointer-events-none z-[90] hidden md:block"
+      aria-hidden="true"
+    />
   )
 }

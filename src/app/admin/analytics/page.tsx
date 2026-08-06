@@ -92,8 +92,8 @@ function StatCard({ label, value, icon: Icon, delay }: {
       className="p-4 md:p-5 rounded-2xl glass-card"
     >
       <div className="flex items-center gap-3 mb-3">
-        <div className="w-9 h-9 rounded-xl bg-purple-500/10 flex items-center justify-center">
-          <Icon className="w-4 h-4 text-purple-400" />
+        <div className="w-9 h-9 rounded-xl bg-[var(--orchid)]/10 flex items-center justify-center">
+          <Icon className="w-4 h-4 text-[var(--orchid)]" />
         </div>
       </div>
       <div className="text-2xl md:text-3xl font-semibold text-foreground">{value}</div>
@@ -248,7 +248,7 @@ export default function AnalyticsPage() {
                 </Link>
                 <div>
                   <h1 className="text-2xl md:text-3xl font-[var(--font-serif)] text-foreground flex items-center gap-2">
-                    <BarChart3 className="w-6 h-6 text-purple-400" />
+                    <BarChart3 className="w-6 h-6 text-[var(--orchid)]" />
                     Website Analytics
                   </h1>
                   <p className="text-sm text-muted-foreground/60 mt-0.5">Track visitor activity and engagement</p>
@@ -297,7 +297,7 @@ export default function AnalyticsPage() {
                 {/* Most Visited Stories */}
                 <div className="rounded-2xl glass-card p-5">
                   <h3 className="text-sm font-medium text-foreground mb-4 flex items-center gap-2">
-                    <BookOpen className="w-4 h-4 text-purple-400/60" />
+                    <BookOpen className="w-4 h-4 text-[var(--orchid)]/60" />
                     Most Visited Stories
                   </h3>
                   {storyStats.length === 0 ? (
@@ -311,7 +311,7 @@ export default function AnalyticsPage() {
                             <div className="text-sm text-foreground truncate capitalize">{s.slug.replace(/-/g, " ")}</div>
                             <div className="mt-1 h-1.5 rounded-full bg-secondary overflow-hidden">
                               <div
-                                className="h-full rounded-full bg-gradient-to-r from-purple-500/60 to-blue-500/60"
+                                className="h-full rounded-full bg-gradient-to-r from-[var(--orchid)]/60 to-[var(--lavender)]/60"
                                 style={{ width: `${(s.count / maxBarCount) * 100}%` }}
                               />
                             </div>
@@ -326,7 +326,7 @@ export default function AnalyticsPage() {
                 {/* Most Viewed Categories */}
                 <div className="rounded-2xl glass-card p-5">
                   <h3 className="text-sm font-medium text-foreground mb-4 flex items-center gap-2">
-                    <BarChart3 className="w-4 h-4 text-blue-400/60" />
+                    <BarChart3 className="w-4 h-4 text-[var(--soft-cyan)]/60" />
                     Most Viewed Categories
                   </h3>
                   {categoryStats.length === 0 ? (
@@ -341,7 +341,7 @@ export default function AnalyticsPage() {
                               <div className="text-sm text-foreground">{c.name}</div>
                               <div className="mt-1 h-1.5 rounded-full bg-secondary overflow-hidden">
                                 <div
-                                  className="h-full rounded-full bg-gradient-to-r from-blue-500/60 to-cyan-500/60"
+                                  className="h-full rounded-full bg-gradient-to-r from-[var(--soft-cyan)]/60 to-[var(--deep-indigo)]/60"
                                   style={{ width: `${(c.count / maxCat) * 100}%` }}
                                 />
                               </div>
@@ -357,7 +357,7 @@ export default function AnalyticsPage() {
                 {/* Device Breakdown */}
                 <div className="rounded-2xl glass-card p-5">
                   <h3 className="text-sm font-medium text-foreground mb-4 flex items-center gap-2">
-                    <Monitor className="w-4 h-4 text-pink-400/60" />
+                    <Monitor className="w-4 h-4 text-[var(--lavender)]/60" />
                     Device Breakdown
                   </h3>
                   {deviceStats.length === 0 ? (
@@ -374,7 +374,7 @@ export default function AnalyticsPage() {
                               <div className="text-sm text-foreground capitalize">{d.name}</div>
                               <div className="mt-1 h-1.5 rounded-full bg-secondary overflow-hidden">
                                 <div
-                                  className="h-full rounded-full bg-gradient-to-r from-pink-500/60 to-orange-500/60"
+                                  className="h-full rounded-full bg-gradient-to-r from-[var(--lavender)]/60 to-[#fb923c]/60"
                                   style={{ width: `${pct}%` }}
                                 />
                               </div>
@@ -390,7 +390,7 @@ export default function AnalyticsPage() {
                 {/* Traffic Sources */}
                 <div className="rounded-2xl glass-card p-5">
                   <h3 className="text-sm font-medium text-foreground mb-4 flex items-center gap-2">
-                    <Globe className="w-4 h-4 text-green-400/60" />
+                    <Globe className="w-4 h-4 text-[#34d399]/60" />
                     Traffic Sources
                   </h3>
                   {referrerStats.length === 0 ? (
@@ -405,7 +405,7 @@ export default function AnalyticsPage() {
                               <div className="text-sm text-foreground capitalize">{r.name}</div>
                               <div className="mt-1 h-1.5 rounded-full bg-secondary overflow-hidden">
                                 <div
-                                  className="h-full rounded-full bg-gradient-to-r from-green-500/60 to-emerald-500/60"
+                                  className="h-full rounded-full bg-gradient-to-r from-[#34d399]/60 to-[#6ee7b7]/60"
                                   style={{ width: `${pct}%` }}
                                 />
                               </div>
@@ -430,19 +430,19 @@ export default function AnalyticsPage() {
                       value={search}
                       onChange={(e) => setSearch(e.target.value)}
                       placeholder="Search activity..."
-                      className="w-full pl-10 pr-4 py-2 rounded-xl glass text-sm text-foreground placeholder:text-muted-foreground/40 focus:outline-none focus:ring-1 focus:ring-purple-500/30"
+                      className="w-full pl-10 pr-4 py-2 rounded-xl glass text-sm text-foreground placeholder:text-muted-foreground/40 focus:outline-none focus:ring-1 focus:ring-[var(--orchid)]/30"
                     />
                   </div>
                   <input
                     type="date"
                     value={filterDate}
                     onChange={(e) => setFilterDate(e.target.value)}
-                    className="px-3 py-2 rounded-xl glass text-sm text-foreground focus:outline-none focus:ring-1 focus:ring-purple-500/30 [color-scheme:dark]"
+                    className="px-3 py-2 rounded-xl glass text-sm text-foreground focus:outline-none focus:ring-1 focus:ring-[var(--orchid)]/30 [color-scheme:dark]"
                   />
                   <select
                     value={filterDevice}
                     onChange={(e) => setFilterDevice(e.target.value)}
-                    className="px-3 py-2 rounded-xl glass text-sm text-foreground focus:outline-none focus:ring-1 focus:ring-purple-500/30 [color-scheme:dark]"
+                    className="px-3 py-2 rounded-xl glass text-sm text-foreground focus:outline-none focus:ring-1 focus:ring-[var(--orchid)]/30 [color-scheme:dark]"
                   >
                     <option value="all">All Devices</option>
                     <option value="desktop">Desktop</option>
@@ -482,7 +482,7 @@ export default function AnalyticsPage() {
                                 <span className="text-[10px] text-muted-foreground/30">{v.country}</span>
                               )}
                               {v.referrer !== "direct" && (
-                                <span className="text-[10px] text-purple-400/40">via {v.referrer}</span>
+                                <span className="text-[10px] text-[var(--orchid)]/40">via {v.referrer}</span>
                               )}
                             </div>
                           </div>
@@ -512,7 +512,7 @@ export default function AnalyticsPage() {
                           </div>
                           <div className="h-2 rounded-full bg-secondary overflow-hidden">
                             <div
-                              className="h-full rounded-full bg-gradient-to-r from-purple-500/60 via-blue-500/60 to-pink-500/60 transition-all duration-500"
+                              className="h-full rounded-full bg-gradient-to-r from-[var(--orchid)]/60 via-[var(--soft-cyan)]/60 to-[var(--lavender)]/60 transition-all duration-500"
                               style={{ width: `${(s.count / maxBarCount) * 100}%` }}
                             />
                           </div>

@@ -1,15 +1,26 @@
 "use client"
 
-import { useState, useEffect, use, useMemo } from "react"
+import { useState, useEffect, use, useMemo, useCallback } from "react"
 import Link from "next/link"
-import { motion } from "framer-motion"
+import { motion, AnimatePresence } from "framer-motion"
 import {
-  ArrowLeft, Clock, Calendar, Share2, Bookmark, Quote,
+  ArrowLeft,
+  Clock,
+  Calendar,
+  Share2,
+  Bookmark,
+  Heart,
+  Quote,
+  Maximize2,
+  Minimize2,
+  ArrowRight,
+  Feather,
 } from "lucide-react"
 import { Navbar } from "@/components/Navbar"
 import { Footer } from "@/components/Footer"
 import { ReadingProgress } from "@/components/ReadingProgress"
 import { FloatingWriteButton } from "@/components/FloatingWriteButton"
+import { StoryCard } from "@/components/StoryCard"
 import { Stars } from "@/components/Stars"
 import { formatDate, cn } from "@/lib/utils"
 import { supabase } from "@/lib/supabase-client"
@@ -33,10 +44,10 @@ function ShareButton({ title, slug }: { title: string; slug: string }) {
   return (
     <button
       onClick={handleShare}
-      className="flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs glass hover:text-foreground transition-colors"
+      aria-label="Share story"
+      className="p-2.5 rounded-full border border-white/[0.08] text-[var(--foreground-secondary)] hover:text-foreground hover:border-white/20 transition-colors"
     >
-      <Share2 className="w-3.5 h-3.5" />
-      {copied ? "Copied!" : "Share"}
+      {copied ? <span className="text-[10px] px-1 font-[var(--font-grotesk)]">Copied</span> : <Share2 className="w-4 h-4" />}
     </button>
   )
 }
@@ -52,9 +63,7 @@ function BookmarkButton({ id }: { id: string }) {
 
   const toggle = () => {
     const saved: string[] = JSON.parse(localStorage.getItem("bhavy-bookmarks") || "[]")
-    const next = bookmarked
-      ? saved.filter((s: string) => s !== id)
-      : [...saved, id]
+    const next = bookmarked ? saved.filter((s: string) => s !== id) : [...saved, id]
     localStorage.setItem("bhavy-bookmarks", JSON.stringify(next))
     setBookmarked(!bookmarked)
   }
@@ -62,21 +71,55 @@ function BookmarkButton({ id }: { id: string }) {
   return (
     <button
       onClick={toggle}
+      aria-label={bookmarked ? "Remove bookmark" : "Bookmark story"}
+      aria-pressed={bookmarked}
       className={cn(
-        "flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs transition-colors",
+        "p-2.5 rounded-full border transition-colors",
         bookmarked
-          ? "glass text-accent"
-          : "glass hover:text-foreground"
+          ? "border-[var(--lavender)]/40 text-[var(--lavender)] bg-[var(--lavender)]/10"
+          : "border-white/[0.08] text-[var(--foreground-secondary)] hover:text-foreground hover:border-white/20"
       )}
     >
-      <Bookmark className="w-3.5 h-3.5" fill={bookmarked ? "currentColor" : "none"} />
-      {bookmarked ? "Saved" : "Save"}
+      <Bookmark className="w-4 h-4" fill={bookmarked ? "currentColor" : "none"} />
+    </button>
+  )
+}
+
+function FavoriteButton({ id }: { id: string }) {
+  const [fav, setFav] = useState(false)
+
+  useEffect(() => {
+    if (typeof window === "undefined") return
+    const saved = JSON.parse(localStorage.getItem("bhavy-favorites") || "[]")
+    setFav(saved.includes(id))
+  }, [id])
+
+  const toggle = () => {
+    const saved: string[] = JSON.parse(localStorage.getItem("bhavy-favorites") || "[]")
+    const next = fav ? saved.filter((s: string) => s !== id) : [...saved, id]
+    localStorage.setItem("bhavy-favorites", JSON.stringify(next))
+    setFav(!fav)
+  }
+
+  return (
+    <button
+      onClick={toggle}
+      aria-label={fav ? "Remove from favorites" : "Add to favorites"}
+      aria-pressed={fav}
+      className={cn(
+        "p-2.5 rounded-full border transition-colors",
+        fav
+          ? "border-[var(--orchid)]/40 text-[var(--orchid)] bg-[var(--orchid)]/10"
+          : "border-white/[0.08] text-[var(--foreground-secondary)] hover:text-foreground hover:border-white/20"
+      )}
+    >
+      <Heart className="w-4 h-4" fill={fav ? "currentColor" : "none"} />
     </button>
   )
 }
 
 function extractQuote(content: string): string | null {
-  const text = content.replace(/<[^>]*>/g, "").trim()
+  const text = content.replace(/<[^>]*>/g, "").replace(/\s+/g, " ").trim()
   const sentences = text.match(/[^.!?]+[.!?]+/g)
   if (!sentences || sentences.length < 3) return null
   const mid = Math.floor(sentences.length / 2)
@@ -92,6 +135,7 @@ export default function StoryPage({ params }: { params: Promise<{ slug: string }
   const [related, setRelated] = useState<Story[]>([])
   const [loading, setLoading] = useState(true)
   const [imageLoaded, setImageLoaded] = useState(false)
+  const [readingMode, setReadingMode] = useState(false)
 
   useEffect(() => {
     async function load() {
@@ -100,17 +144,17 @@ export default function StoryPage({ params }: { params: Promise<{ slug: string }
         const data = await res.json()
         setStory(data)
 
-        // Track reading history
         try {
           const history: string[] = JSON.parse(localStorage.getItem("bhavy-reading-history") || "[]")
           const updated = [slug, ...history.filter((s: string) => s !== slug)].slice(0, 10)
           localStorage.setItem("bhavy-reading-history", JSON.stringify(updated))
         } catch {}
 
-        if (data.category) {
+        if (data?.category) {
           const { data: relatedData } = await supabase
             .from("Story")
             .select("*")
+            .eq("published", true)
             .eq("category", data.category)
             .neq("slug", slug)
             .limit(3)
@@ -122,21 +166,41 @@ export default function StoryPage({ params }: { params: Promise<{ slug: string }
     load()
   }, [slug])
 
-  const { mood } = useMemo(() => parseStoryTags(story?.tags || ""), [story?.tags])
-  const moodColor = mood ? MOOD_COLORS[mood as Mood] : undefined
+  const tags = useMemo(() => parseStoryTags(story?.tags || ""), [story?.tags])
+  const moodColor = tags.mood ? MOOD_COLORS[tags.mood as Mood] : undefined
+  const accentColor = tags.accent || moodColor
 
-  const quote = useMemo(() => story?.content ? extractQuote(story.content) : null, [story?.content])
+  const quote = useMemo(() => {
+    if (!story?.content) return null
+    if (tags.quote) return tags.quote
+    return extractQuote(story.content)
+  }, [story?.content, tags.quote])
+
+  const continueStory = useMemo(() => {
+    if (!story) return null
+    if (tags.continueSlug && tags.continueSlug !== story.slug) {
+      return related.find((r) => r.slug === tags.continueSlug) || null
+    }
+    return related[0] || null
+  }, [tags.continueSlug, related, story])
+
+  const handleReadingMode = useCallback(() => {
+    setReadingMode((m) => !m)
+    if (typeof window !== "undefined") {
+      window.scrollTo({ top: 0, behavior: "smooth" })
+    }
+  }, [])
 
   if (loading) {
     return (
       <div className="min-h-screen">
         <ReadingProgress />
         <Navbar />
-        <main className="pt-12 md:pt-16 max-w-3xl mx-auto px-6 py-10">
+        <main className="pt-24 md:pt-32 max-w-3xl mx-auto px-6 py-10">
           <div className="space-y-4">
-            <div className="h-4 skeleton rounded w-1/4" />
-            <div className="h-10 skeleton rounded w-3/4" />
-            <div className="h-64 skeleton rounded-xl" />
+            <div className="h-64 skeleton rounded-[32px]" />
+            <div className="h-6 skeleton rounded w-1/3" />
+            <div className="h-12 skeleton rounded w-3/4" />
             <div className="space-y-3">
               {Array.from({ length: 8 }).map((_, i) => (
                 <div key={i} className="h-4 skeleton rounded" style={{ width: `${60 + Math.random() * 40}%` }} />
@@ -152,9 +216,12 @@ export default function StoryPage({ params }: { params: Promise<{ slug: string }
     return (
       <div className="min-h-screen">
         <Navbar />
-        <main className="pt-12 md:pt-16 max-w-3xl mx-auto px-6 py-20 text-center">
-          <h1 className="text-2xl font-[var(--font-serif)] text-muted-foreground/60">Story not found</h1>
-          <Link href="/stories" className="text-sm text-muted-foreground hover:text-foreground mt-2 inline-block underline-animate">
+        <main className="pt-32 max-w-3xl mx-auto px-6 py-20 text-center">
+          <div className="w-16 h-16 mx-auto mb-5 rounded-full" style={{ boxShadow: "0 0 40px rgba(167,139,250,0.15)" }} />
+          <h1 className="text-3xl font-[var(--font-instrument-serif)] text-[var(--foreground-secondary)]">
+            Story not found
+          </h1>
+          <Link href="/stories" className="text-sm text-[var(--muted)] hover:text-foreground mt-4 inline-block underline-animate">
             Back to stories
           </Link>
         </main>
@@ -163,186 +230,288 @@ export default function StoryPage({ params }: { params: Promise<{ slug: string }
   }
 
   return (
-    <div className="min-h-screen">
+    <div className={cn("min-h-screen", readingMode && "reading-mode")}>
       <ReadingProgress />
-      <Navbar />
-      <main className="pt-0 md:pt-16">
-        {/* Hero Cover */}
-        {story.coverImage ? (
-          <div className="relative h-[45vh] md:h-[60vh] min-h-[350px] overflow-hidden">
-            {!imageLoaded && <div className="absolute inset-0 skeleton" />}
-            <img
-              src={story.coverImage}
-              alt={story.title}
-              loading="lazy"
-              decoding="async"
-              onLoad={() => setImageLoaded(true)}
-              className={cn(
-                "w-full h-full object-cover animate-image-reveal",
-                imageLoaded ? "opacity-100" : "opacity-0"
-              )}
-            />
-            <div className="absolute inset-0 bg-gradient-to-t from-background via-background/40 to-transparent" />
-            <Stars count={30} />
-          </div>
-        ) : (
-          <div
-            className="relative h-[30vh] min-h-[200px] flex items-center justify-center"
-            style={moodColor ? { background: `linear-gradient(135deg, ${moodColor}20, ${moodColor}05)` } : undefined}
+      {!readingMode && <Navbar />}
+
+      {/* Reading mode pill */}
+      <AnimatePresence>
+        {readingMode && (
+          <motion.div
+            initial={{ opacity: 0, y: -12 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -12 }}
+            className="fixed top-4 left-1/2 -translate-x-1/2 z-[60]"
           >
-            <div
-              className={!moodColor ? "gradient-bg absolute inset-0" : "absolute inset-0"}
-            />
-            <Stars count={30} />
-            <div
-              className="w-16 h-16 rounded-full moon-glow animate-moon-glow"
-              style={moodColor ? { boxShadow: `0 0 60px ${moodColor}40, 0 0 120px ${moodColor}20` } : undefined}
-            />
+            <div className="glass-strong rounded-full px-4 py-2 flex items-center gap-3">
+              <span className="text-[11px] text-[var(--foreground-secondary)] font-[var(--font-grotesk)] tracking-wide">
+                Reading
+              </span>
+              <button
+                onClick={handleReadingMode}
+                className="text-[11px] text-foreground hover:opacity-80 transition-opacity font-[var(--font-grotesk)] flex items-center gap-1.5"
+                aria-label="Exit reading mode"
+              >
+                <Minimize2 className="w-3 h-3" />
+                Exit
+              </button>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      <main className={cn("relative", readingMode && "pt-10")}>
+        {/* ===== HERO IMAGE ===== */}
+        {!readingMode && (
+          <div className={cn("relative overflow-hidden", story.coverImage ? "h-[46vh] md:h-[62vh] min-h-[320px]" : "h-[32vh] min-h-[240px]")}>
+            {story.coverImage ? (
+              <>
+                {!imageLoaded && <div className="absolute inset-0 skeleton" />}
+                <img
+                  src={story.coverImage}
+                  alt={story.title}
+                  loading="lazy"
+                  decoding="async"
+                  onLoad={() => setImageLoaded(true)}
+                  className={cn(
+                    "w-full h-full object-cover",
+                    imageLoaded ? "opacity-100 animate-image-reveal" : "opacity-0"
+                  )}
+                  style={tags.coverPos ? { objectPosition: `${tags.coverPos.x}% ${tags.coverPos.y}%` } : undefined}
+                />
+              </>
+            ) : (
+              <div
+                className="absolute inset-0"
+                style={
+                  moodColor
+                    ? { background: `linear-gradient(150deg, ${moodColor}18 0%, #000 60%)` }
+                    : { background: "linear-gradient(150deg, rgba(177,108,234,0.12) 0%, #000 60%)" }
+                }
+              />
+            )}
+            <div className="absolute inset-0 bg-gradient-to-t from-black via-black/30 to-black/10" />
+            <Stars count={24} />
           </div>
         )}
 
-        <article className="max-w-3xl mx-auto px-6 -mt-16 relative z-10">
+        {/* ===== FLOATING INFO CARD ===== */}
+        <article className={cn("mx-auto px-5 md:px-6 relative z-10", readingMode ? "max-w-3xl" : "max-w-6xl")}>
           <motion.div
-            initial={{ opacity: 0, y: 20 }}
+            initial={{ opacity: 0, y: 24 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
+            transition={{ duration: 0.8, delay: readingMode ? 0 : 0.15, ease: [0.16, 1, 0.3, 1] }}
+            className={cn(
+              !readingMode &&
+                "md:-mt-24 glass-card p-7 md:p-10 rounded-[28px] md:rounded-[36px] relative"
+            )}
           >
-            <Link
-              href="/stories"
-              className="inline-flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground transition-colors mb-6 glass px-3 py-1.5 rounded-lg"
-            >
-              <ArrowLeft className="w-3.5 h-3.5" />
-              Back to stories
-            </Link>
-          </motion.div>
+            <div className="max-w-3xl mx-auto">
+              {/* Back link */}
+              {!readingMode && (
+                <Link
+                  href="/stories"
+                  className="inline-flex items-center gap-1.5 text-xs text-[var(--foreground-secondary)] hover:text-foreground transition-colors mb-7"
+                >
+                  <ArrowLeft className="w-3.5 h-3.5" />
+                  All stories
+                </Link>
+              )}
 
-          <motion.header
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.1 }}
-            className="mb-8"
-          >
-            {!story.coverImage && <div className="h-8" />}
-            <div className="flex items-center gap-3 mb-3">
-              {story.category && (
-                <span className="inline-block text-[10px] font-medium uppercase tracking-[0.2em]" style={{ color: moodColor || "var(--accent)" }}>
-                  {story.category}
-                </span>
+              {/* Meta badges */}
+              <div className="flex flex-wrap items-center gap-2.5 mb-5">
+                {story.category && (
+                  <span
+                    className="px-3 py-1 rounded-full text-[10px] uppercase tracking-[0.18em] border font-[var(--font-grotesk)]"
+                    style={{
+                      color: accentColor || "var(--lavender)",
+                      borderColor: `${accentColor || "var(--lavender)"}35`,
+                      background: `${accentColor || "var(--lavender)"}0d`,
+                    }}
+                  >
+                    {story.category}
+                  </span>
+                )}
+                {tags.mood && (
+                  <span className="px-3 py-1 rounded-full text-[10px] uppercase tracking-[0.18em] border border-white/[0.08] text-[var(--foreground-secondary)] font-[var(--font-grotesk)]">
+                    {tags.mood}
+                  </span>
+                )}
+                {tags.collection && (
+                  <Link
+                    href={`/stories?collection=${encodeURIComponent(tags.collection.toLowerCase())}`}
+                    className="px-3 py-1 rounded-full text-[10px] uppercase tracking-[0.18em] border border-white/[0.08] text-[var(--foreground-secondary)] hover:text-foreground transition-colors font-[var(--font-grotesk)]"
+                  >
+                    {tags.collection}
+                  </Link>
+                )}
+              </div>
+
+              <h1
+                className={cn(
+                  "text-foreground leading-[1.1]",
+                  readingMode ? "text-3xl md:text-4xl" : "text-3xl md:text-5xl"
+                )}
+              >
+                {story.title}
+              </h1>
+              {story.subtitle && (
+                <p className="text-base md:text-lg text-[var(--foreground-secondary)] mt-3 font-[var(--font-source-serif)] italic">
+                  {story.subtitle}
+                </p>
               )}
-              {mood && (
-                <span className="text-[10px] glass px-2 py-0.5 rounded uppercase tracking-wider" style={{ color: moodColor, borderColor: `${moodColor}40` }}>
-                  {mood}
+
+              {/* Meta row */}
+              <div className="flex flex-wrap items-center gap-x-5 gap-y-3 mt-6 text-xs text-[var(--muted)]">
+                <span className="flex items-center gap-1.5 font-[var(--font-grotesk)]">
+                  <Calendar className="w-3.5 h-3.5" />
+                  {formatDate(story.createdAt)}
                 </span>
-              )}
-            </div>
-            <h1 className="text-3xl md:text-5xl font-[var(--font-serif)] text-foreground leading-tight mb-4">
-              {story.title}
-            </h1>
-            <div className="flex flex-wrap items-center gap-4 mt-2 text-xs text-muted-foreground">
-              <span className="flex items-center gap-1.5">
-                <Calendar className="w-3.5 h-3.5" />
-                {formatDate(story.createdAt)}
-              </span>
-              <span className="flex items-center gap-1.5">
-                <Clock className="w-3.5 h-3.5" />
-                {story.readingTime || "5"} min read
-              </span>
-              <div className="flex items-center gap-2 ml-auto">
-                <ShareButton title={story.title} slug={story.slug} />
-                <BookmarkButton id={story.id} />
+                <span className="flex items-center gap-1.5 font-[var(--font-grotesk)]">
+                  <Clock className="w-3.5 h-3.5" />
+                  {story.readingTime || 5} min read
+                </span>
+                <span className="flex items-center gap-1.5 font-[var(--font-grotesk)]">
+                  <Feather className="w-3.5 h-3.5" />
+                  by Bhavya
+                </span>
+
+                <div className="flex items-center gap-2 ml-auto">
+                  {!readingMode && (
+                    <button
+                      onClick={handleReadingMode}
+                      aria-label="Enter reading mode"
+                      title="Reading mode"
+                      className="p-2.5 rounded-full border border-white/[0.08] text-[var(--foreground-secondary)] hover:text-foreground hover:border-white/20 transition-colors"
+                    >
+                      <Maximize2 className="w-4 h-4" />
+                    </button>
+                  )}
+                  <FavoriteButton id={story.id} />
+                  <BookmarkButton id={story.id} />
+                  <ShareButton title={story.title} slug={story.slug} />
+                </div>
               </div>
             </div>
-          </motion.header>
+          </motion.div>
 
-          {/* Highlighted Quote */}
+          {/* ===== HIGHLIGHTED QUOTE ===== */}
           {quote && (
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8, delay: 0.15 }}
-              className="glass-strong rounded-2xl p-6 md:p-8 mb-10 text-center"
-              style={moodColor ? { borderColor: `${moodColor}30` } : undefined}
+              transition={{ duration: 0.8, delay: 0.25 }}
+              className="max-w-3xl mx-auto my-10 md:my-14"
             >
-              <Quote className="w-5 h-5 mx-auto mb-3" style={{ color: moodColor || "var(--accent)" }} />
-              <p className="text-lg md:text-xl font-[var(--font-serif)] italic text-foreground/90 leading-relaxed">
-                &ldquo;{quote}&rdquo;
-              </p>
+              <div className="relative px-2">
+                <Quote
+                  className="w-8 h-8 mb-4"
+                  style={{ color: accentColor || "var(--lavender)" }}
+                />
+                <p className="font-[var(--font-instrument-serif)] italic text-2xl md:text-3xl leading-[1.4] text-foreground">
+                  &ldquo;{quote}&rdquo;
+                </p>
+                <div
+                  className="mt-6 h-px w-16"
+                  style={{ background: `linear-gradient(to right, ${accentColor || "var(--lavender)"}, transparent)` }}
+                />
+              </div>
             </motion.div>
           )}
 
+          {/* ===== STORY BODY ===== */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.2 }}
-            className="prose prose-invert max-w-none
-              prose-headings:font-[var(--font-serif)] prose-headings:text-foreground prose-headings:leading-tight
-              prose-p:text-foreground/80 prose-p:leading-relaxed prose-p:text-base md:prose-p:text-lg
-              prose-a:text-accent prose-a:no-underline hover:prose-a:underline
-              prose-strong:text-foreground
-              prose-code:glass prose-code:px-1.5 prose-code:py-0.5 prose-code:rounded prose-code:text-sm
-              prose-pre:glass-card prose-pre:rounded-xl
-              prose-blockquote:border-l-2 prose-blockquote:border-accent/30 prose-blockquote:text-muted-foreground prose-blockquote:pl-6 prose-blockquote:italic
-              prose-img:rounded-xl prose-img:shadow-lg
-              prose-hr:border-border/50
-              prose-li:text-foreground/80
-              [&_p]:mb-6
-              [&_h2]:mt-12 [&_h2]:mb-6
-              [&_h3]:mt-8 [&_h3]:mb-4"
-            dangerouslySetInnerHTML={{ __html: story.content }}
-          />
+            transition={{ duration: 0.8, delay: 0.3 }}
+            className="max-w-3xl mx-auto"
+          >
+            <div
+              className={cn("reading-prose", readingMode && "reading-prose-large")}
+              dangerouslySetInnerHTML={{ __html: story.content }}
+            />
+          </motion.div>
 
-          {/* Handwritten Signature */}
+          {/* ===== THANK YOU + SIGNATURE ===== */}
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            transition={{ duration: 0.6, delay: 0.5 }}
-            className="mt-12 pt-8 border-t border-border/50 text-right"
+            transition={{ duration: 0.8, delay: 0.5 }}
+            className="max-w-3xl mx-auto mt-16 md:mt-24 pt-10 border-t border-white/[0.06] text-center"
           >
-            <p className="font-[var(--font-brand)] text-lg md:text-xl text-accent">
-              &mdash; Bhavya
+            <p className="font-[var(--font-instrument-serif)] italic text-lg md:text-xl text-[var(--foreground-secondary)] leading-relaxed max-w-md mx-auto">
+              Thank you for reading this far.
+            </p>
+            <p className="font-[var(--font-great-vibes)] text-3xl md:text-4xl gradient-logo mt-6">
+              Bhavya
             </p>
           </motion.div>
-
-          <div className="flex items-center justify-between mt-8 pt-4">
-            <div className="flex items-center gap-2">
-              <ShareButton title={story.title} slug={story.slug} />
-              <BookmarkButton id={story.id} />
-            </div>
-          </div>
         </article>
 
-        {related.length > 0 && (
-          <section className="max-w-6xl mx-auto px-6 py-12 md:py-16 border-t border-border/50 mt-12">
-            <h2 className="text-2xl font-[var(--font-serif)] text-foreground mb-6">Related Stories</h2>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              {related.map((relatedStory) => (
-                <Link key={relatedStory.id} href={`/stories/${relatedStory.slug}`} className="group block">
-                  <div
-                    className="glass-card overflow-hidden hover-lift"
-                    style={{ borderRadius: 28 }}
+        {/* ===== CONTINUE READING ===== */}
+        {continueStory && !readingMode && (
+          <section className="max-w-6xl mx-auto px-5 md:px-6 mt-20 md:mt-28">
+            <div className="glass-card rounded-[32px] overflow-hidden">
+              <div className="grid grid-cols-1 md:grid-cols-2">
+                <div className="relative min-h-[240px] bg-[#0a0a0c]">
+                  {continueStory.coverImage ? (
+                    <img
+                      src={continueStory.coverImage}
+                      alt={continueStory.title}
+                      loading="lazy"
+                      className="absolute inset-0 w-full h-full object-cover"
+                    />
+                  ) : (
+                    <div className="absolute inset-0 bg-gradient-to-br from-[#1a1024] via-[#0a0a0c] to-[#0d1a24]" />
+                  )}
+                  <div className="absolute inset-0 bg-gradient-to-r from-black/60 to-transparent hidden md:block" />
+                </div>
+                <div className="p-8 md:p-12 flex flex-col justify-center">
+                  <p className="text-[10px] uppercase tracking-[0.3em] text-[var(--muted)] font-[var(--font-grotesk)] mb-3">
+                    Continue Reading
+                  </p>
+                  <h3 className="font-[var(--font-instrument-serif)] text-2xl md:text-3xl text-foreground leading-snug">
+                    {continueStory.title}
+                  </h3>
+                  <p className="text-sm text-[var(--foreground-secondary)] mt-3 line-clamp-2 leading-relaxed">
+                    {continueStory.excerpt}
+                  </p>
+                  <Link
+                    href={`/stories/${continueStory.slug}`}
+                    className="inline-flex items-center gap-2 text-sm text-foreground mt-6 w-fit group"
                   >
-                    <div className="aspect-[16/9] bg-secondary overflow-hidden">
-                      {relatedStory.coverImage ? (
-                        <img src={relatedStory.coverImage} alt={relatedStory.title} className="w-full h-full object-cover transition-all duration-500 group-hover:scale-[1.05]" />
-                      ) : (
-                        <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-purple-900/20 via-blue-900/10 to-pink-900/20">
-                          <div className="w-8 h-8 rounded-full bg-gradient-to-br from-purple-400/20 to-pink-400/20 moon-glow" />
-                        </div>
-                      )}
-                    </div>
-                    <div className="p-5">
-                      <h3 className="text-base font-[var(--font-serif)] text-foreground group-hover:text-accent transition-colors leading-snug">{relatedStory.title}</h3>
-                      <p className="text-xs text-muted-foreground/60 mt-1.5">{relatedStory.readingTime || "5"} min read</p>
-                    </div>
-                  </div>
-                </Link>
+                    <span className="underline-animate">Read next</span>
+                    <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-0.5" />
+                  </Link>
+                </div>
+              </div>
+            </div>
+          </section>
+        )}
+
+        {/* ===== RELATED STORIES ===== */}
+        {related.length > 0 && !readingMode && (
+          <section className="max-w-6xl mx-auto px-5 md:px-6 mt-16 md:mt-24">
+            <div className="mb-8 flex items-center gap-2">
+              <p className="text-[10px] uppercase tracking-[0.3em] text-[var(--muted)] font-[var(--font-grotesk)]">
+                More in {story.category}
+              </p>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-5 md:gap-6">
+              {related.map((r, i) => (
+                <StoryCard key={r.id} story={r} index={i} />
               ))}
             </div>
           </section>
         )}
       </main>
-      <Footer />
-      <FloatingWriteButton />
+
+      {!readingMode && (
+        <>
+          <Footer />
+          <FloatingWriteButton />
+        </>
+      )}
     </div>
   )
 }
