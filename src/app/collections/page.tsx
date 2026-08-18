@@ -3,7 +3,7 @@
 import { useEffect, useState, useMemo } from "react"
 import Link from "next/link"
 import { motion } from "framer-motion"
-import { Moon, ArrowRight } from "lucide-react"
+import { Moon, ArrowRight, FolderOpen } from "lucide-react"
 import { Navbar } from "@/components/Navbar"
 import { Footer } from "@/components/Footer"
 import { FloatingWriteButton } from "@/components/FloatingWriteButton"
@@ -53,8 +53,8 @@ export default function CollectionsPage() {
     <div className="relative min-h-screen">
       <ReadingProgress />
       <Navbar />
-      <main className="pt-28 md:pt-36">
-        <div className="max-w-6xl mx-auto px-5 md:px-6 pb-16">
+      <main className="pt-32 md:pt-40">
+        <div className="max-w-7xl mx-auto px-5 md:px-8 pb-16">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -79,7 +79,12 @@ export default function CollectionsPage() {
           ) : collections.length === 0 ? (
             <div className="text-center py-24">
               <Moon className="w-10 h-10 text-[var(--muted)] mx-auto mb-4 opacity-40" />
-              <p className="text-sm text-[var(--foreground-secondary)]">No collections yet.</p>
+              <p className="text-lg font-[var(--font-instrument-serif)] text-[var(--foreground-secondary)]">
+                Some stories are still waiting for a home.
+              </p>
+              <p className="text-sm text-[var(--muted)] mt-2">
+                Collections will appear here as stories find their place.
+              </p>
             </div>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -94,7 +99,7 @@ export default function CollectionsPage() {
                     transition={{ duration: 0.7, delay: (i % 2) * 0.08 }}
                   >
                     <Link
-                      href={`/stories?collection=${encodeURIComponent(collection.toLowerCase())}`}
+                      href={`/collections/${encodeURIComponent(collection.toLowerCase())}`}
                       className="group block h-full"
                     >
                       <div
@@ -142,7 +147,7 @@ export default function CollectionsPage() {
                               className="inline-flex items-center gap-1.5 text-xs transition-all duration-300 group-hover:gap-2.5"
                               style={{ color: accent }}
                             >
-                              Browse
+                              Open
                               <ArrowRight className="w-3.5 h-3.5" />
                             </span>
                           </div>

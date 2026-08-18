@@ -10,6 +10,7 @@ import {
 import { Background } from "@/components/Background"
 import { CursorWrapper } from "@/components/CursorWrapper"
 import { VisitTracker } from "@/components/VisitTracker"
+import { ThemeProvider } from "@/components/ThemeProvider"
 import "./globals.css"
 
 const inter = Inter({
@@ -68,7 +69,6 @@ export const metadata: Metadata = {
 
 export const viewport: Viewport = {
   themeColor: "#000000",
-  colorScheme: "dark",
   width: "device-width",
   initialScale: 1,
   maximumScale: 1,
@@ -87,11 +87,18 @@ export default function RootLayout({
       suppressHydrationWarning
       className={`${inter.variable} ${instrumentSerif.variable} ${spaceGrotesk.variable} ${sourceSerif.variable} ${greatVibes.variable} ${geistMono.variable}`}
     >
-      <body className="min-h-screen antialiased bg-[#000000]">
-        <Background />
-        <CursorWrapper />
-        <VisitTracker />
-        {children}
+      <body className="min-h-screen antialiased bg-background">
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="dark"
+          enableSystem
+          themes={["light", "dark"]}
+        >
+          <Background />
+          <CursorWrapper />
+          <VisitTracker />
+          {children}
+        </ThemeProvider>
       </body>
     </html>
   )

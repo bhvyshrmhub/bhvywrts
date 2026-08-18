@@ -99,7 +99,7 @@ export default function DashboardPage() {
                 <p className="text-sm text-[var(--foreground-secondary)] mt-1.5">Manage your journal</p>
               </div>
               <div className="flex items-center gap-2">
-                <Link href="/admin/analytics" className="inline-flex items-center gap-2 px-4 py-2.5 text-sm rounded-full border border-white/[0.08] text-[var(--foreground-secondary)] hover:text-foreground hover:border-white/20 transition-colors">
+                <Link href="/admin/analytics" className="inline-flex items-center gap-2 px-4 py-2.5 text-sm rounded-full border border-[var(--border)] text-[var(--foreground-secondary)] hover:text-foreground hover:border-[var(--border-strong)] transition-colors">
                   <BarChart3 className="w-4 h-4" />
                   Analytics
                 </Link>
@@ -143,7 +143,7 @@ export default function DashboardPage() {
                     "px-3.5 py-1.5 rounded-full text-xs border transition-colors font-[var(--font-grotesk)]",
                     filter === f
                       ? "border-transparent bg-white text-black"
-                      : "border-white/[0.06] text-[var(--foreground-secondary)] hover:border-white/20 hover:text-foreground"
+                      : "border-[var(--border)] text-[var(--foreground-secondary)] hover:border-[var(--border-strong)] hover:text-foreground"
                   )}
                 >
                   {f.charAt(0).toUpperCase() + f.slice(1)}
@@ -154,7 +154,7 @@ export default function DashboardPage() {
             {loading ? (
               <div className="space-y-2">
                 {Array.from({ length: 4 }).map((_, i) => (
-                  <div key={i} className="h-16 rounded-2xl skeleton border border-white/[0.05]" />
+                  <div key={i} className="h-16 rounded-2xl skeleton border border-[var(--border)]" />
                 ))}
               </div>
             ) : stories.length === 0 ? (
@@ -231,11 +231,11 @@ export default function DashboardPage() {
                           <IconBtn onClick={() => toggleFlag(story, "recommended")} active={!!tags.recommended} title={tags.recommended ? "Remove Recommended" : "Mark as Recommended"} activeColor="text-[var(--soft-cyan)]">
                             <Feather className="w-4 h-4" />
                           </IconBtn>
-                          <div className="w-px h-5 bg-white/[0.06] mx-1" />
-                          <Link href={`/stories/${story.slug}`} className="p-1.5 rounded-lg text-[var(--muted)] hover:text-foreground hover:bg-white/5 transition-colors" title="View">
+                          <div className="w-px h-5 bg-[var(--border)] mx-1" />
+                          <Link href={`/stories/${story.slug}`} className="p-1.5 rounded-lg text-[var(--muted)] hover:text-foreground hover:bg-secondary transition-colors" title="View">
                             <ExternalLink className="w-4 h-4" />
                           </Link>
-                          <Link href={`/editor/${story.slug}`} className="p-1.5 rounded-lg text-[var(--muted)] hover:text-foreground hover:bg-white/5 transition-colors" title="Edit">
+                          <Link href={`/editor/${story.slug}`} className="p-1.5 rounded-lg text-[var(--muted)] hover:text-foreground hover:bg-secondary transition-colors" title="Edit">
                             <Edit className="w-4 h-4" />
                           </Link>
                           <IconBtn onClick={() => togglePublish(story)} title={story.published ? "Unpublish" : "Publish"}>
@@ -304,7 +304,7 @@ function IconBtn({
       title={title}
       className={cn(
         "p-1.5 rounded-lg transition-colors",
-        active ? cn(activeColor, "bg-white/5") : "text-[var(--muted)] hover:text-foreground hover:bg-white/5"
+        active ? cn(activeColor, "bg-secondary") : "text-[var(--muted)] hover:text-foreground hover:bg-secondary"
       )}
     >
       {children}

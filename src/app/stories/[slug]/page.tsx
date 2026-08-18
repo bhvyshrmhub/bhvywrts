@@ -27,6 +27,8 @@ import { supabase } from "@/lib/supabase-client"
 import { parseStoryTags, MOOD_COLORS, type Mood } from "@/lib/constants"
 import type { Story } from "@/types"
 
+const SKELETON_WIDTHS = ["78%", "92%", "64%", "88%", "70%", "82%", "60%", "90%"]
+
 function ShareButton({ title, slug }: { title: string; slug: string }) {
   const [copied, setCopied] = useState(false)
   const url = typeof window !== "undefined" ? `${window.location.origin}/stories/${slug}` : ""
@@ -45,7 +47,7 @@ function ShareButton({ title, slug }: { title: string; slug: string }) {
     <button
       onClick={handleShare}
       aria-label="Share story"
-      className="p-2.5 rounded-full border border-white/[0.08] text-[var(--foreground-secondary)] hover:text-foreground hover:border-white/20 transition-colors"
+      className="p-2.5 rounded-full border border-[var(--border)] text-[var(--foreground-secondary)] hover:text-foreground hover:border-[var(--border-strong)] transition-colors"
     >
       {copied ? <span className="text-[10px] px-1 font-[var(--font-grotesk)]">Copied</span> : <Share2 className="w-4 h-4" />}
     </button>
@@ -77,7 +79,7 @@ function BookmarkButton({ id }: { id: string }) {
         "p-2.5 rounded-full border transition-colors",
         bookmarked
           ? "border-[var(--lavender)]/40 text-[var(--lavender)] bg-[var(--lavender)]/10"
-          : "border-white/[0.08] text-[var(--foreground-secondary)] hover:text-foreground hover:border-white/20"
+          : "border-[var(--border)] text-[var(--foreground-secondary)] hover:text-foreground hover:border-[var(--border-strong)]"
       )}
     >
       <Bookmark className="w-4 h-4" fill={bookmarked ? "currentColor" : "none"} />
@@ -110,7 +112,7 @@ function FavoriteButton({ id }: { id: string }) {
         "p-2.5 rounded-full border transition-colors",
         fav
           ? "border-[var(--orchid)]/40 text-[var(--orchid)] bg-[var(--orchid)]/10"
-          : "border-white/[0.08] text-[var(--foreground-secondary)] hover:text-foreground hover:border-white/20"
+          : "border-[var(--border)] text-[var(--foreground-secondary)] hover:text-foreground hover:border-[var(--border-strong)]"
       )}
     >
       <Heart className="w-4 h-4" fill={fav ? "currentColor" : "none"} />
@@ -123,8 +125,7 @@ function extractQuote(content: string): string | null {
   const sentences = text.match(/[^.!?]+[.!?]+/g)
   if (!sentences || sentences.length < 3) return null
   const mid = Math.floor(sentences.length / 2)
-  const candidates = [sentences[mid], sentences[mid - 1], sentences[mid + 1]].filter(Boolean)
-  const chosen = candidates[Math.floor(Math.random() * candidates.length)]?.trim()
+  const chosen = sentences[mid]?.trim()
   if (!chosen || chosen.length < 20) return null
   return chosen.length > 200 ? chosen.slice(0, 200) + "..." : chosen
 }
@@ -202,8 +203,8 @@ export default function StoryPage({ params }: { params: Promise<{ slug: string }
             <div className="h-6 skeleton rounded w-1/3" />
             <div className="h-12 skeleton rounded w-3/4" />
             <div className="space-y-3">
-              {Array.from({ length: 8 }).map((_, i) => (
-                <div key={i} className="h-4 skeleton rounded" style={{ width: `${60 + Math.random() * 40}%` }} />
+              {SKELETON_WIDTHS.map((w, i) => (
+                <div key={i} className="h-4 skeleton rounded" style={{ width: w }} />
               ))}
             </div>
           </div>
@@ -333,14 +334,14 @@ export default function StoryPage({ params }: { params: Promise<{ slug: string }
                   </span>
                 )}
                 {tags.mood && (
-                  <span className="px-3 py-1 rounded-full text-[10px] uppercase tracking-[0.18em] border border-white/[0.08] text-[var(--foreground-secondary)] font-[var(--font-grotesk)]">
+                  <span className="px-3 py-1 rounded-full text-[10px] uppercase tracking-[0.18em] border border-[var(--border)] text-[var(--foreground-secondary)] font-[var(--font-grotesk)]">
                     {tags.mood}
                   </span>
                 )}
                 {tags.collection && (
                   <Link
-                    href={`/stories?collection=${encodeURIComponent(tags.collection.toLowerCase())}`}
-                    className="px-3 py-1 rounded-full text-[10px] uppercase tracking-[0.18em] border border-white/[0.08] text-[var(--foreground-secondary)] hover:text-foreground transition-colors font-[var(--font-grotesk)]"
+                    href={`/collections/${encodeURIComponent(tags.collection.toLowerCase())}`}
+                    className="px-3 py-1 rounded-full text-[10px] uppercase tracking-[0.18em] border border-[var(--border)] text-[var(--foreground-secondary)] hover:text-foreground transition-colors font-[var(--font-grotesk)]"
                   >
                     {tags.collection}
                   </Link>
@@ -382,7 +383,7 @@ export default function StoryPage({ params }: { params: Promise<{ slug: string }
                       onClick={handleReadingMode}
                       aria-label="Enter reading mode"
                       title="Reading mode"
-                      className="p-2.5 rounded-full border border-white/[0.08] text-[var(--foreground-secondary)] hover:text-foreground hover:border-white/20 transition-colors"
+                      className="p-2.5 rounded-full border border-[var(--border)] text-[var(--foreground-secondary)] hover:text-foreground hover:border-[var(--border-strong)] transition-colors"
                     >
                       <Maximize2 className="w-4 h-4" />
                     </button>
@@ -437,7 +438,7 @@ export default function StoryPage({ params }: { params: Promise<{ slug: string }
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ duration: 0.8, delay: 0.5 }}
-            className="max-w-3xl mx-auto mt-16 md:mt-24 pt-10 border-t border-white/[0.06] text-center"
+            className="max-w-3xl mx-auto mt-16 md:mt-24 pt-10 border-t border-[var(--border)] text-center"
           >
             <p className="font-[var(--font-instrument-serif)] italic text-lg md:text-xl text-[var(--foreground-secondary)] leading-relaxed max-w-md mx-auto">
               Thank you for reading this far.

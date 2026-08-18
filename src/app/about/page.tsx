@@ -136,7 +136,7 @@ export default function AboutPage() {
             <p className="text-[10px] uppercase tracking-[0.3em] text-[var(--muted)] font-[var(--font-grotesk)] mb-8">
               The Road So Far
             </p>
-            <div className="space-y-8 relative before:absolute before:left-[7px] before:top-1 before:bottom-1 before:w-px before:bg-white/[0.07]">
+            <div className="space-y-8 relative before:absolute before:left-[7px] before:top-1 before:bottom-1 before:w-px before:bg-[var(--border)]">
               {TIMELINE.map((item, i) => (
                 <motion.div
                   key={item.year}
@@ -166,7 +166,7 @@ export default function AboutPage() {
             <p className="font-[var(--font-instrument-serif)] italic text-xl md:text-2xl text-foreground leading-relaxed">
               &ldquo;A story is a room you build so someone else can rest in it.&rdquo;
             </p>
-            <div className="mt-6 pt-6 border-t border-white/[0.06]">
+            <div className="mt-6 pt-6 border-t border-[var(--border)]">
               <p className="text-[10px] uppercase tracking-[0.3em] text-[var(--muted)] font-[var(--font-grotesk)] mb-3">
                 Writing Philosophy
               </p>

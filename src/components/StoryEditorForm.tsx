@@ -191,7 +191,7 @@ export function StoryEditorForm({ existingStory, onSaved }: StoryEditorFormProps
                   "px-2.5 py-1 rounded-full text-[11px] border transition-colors font-[var(--font-grotesk)]",
                   mode === m.id
                     ? "border-transparent bg-white text-black"
-                    : "border-white/[0.06] text-[var(--foreground-secondary)] hover:text-foreground"
+                    : "border-[var(--border)] text-[var(--foreground-secondary)] hover:text-foreground"
                 )}
               >
                 {m.label}
@@ -271,7 +271,7 @@ export function StoryEditorForm({ existingStory, onSaved }: StoryEditorFormProps
                       "px-3 py-1.5 rounded-full text-[11px] border transition-colors font-[var(--font-grotesk)]",
                       mood === m
                         ? "mood-chip"
-                        : "border-white/[0.06] text-[var(--foreground-secondary)] hover:border-white/20"
+                        : "border-[var(--border)] text-[var(--foreground-secondary)] hover:border-[var(--border-strong)]"
                     )}
                     style={mood === m ? { color: `var(--mood-${m.toLowerCase()})` } : undefined}
                   >
@@ -304,7 +304,7 @@ export function StoryEditorForm({ existingStory, onSaved }: StoryEditorFormProps
                   <select
                     value={collection}
                     onChange={(e) => setCollection(e.target.value as CollectionType | "")}
-                    className="w-full h-9 px-3 rounded-xl bg-white/[0.03] border border-white/[0.07] text-xs text-[var(--foreground-secondary)] outline-none cursor-pointer [color-scheme:dark]"
+                    className="w-full h-9 px-3 rounded-xl bg-white/[0.03] border border-[var(--border)] text-xs text-[var(--foreground-secondary)] outline-none cursor-pointer [color-scheme:dark]"
                   >
                     <option value="">None</option>
                     {COLLECTIONS.map((c) => (
@@ -317,7 +317,7 @@ export function StoryEditorForm({ existingStory, onSaved }: StoryEditorFormProps
                   <select
                     value={category}
                     onChange={(e) => setCategory(e.target.value)}
-                    className="w-full h-9 px-3 rounded-xl bg-white/[0.03] border border-white/[0.07] text-xs text-[var(--foreground-secondary)] outline-none cursor-pointer [color-scheme:dark]"
+                    className="w-full h-9 px-3 rounded-xl bg-white/[0.03] border border-[var(--border)] text-xs text-[var(--foreground-secondary)] outline-none cursor-pointer [color-scheme:dark]"
                   >
                     {CATEGORIES.map((cat) => (
                       <option key={cat} value={cat}>{cat}</option>
@@ -345,7 +345,7 @@ export function StoryEditorForm({ existingStory, onSaved }: StoryEditorFormProps
                 onChange={(e) => setQuote(e.target.value)}
                 rows={3}
                 placeholder="A quote from the story to feature..."
-                className="w-full mt-2 px-3 py-2.5 rounded-xl bg-white/[0.03] border border-white/[0.07] text-sm text-foreground placeholder:text-[var(--muted)] outline-none focus:border-[var(--orchid)]/40 transition-colors resize-none"
+                className="w-full mt-2 px-3 py-2.5 rounded-xl bg-white/[0.03] border border-[var(--border)] text-sm text-foreground placeholder:text-[var(--muted)] outline-none focus:border-[var(--orchid)]/40 transition-colors resize-none"
               />
               <p className="text-[10px] text-[var(--muted)] mt-1.5 font-[var(--font-grotesk)]">
                 Leave empty to auto-pick a sentence from the story.
@@ -361,7 +361,7 @@ export function StoryEditorForm({ existingStory, onSaved }: StoryEditorFormProps
               <select
                 value={continueSlug}
                 onChange={(e) => setContinueSlug(e.target.value)}
-                className="w-full h-9 mt-2 px-3 rounded-xl bg-white/[0.03] border border-white/[0.07] text-xs text-[var(--foreground-secondary)] outline-none cursor-pointer [color-scheme:dark]"
+                className="w-full h-9 mt-2 px-3 rounded-xl bg-white/[0.03] border border-[var(--border)] text-xs text-[var(--foreground-secondary)] outline-none cursor-pointer [color-scheme:dark]"
               >
                 <option value="">Auto — next related story</option>
                 {allStories.map((s) => (
@@ -376,7 +376,7 @@ export function StoryEditorForm({ existingStory, onSaved }: StoryEditorFormProps
                 <Eye className="w-3.5 h-3.5 inline mr-1" />
                 SEO Preview
               </SectionLabel>
-              <div className="mt-3 rounded-xl border border-white/[0.06] bg-white/[0.02] p-3.5">
+              <div className="mt-3 rounded-xl border border-[var(--border)] bg-[var(--border)] p-3.5">
                 <p className="text-[11px] text-[#8ab4f8] truncate">{seoTitle}</p>
                 <p className="text-[11px] text-[#87ceeb] truncate mt-0.5">bhavywrites.com/stories/{slugify(title) || "story"}</p>
                 <p className="text-[11px] text-[var(--muted)] mt-1 line-clamp-2">{excerpt || "No excerpt yet — the first sentence will be used."}</p>
@@ -393,7 +393,7 @@ export function StoryEditorForm({ existingStory, onSaved }: StoryEditorFormProps
         transition={{ delay: 0.3 }}
         className={cn("fixed bottom-0 left-0 right-0 z-40", mode === "fullscreen" && "hidden")}
       >
-        <div className="glass-strong border-t border-white/[0.06]">
+        <div className="glass-strong border-t border-[var(--border)]">
           <div className="max-w-5xl mx-auto px-4 sm:px-6 py-3 flex flex-wrap items-center justify-between gap-3">
             <div className="flex items-center gap-3 text-xs text-[var(--muted)] font-[var(--font-grotesk)]">
               <span>{metrics.words} words</span>
@@ -411,7 +411,7 @@ export function StoryEditorForm({ existingStory, onSaved }: StoryEditorFormProps
               <button
                 onClick={() => saveStory(false)}
                 disabled={saving || !title.trim()}
-                className="h-9 px-4 text-xs rounded-full border border-white/[0.08] text-[var(--foreground-secondary)] hover:text-foreground hover:border-white/20 transition-colors disabled:opacity-40 flex items-center gap-1.5 font-[var(--font-grotesk)]"
+                className="h-9 px-4 text-xs rounded-full border border-[var(--border)] text-[var(--foreground-secondary)] hover:text-foreground hover:border-[var(--border-strong)] transition-colors disabled:opacity-40 flex items-center gap-1.5 font-[var(--font-grotesk)]"
               >
                 <Save className="w-3.5 h-3.5" />
                 <span className="hidden sm:inline">Save Draft</span>
@@ -459,12 +459,12 @@ function FlagToggle({
     <button
       onClick={onClick}
       aria-pressed={active}
-      className="w-full flex items-center gap-3 py-2.5 px-2 rounded-xl hover:bg-white/[0.03] transition-colors text-left"
+      className="w-full flex items-center gap-3 py-2.5 px-2 rounded-xl hover:bg-secondary transition-colors text-left"
     >
       <span
         className={cn(
           "w-9 h-9 rounded-xl flex items-center justify-center border transition-colors",
-          active ? "border-[var(--orchid)]/40 text-[var(--orchid)] bg-[var(--orchid)]/10" : "border-white/[0.06] text-[var(--muted)]"
+          active ? "border-[var(--orchid)]/40 text-[var(--orchid)] bg-[var(--orchid)]/10" : "border-[var(--border)] text-[var(--muted)]"
         )}
       >
         {icon}
@@ -476,7 +476,7 @@ function FlagToggle({
       <span
         className={cn(
           "w-8 h-4.5 h-[18px] rounded-full border transition-colors relative shrink-0",
-          active ? "bg-[var(--orchid)]/60 border-[var(--orchid)]" : "bg-white/[0.06] border-white/[0.1]"
+          active ? "bg-[var(--orchid)]/60 border-[var(--orchid)]" : "bg-[var(--border)] border-[var(--border)]"
         )}
       >
         <span

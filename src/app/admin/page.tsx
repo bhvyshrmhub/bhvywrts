@@ -42,7 +42,7 @@ export default function AdminLoginPage() {
 
   if (checking) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-black">
+      <div className="min-h-screen flex items-center justify-center bg-background">
         <div className="flex flex-col items-center gap-3">
           <div className="w-6 h-6 border-2 border-white/20 border-t-white rounded-full animate-spin" />
           <p className="text-xs text-[var(--muted)] font-[var(--font-grotesk)]">Verifying...</p>
@@ -79,7 +79,7 @@ export default function AdminLoginPage() {
                 onChange={(e) => setUsername(e.target.value)}
                 placeholder="Username"
                 aria-label="Username"
-                className="w-full px-4 py-3 rounded-2xl bg-white/[0.03] border border-white/[0.07] text-foreground placeholder:text-[var(--muted)] outline-none focus:border-[var(--orchid)]/40 transition-colors text-sm"
+                className="w-full px-4 py-3 rounded-2xl bg-white/[0.03] border border-[var(--border)] text-foreground placeholder:text-[var(--muted)] outline-none focus:border-[var(--orchid)]/40 transition-colors text-sm"
                 autoFocus
                 autoComplete="username"
               />
@@ -92,7 +92,7 @@ export default function AdminLoginPage() {
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="Password"
                 aria-label="Password"
-                className="w-full px-4 py-3 rounded-2xl bg-white/[0.03] border border-white/[0.07] text-foreground placeholder:text-[var(--muted)] outline-none focus:border-[var(--orchid)]/40 transition-colors text-sm pr-11"
+                className="w-full px-4 py-3 rounded-2xl bg-white/[0.03] border border-[var(--border)] text-foreground placeholder:text-[var(--muted)] outline-none focus:border-[var(--orchid)]/40 transition-colors text-sm pr-11"
                 autoComplete="current-password"
               />
               <button

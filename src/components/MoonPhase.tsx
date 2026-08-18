@@ -1,6 +1,6 @@
 "use client"
 
-import { useMemo } from "react"
+import { useMemo, useState, useEffect } from "react"
 
 const SYNODIC_MONTH = 29.53058867
 const NEW_MOON_EPOCH = Date.UTC(2000, 0, 6, 18, 14) // known new moon
@@ -32,7 +32,16 @@ function litPath(phase01: number): string {
 }
 
 export function MoonPhase({ size = "md" }: { size?: "sm" | "md" | "lg" }) {
+  const [mounted, setMounted] = useState(false)
+
+  useEffect(() => {
+    setMounted(true)
+  }, [])
+
   const { phase, agePercent, nextFullDays } = useMemo(() => {
+    if (!mounted) {
+      return { phase: { name: "New Moon", icon: "🌑" }, agePercent: 0, nextFullDays: 14.76 }
+    }
     const now = Date.now()
     const days = ((now - NEW_MOON_EPOCH) / 86400000) % SYNODIC_MONTH
     const age = days < 0 ? days + SYNODIC_MONTH : days
@@ -42,7 +51,7 @@ export function MoonPhase({ size = "md" }: { size?: "sm" | "md" | "lg" }) {
       agePercent: age / SYNODIC_MONTH,
       nextFullDays: Math.min(fullDays, SYNODIC_MONTH - fullDays),
     }
-  }, [])
+  }, [mounted])
 
   const dims = size === "lg" ? 110 : size === "sm" ? 48 : 72
 

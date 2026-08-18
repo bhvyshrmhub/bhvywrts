@@ -151,7 +151,7 @@ export function StoryCard({ story, index = 0, large = false }: StoryCardProps) {
                   {story.category}
                 </span>
               )}
-              <span className="w-0.5 h-0.5 rounded-full bg-white/20" />
+              <span className="w-0.5 h-0.5 rounded-full bg-[var(--muted)]" />
               <span className="text-[11px] text-[var(--muted)] flex items-center gap-1 font-[var(--font-grotesk)]">
                 <Clock className="w-3 h-3" />
                 {readingTime} min
@@ -177,7 +177,7 @@ export function StoryCard({ story, index = 0, large = false }: StoryCardProps) {
             )}
 
             {/* Actions */}
-            <div className="flex items-center gap-1 mt-4 pt-3.5 border-t border-white/[0.06]">
+            <div className="flex items-center gap-1 mt-4 pt-3.5 border-t border-[var(--border)]">
               <button
                 onClick={bookmarks.toggle}
                 aria-label={bookmarks.isIn ? "Remove bookmark" : "Bookmark story"}
@@ -185,8 +185,8 @@ export function StoryCard({ story, index = 0, large = false }: StoryCardProps) {
                 className={cn(
                   "p-2 rounded-full transition-all duration-300",
                   bookmarks.isIn
-                    ? "text-[var(--lavender)] bg-white/5"
-                    : "text-[var(--muted)] hover:text-foreground hover:bg-white/5"
+                    ? "text-[var(--lavender)] bg-secondary"
+                    : "text-[var(--muted)] hover:text-foreground hover:bg-secondary"
                 )}
               >
                 <Bookmark className="w-[17px] h-[17px]" fill={bookmarks.isIn ? "currentColor" : "none"} />
@@ -198,8 +198,8 @@ export function StoryCard({ story, index = 0, large = false }: StoryCardProps) {
                 className={cn(
                   "p-2 rounded-full transition-all duration-300",
                   favorites.isIn
-                    ? "text-[var(--orchid)] bg-white/5"
-                    : "text-[var(--muted)] hover:text-foreground hover:bg-white/5"
+                    ? "text-[var(--orchid)] bg-secondary"
+                    : "text-[var(--muted)] hover:text-foreground hover:bg-secondary"
                 )}
               >
                 <Heart className="w-[17px] h-[17px]" fill={favorites.isIn ? "currentColor" : "none"} />
@@ -207,7 +207,7 @@ export function StoryCard({ story, index = 0, large = false }: StoryCardProps) {
               <button
                 onClick={handleShare}
                 aria-label="Share story"
-                className="p-2 rounded-full text-[var(--muted)] hover:text-foreground hover:bg-white/5 transition-all duration-300"
+                className="p-2 rounded-full text-[var(--muted)] hover:text-foreground hover:bg-secondary transition-all duration-300"
               >
                 <Share2 className="w-[17px] h-[17px]" />
               </button>
