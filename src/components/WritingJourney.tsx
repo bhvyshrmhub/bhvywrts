@@ -39,6 +39,7 @@ export default function WritingJourney() {
   useEffect(() => {
     setMounted(true)
     setSelectedMonth(new Date().getMonth())
+    useAuthStore.getState().checkAuth()
   }, [])
 
   const fetchStories = useCallback(async () => {
