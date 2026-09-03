@@ -48,6 +48,7 @@ export function Navbar() {
   const isActive = (href: string) => {
     if (href === "/stories" && pathname === "/stories") return true
     if (href === "/collections" && pathname.startsWith("/collections")) return true
+    if (href === "/writing-journey" && pathname === "/writing-journey") return true
     return false
   }
 
@@ -81,6 +82,7 @@ export function Navbar() {
             </button>
             <NavLink href="/stories" active={isActive("/stories")} label="Stories" className="hidden md:inline-flex" />
             <NavLink href="/collections" active={isActive("/collections")} label="Collections" className="hidden md:inline-flex" />
+            <NavLink href="/writing-journey" active={isActive("/writing-journey")} label="Writing Journey" className="hidden md:inline-flex" />
           </div>
 
           {/* Center — logo, visually dominant */}
@@ -135,6 +137,7 @@ export function Navbar() {
               <div className="px-3 py-3 space-y-0.5">
                 <MobileLink href="/stories" label="Stories" onClick={() => setMenuOpen(false)} />
                 <MobileLink href="/collections" label="Collections" onClick={() => setMenuOpen(false)} />
+                <MobileLink href="/writing-journey" label="Writing Journey" onClick={() => setMenuOpen(false)} />
                 {adminReady ? (
                   <>
                     <MobileLink href="/dashboard" label="Dashboard" icon={<LayoutDashboard className="w-4 h-4" />} onClick={() => setMenuOpen(false)} />

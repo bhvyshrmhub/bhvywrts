@@ -19,6 +19,7 @@ export function Footer() {
           <nav className="flex flex-wrap items-center justify-center gap-x-6 gap-y-3" aria-label="Footer">
             <FooterLink href="/stories">Stories</FooterLink>
             <FooterLink href="/collections">Collections</FooterLink>
+            <FooterLink href="/writing-journey">Writing Journey</FooterLink>
             <FooterLink href="/about">About</FooterLink>
             <span className="inline-flex items-center gap-2 text-[var(--foreground-secondary)]">
               <span className="text-sm">Theme</span>
