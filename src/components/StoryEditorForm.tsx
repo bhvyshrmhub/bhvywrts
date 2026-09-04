@@ -161,7 +161,7 @@ export function StoryEditorForm({ existingStory, onSaved }: StoryEditorFormProps
     return "Untitled — Bhavya Writes"
   }, [title])
 
-  const accentSwatch = accent || initialTags.accent || "#b16cea"
+  const accentSwatch = accent || initialTags.accent || "#ffb6d9"
 
   return (
     <div className="relative">

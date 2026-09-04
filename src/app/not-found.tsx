@@ -24,8 +24,8 @@ export default function NotFound() {
             transition={{ duration: 1.2, delay: 0.2 }}
             className="w-full h-full rounded-full animate-moon-glow"
             style={{
-              background: "radial-gradient(circle at 35% 35%, #f5f0ff 0%, #ddd2f5 45%, #b9a8e8 100%)",
-              boxShadow: "0 0 50px rgba(167,139,250,0.25), 0 0 120px rgba(167,139,250,0.12)",
+              background: "radial-gradient(circle at 35% 35%, #fff5f9 0%, #f5dde8 45%, #e8c4d5 100%)",
+              boxShadow: "0 0 50px rgba(255,182,217,0.2), 0 0 120px rgba(255,182,217,0.1)",
             }}
           />
           <div className="absolute top-[30%] left-[25%] w-3.5 h-3.5 rounded-full bg-black/10" />

@@ -46,7 +46,7 @@ function SectionHeading({ eyebrow, title, link }: { eyebrow?: string; title: str
 
 function Section({ children, className = "" }: { children: React.ReactNode; className?: string }) {
   return (
-    <section className={cn("max-w-7xl mx-auto px-5 md:px-8 py-7 md:py-12", className)}>
+    <section className={cn("max-w-7xl mx-auto px-5 md:px-8 py-5 md:py-10", className)}>
       {children}
     </section>
   )
@@ -125,7 +125,7 @@ export function HomeContent() {
       <Navbar />
       <main className="min-h-screen relative">
         {/* ===== JOURNAL MASTHEAD — compact, story-first ===== */}
-        <section className="relative pt-24 md:pt-36 pb-2">
+        <section className="relative pt-20 md:pt-32 pb-2">
           <Stars count={12} className="!absolute" />
           <div className="max-w-7xl mx-auto px-5 md:px-8 text-center">
             <motion.div
@@ -143,8 +143,8 @@ export function HomeContent() {
                 <span
                   className="w-2.5 h-2.5 rounded-full animate-moon-glow"
                   style={{
-                    background: "radial-gradient(circle at 35% 35%, #f5f0ff 0%, #d8c8f5 55%, #b8a5e8 100%)",
-                    boxShadow: "0 0 14px rgba(167,139,250,0.35), 0 0 34px rgba(167,139,250,0.14)",
+                    background: "radial-gradient(circle at 35% 35%, #fff5f9 0%, #f5dde8 55%, #e8c4d5 100%)",
+                    boxShadow: "0 0 14px rgba(255,182,217,0.3), 0 0 34px rgba(255,182,217,0.12)",
                   }}
                 />
                 <span className="h-px w-10 bg-gradient-to-l from-transparent to-[var(--border-strong)]" />
@@ -209,7 +209,7 @@ export function HomeContent() {
                 >
                   <Link href={`/stories/${featured.slug}`} className="group block">
                     <div
-                      className="relative overflow-hidden rounded-[36px] border border-[var(--border)]"
+                      className="relative overflow-hidden rounded-[28px] border border-[var(--border)]"
                       style={{ boxShadow: "var(--card-hover-shadow)" }}
                     >
                       <div className="aspect-[16/9] md:aspect-[21/9] relative bg-[#0a0a0c]">
@@ -222,7 +222,7 @@ export function HomeContent() {
                             className="w-full h-full object-cover transition-transform duration-[1100ms] ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:scale-[1.05]"
                           />
                         ) : (
-                          <div className="w-full h-full bg-gradient-to-br from-[#1a1024] via-[#0a0a0c] to-[#2a1030]" />
+                          <div className="w-full h-full bg-gradient-to-br from-[#1a1018] via-[#0a0a0c] to-[#1a1020]" />
                         )}
                         <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/25 to-black/10" />
                         <div className="absolute inset-x-0 bottom-0 p-6 md:p-10">
@@ -322,7 +322,7 @@ export function HomeContent() {
             )}
 
             {/* ===== CLOSING ===== */}
-            <Section className="pt-4 pb-6">
+            <Section className="pt-2 pb-4">
               <motion.div
                 initial={{ opacity: 0, y: 24 }}
                 whileInView={{ opacity: 1, y: 0 }}
@@ -362,7 +362,7 @@ function LatestStoryCard({ story }: { story: Story }) {
     <Link href={`/stories/${story.slug}`} className="group block focus-visible:outline-none">
       <div
         className="glass-card overflow-hidden hover-lift"
-        style={{ borderRadius: 32 }}
+        style={{ borderRadius: 28 }}
       >
         <div className="grid grid-cols-1 md:grid-cols-2">
           <div className="relative aspect-[4/3] md:aspect-auto md:min-h-[320px] overflow-hidden bg-[#0a0a0c]">

@@ -238,7 +238,7 @@ export default function WritingJourney() {
         <div className="max-w-4xl mx-auto px-5 md:px-8 pt-32 md:pt-40 text-center space-y-6">
           <div className="inline-flex items-center gap-2 text-[10px] uppercase tracking-[0.25em] text-[var(--muted)] font-[var(--font-grotesk)]">
             <Moon className="w-3 h-3" />
-            Writing Journey
+            Calendar
           </div>
           <h1 className="font-[var(--font-instrument-serif)] text-3xl md:text-4xl text-foreground leading-tight">
             Your writing journey starts here.
@@ -264,7 +264,7 @@ export default function WritingJourney() {
           >
             <div className="inline-flex items-center gap-2 text-[10px] uppercase tracking-[0.25em] text-[var(--muted)] font-[var(--font-grotesk)]">
               <Moon className="w-3 h-3" />
-              Writing Journey
+              Calendar
             </div>
             <h1 className="font-[var(--font-instrument-serif)] text-3xl md:text-4xl lg:text-5xl text-foreground leading-[1.15]">
               A timeline of the things I&apos;ve written.

@@ -53,13 +53,13 @@ export default function CollectionsPage() {
     <div className="relative min-h-screen">
       <ReadingProgress />
       <Navbar />
-      <main className="pt-32 md:pt-40">
-        <div className="max-w-7xl mx-auto px-5 md:px-8 pb-16">
+      <main className="pt-28 md:pt-36">
+        <div className="max-w-7xl mx-auto px-5 md:px-8 pb-12">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
-            className="text-center mb-14"
+            className="text-center mb-10"
           >
             <p className="text-[10px] uppercase tracking-[0.35em] text-[var(--muted)] font-[var(--font-grotesk)] mb-4">
               Series &amp; Themes
@@ -104,7 +104,7 @@ export default function CollectionsPage() {
                     >
                       <div
                         className="glass-card overflow-hidden h-full hover-lift"
-                        style={{ borderRadius: 32 }}
+                        style={{ borderRadius: 28 }}
                       >
                         <div className="relative aspect-[16/9] overflow-hidden bg-[#0a0a0c]">
                           {colStories[0]?.coverImage ? (

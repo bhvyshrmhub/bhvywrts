@@ -12,7 +12,7 @@ import { FloatingWriteButton } from "@/components/FloatingWriteButton"
 import type { Story } from "@/types"
 
 function SkeletonCard() {
-  return <div className="h-80 rounded-[28px] skeleton border border-[var(--border)]" />
+  return <div className="h-72 rounded-[28px] skeleton border border-[var(--border)]" />
 }
 
 export default function StoriesPage() {
@@ -48,14 +48,14 @@ export default function StoriesPage() {
     <div className="relative min-h-screen">
       <ReadingProgress />
       <Navbar />
-      <main className="pt-32 md:pt-40">
-        <div className="max-w-7xl mx-auto px-5 md:px-8 pb-16">
+      <main className="pt-28 md:pt-36">
+        <div className="max-w-7xl mx-auto px-5 md:px-8 pb-12">
           {/* Header */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
-            className="text-center mb-12"
+            className="text-center mb-10"
           >
             <p className="text-[10px] uppercase tracking-[0.35em] text-[var(--muted)] font-[var(--font-grotesk)] mb-4">
               The Archive

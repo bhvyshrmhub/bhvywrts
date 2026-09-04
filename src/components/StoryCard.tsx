@@ -53,7 +53,7 @@ export function StoryCard({ story, index = 0, large = false }: StoryCardProps) {
 
   const { mood, accent, editorsPick, coverPos } = useMemo(() => parseStoryTags(story.tags || ""), [story.tags])
   const moodColor = mood ? MOOD_COLORS[mood] : undefined
-  const borderGlow = accent || moodColor || "rgba(177, 108, 234, 0.18)"
+  const borderGlow = accent || moodColor || "rgba(255, 182, 217, 0.18)"
 
   const handleShare = (e: React.MouseEvent) => {
     e.preventDefault()

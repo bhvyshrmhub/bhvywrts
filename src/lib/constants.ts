@@ -90,11 +90,11 @@ export const COLLECTION_DESCRIPTIONS: Record<CollectionType, string> = {
 }
 
 export const COLLECTION_ACCENTS: Record<CollectionType, string> = {
-  "Moon Diaries": "#a78bfa",
-  "Midnight Thoughts": "#67e8f9",
-  "Letters Never Sent": "#f471b5",
-  "Dreams": "#c084fc",
-  "Philosophy": "#6366f1",
+  "Moon Diaries": "#f8a8c8",
+  "Midnight Thoughts": "#8debff",
+  "Letters Never Sent": "#ffb6d9",
+  "Dreams": "#ffb6d9",
+  "Philosophy": "#8fd3ff",
   "Life Lessons": "#34d399",
   "Short Stories": "#fb923c",
 }
@@ -210,11 +210,11 @@ export function buildTags(options: {
 }
 
 export const ACCENTS = [
-  { name: "Orchid", value: "#b16cea" },
-  { name: "Lavender", value: "#a78bfa" },
-  { name: "Soft Cyan", value: "#67e8f9" },
-  { name: "Deep Indigo", value: "#6366f1" },
-  { name: "Rose", value: "#f471b5" },
+  { name: "Baby Pink", value: "#ffb6d9" },
+  { name: "Soft Rose", value: "#f8a8c8" },
+  { name: "Soft Cyan", value: "#8debff" },
+  { name: "Soft Blue", value: "#8fd3ff" },
+  { name: "Rose", value: "#f9a8d4" },
   { name: "Emerald", value: "#34d399" },
   { name: "Amber", value: "#fbbf24" },
   { name: "Ember", value: "#fb923c" },

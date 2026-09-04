@@ -13,7 +13,7 @@ import { cn } from "@/lib/utils"
 const NAV_ITEMS = [
   { href: "/stories", label: "Stories" },
   { href: "/collections", label: "Collections" },
-  { href: "/writing-journey", label: "Writing Journey" },
+  { href: "/writing-journey", label: "Calendar" },
 ] as const
 
 export function Navbar() {
@@ -21,14 +21,38 @@ export function Navbar() {
   const router = useRouter()
   const { isAdmin, checking, logout } = useAuthStore()
   const [scrolled, setScrolled] = useState(false)
+  const [hidden, setHidden] = useState(false)
   const [menuOpen, setMenuOpen] = useState(false)
   const ticking = useRef(false)
+  const lastScrollY = useRef(0)
+  const menuOpenRef = useRef(false)
+
+  // Keep ref in sync so scroll handler sees latest menu state
+  useEffect(() => {
+    menuOpenRef.current = menuOpen
+  }, [menuOpen])
 
   useEffect(() => {
     const onScroll = () => {
       if (!ticking.current) {
         requestAnimationFrame(() => {
-          setScrolled(window.scrollY > 24)
+          const currentY = window.scrollY
+          const isScrolled = currentY > 24
+
+          setScrolled(isScrolled)
+
+          // Don't auto-hide when menu is open or near top
+          if (menuOpenRef.current || currentY < 80) {
+            setHidden(false)
+          } else if (currentY > lastScrollY.current + 6) {
+            // Scrolling down — hide
+            setHidden(true)
+          } else if (currentY < lastScrollY.current - 6) {
+            // Scrolling up — show
+            setHidden(false)
+          }
+
+          lastScrollY.current = currentY
           ticking.current = false
         })
         ticking.current = true
@@ -62,7 +86,8 @@ export function Navbar() {
       transition={{ duration: 0.6, delay: 0.15, ease: [0.16, 1, 0.3, 1] }}
       className={cn(
         "fixed top-0 left-0 right-0 z-50 transition-all duration-500 will-change-transform",
-        scrolled ? "pt-2 md:pt-3" : "pt-0"
+        scrolled ? "pt-2 md:pt-3" : "pt-0",
+        hidden && !menuOpen ? "-translate-y-full" : "translate-y-0"
       )}
     >
       <div className="max-w-6xl mx-auto px-3 md:px-6">
