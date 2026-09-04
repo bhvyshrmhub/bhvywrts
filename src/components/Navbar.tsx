@@ -4,18 +4,23 @@ import { useState, useEffect, useRef } from "react"
 import Link from "next/link"
 import { usePathname, useRouter } from "next/navigation"
 import { AnimatePresence, motion } from "framer-motion"
-import { Menu, X, LogOut, PenSquare, LayoutDashboard, BarChart3 } from "lucide-react"
+import { LogOut, PenSquare, LayoutDashboard, BarChart3, MoreHorizontal } from "lucide-react"
 import { Logo } from "./Logo"
 import { ThemeToggle } from "./ThemeToggle"
 import { useAuthStore } from "@/lib/store"
 import { cn } from "@/lib/utils"
+
+const NAV_ITEMS = [
+  { href: "/stories", label: "Stories" },
+  { href: "/collections", label: "Collections" },
+  { href: "/writing-journey", label: "Writing Journey" },
+] as const
 
 export function Navbar() {
   const pathname = usePathname()
   const router = useRouter()
   const { isAdmin, checking, logout } = useAuthStore()
   const [scrolled, setScrolled] = useState(false)
-  const [compact, setCompact] = useState(false)
   const [menuOpen, setMenuOpen] = useState(false)
   const ticking = useRef(false)
 
@@ -23,9 +28,7 @@ export function Navbar() {
     const onScroll = () => {
       if (!ticking.current) {
         requestAnimationFrame(() => {
-          const y = window.scrollY
-          setScrolled(y > 24)
-          setCompact(y > 140)
+          setScrolled(window.scrollY > 24)
           ticking.current = false
         })
         ticking.current = true
@@ -54,49 +57,57 @@ export function Navbar() {
 
   return (
     <motion.header
-      initial={{ opacity: 0, y: -16 }}
+      initial={{ opacity: 0, y: -12 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.8, delay: 0.2, ease: [0.16, 1, 0.3, 1] }}
+      transition={{ duration: 0.6, delay: 0.15, ease: [0.16, 1, 0.3, 1] }}
       className={cn(
         "fixed top-0 left-0 right-0 z-50 transition-all duration-500 will-change-transform",
         scrolled ? "pt-2 md:pt-3" : "pt-0"
       )}
     >
-      <div className="max-w-6xl mx-auto px-4 md:px-6">
+      <div className="max-w-6xl mx-auto px-3 md:px-6">
         <nav
           className={cn(
-            "relative flex items-center justify-between transition-all duration-500 ease-out rounded-full will-change-transform",
-            scrolled ? "glass-strong h-12 md:h-14 px-3 md:px-5" : "bg-transparent h-16 md:h-20 px-0 md:px-2",
-            scrolled && "border-b"
+            "relative flex items-center justify-between transition-all duration-500 ease-out will-change-transform",
+            scrolled
+              ? "glass-strong h-11 md:h-12 px-3 md:px-5 rounded-full border-b"
+              : "bg-transparent h-14 md:h-16 px-1 md:px-3"
           )}
         >
-          {/* Left — Stories + Collections (desktop), hamburger (mobile) */}
-          <div className="flex items-center gap-1 md:gap-1.5">
-            <button
-              onClick={() => setMenuOpen(!menuOpen)}
-              className="md:hidden inline-flex items-center justify-center w-9 h-9 rounded-full text-[var(--foreground-secondary)] hover:text-foreground hover:bg-secondary transition-colors"
-              aria-label={menuOpen ? "Close menu" : "Open menu"}
-              aria-expanded={menuOpen}
-            >
-              {menuOpen ? <X className="w-[18px] h-[18px]" /> : <Menu className="w-[18px] h-[18px]" />}
-            </button>
-            <NavLink href="/stories" active={isActive("/stories")} label="Stories" className="hidden md:inline-flex" />
-            <NavLink href="/collections" active={isActive("/collections")} label="Collections" className="hidden md:inline-flex" />
-            <NavLink href="/writing-journey" active={isActive("/writing-journey")} label="Writing Journey" className="hidden md:inline-flex" />
+          {/* Left — BW logo */}
+          <div className="flex items-center shrink-0">
+            <Logo href="/" size="md" />
           </div>
 
-          {/* Center — logo, visually dominant */}
-          <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2">
-            <Logo
-              href="/"
-              size={compact ? "sm" : "md"}
-              className={cn("transition-all duration-500", compact ? "opacity-80" : "opacity-100")}
-            />
+          {/* Center — nav links with animated pill */}
+          <div className="hidden md:flex items-center gap-0.5">
+            {NAV_ITEMS.map((item) => (
+              <Link
+                key={item.href}
+                href={item.href}
+                aria-current={isActive(item.href) ? "page" : undefined}
+                className={cn(
+                  "relative px-3.5 py-1.5 text-[13px] font-medium transition-colors duration-200 rounded-full font-[var(--font-grotesk)]",
+                  isActive(item.href)
+                    ? "text-foreground"
+                    : "text-[var(--foreground-secondary)] hover:text-foreground"
+                )}
+              >
+                {isActive(item.href) && (
+                  <motion.span
+                    layoutId="nav-pill"
+                    className="absolute inset-0 rounded-full bg-secondary border border-[var(--border)] -z-10"
+                    transition={{ type: "spring", stiffness: 400, damping: 32 }}
+                  />
+                )}
+                {item.label}
+              </Link>
+            ))}
           </div>
 
-          {/* Right — theme toggle, admin controls, hamburger (mobile) */}
-          <div className="flex items-center gap-1 md:gap-1.5">
-            <ThemeToggle className="hidden sm:inline-flex" />
+          {/* Right — theme + admin */}
+          <div className="flex items-center gap-1 md:gap-1.5 shrink-0">
+            <ThemeToggle />
 
             {adminReady && (
               <div className="hidden md:flex items-center gap-1">
@@ -104,119 +115,86 @@ export function Navbar() {
                   href="/dashboard"
                   aria-label="Dashboard"
                   title="Dashboard"
-                  className="inline-flex items-center justify-center w-9 h-9 rounded-full text-[var(--foreground-secondary)] hover:text-foreground hover:bg-secondary transition-colors"
+                  className="inline-flex items-center justify-center w-8 h-8 rounded-full text-[var(--foreground-secondary)] hover:text-foreground hover:bg-secondary transition-colors"
                 >
-                  <LayoutDashboard className="w-[17px] h-[17px]" />
+                  <LayoutDashboard className="w-4 h-4" />
                 </Link>
                 <Link
                   href="/editor"
-                  className="inline-flex items-center gap-1.5 rounded-full px-3.5 py-1.5 text-sm bg-white text-black hover:bg-white/90 transition-colors"
+                  className="inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-medium bg-white text-black hover:bg-white/90 transition-colors font-[var(--font-grotesk)]"
                 >
-                  <PenSquare className="w-3.5 h-3.5" />
+                  <PenSquare className="w-3 h-3" />
                   Write
                 </Link>
               </div>
             )}
 
-            <ThemeToggle className="sm:hidden" />
+            {/* Mobile admin overflow */}
+            {adminReady && (
+              <div className="md:hidden relative">
+                <button
+                  onClick={() => setMenuOpen(!menuOpen)}
+                  className="inline-flex items-center justify-center w-8 h-8 rounded-full text-[var(--foreground-secondary)] hover:text-foreground hover:bg-secondary transition-colors"
+                  aria-label="Admin menu"
+                  aria-expanded={menuOpen}
+                >
+                  <MoreHorizontal className="w-4 h-4" />
+                </button>
+
+                <AnimatePresence>
+                  {menuOpen && (
+                    <motion.div
+                      initial={{ opacity: 0, scale: 0.95, y: -4 }}
+                      animate={{ opacity: 1, scale: 1, y: 0 }}
+                      exit={{ opacity: 0, scale: 0.95, y: -4 }}
+                      transition={{ duration: 0.18, ease: [0.16, 1, 0.3, 1] }}
+                      className="absolute right-0 top-full mt-2 w-52 rounded-2xl glass-strong overflow-hidden border border-[var(--border)] z-50"
+                    >
+                      <div className="py-1.5">
+                        <MobileMenuItem href="/dashboard" icon={<LayoutDashboard className="w-4 h-4" />} label="Dashboard" onClick={() => setMenuOpen(false)} />
+                        <MobileMenuItem href="/editor" icon={<PenSquare className="w-4 h-4" />} label="Write a story" onClick={() => setMenuOpen(false)} />
+                        <MobileMenuItem href="/admin/analytics" icon={<BarChart3 className="w-4 h-4" />} label="Analytics" onClick={() => setMenuOpen(false)} />
+                        <div className="my-1 h-px bg-[var(--border)]" />
+                        <button
+                          onClick={() => {
+                            setMenuOpen(false)
+                            logout()
+                            router.push("/")
+                          }}
+                          className="flex items-center gap-2.5 w-full px-3.5 py-2.5 text-sm text-[var(--foreground-secondary)] hover:text-foreground hover:bg-secondary transition-colors text-left"
+                        >
+                          <LogOut className="w-4 h-4" />
+                          Log out
+                        </button>
+                      </div>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </div>
+            )}
           </div>
         </nav>
       </div>
-
-      {/* Mobile menu — top sheet, no bottom nav */}
-      <AnimatePresence>
-        {menuOpen && (
-          <motion.div
-            initial={{ opacity: 0, height: 0 }}
-            animate={{ opacity: 1, height: "auto" }}
-            exit={{ opacity: 0, height: 0 }}
-            transition={{ duration: 0.28, ease: [0.16, 1, 0.3, 1] }}
-            className="md:hidden overflow-hidden"
-          >
-            <div className="mx-4 mt-2 rounded-3xl glass-strong overflow-hidden border-t-0">
-              <div className="px-3 py-3 space-y-0.5">
-                <MobileLink href="/stories" label="Stories" onClick={() => setMenuOpen(false)} />
-                <MobileLink href="/collections" label="Collections" onClick={() => setMenuOpen(false)} />
-                <MobileLink href="/writing-journey" label="Writing Journey" onClick={() => setMenuOpen(false)} />
-                {adminReady ? (
-                  <>
-                    <MobileLink href="/dashboard" label="Dashboard" icon={<LayoutDashboard className="w-4 h-4" />} onClick={() => setMenuOpen(false)} />
-                    <MobileLink href="/editor" label="Write a story" icon={<PenSquare className="w-4 h-4" />} onClick={() => setMenuOpen(false)} />
-                    <MobileLink href="/admin/analytics" label="Analytics" icon={<BarChart3 className="w-4 h-4" />} onClick={() => setMenuOpen(false)} />
-                    <button
-                      onClick={() => {
-                        setMenuOpen(false)
-                        logout()
-                        router.push("/")
-                      }}
-                      className="flex items-center gap-2.5 w-full px-3 py-2.5 rounded-2xl text-sm text-[var(--foreground-secondary)] hover:text-foreground hover:bg-secondary transition-colors text-left"
-                    >
-                      <LogOut className="w-4 h-4" />
-                      Log out
-                    </button>
-                  </>
-                ) : (
-                  <MobileLink href="/admin" label="Admin" onClick={() => setMenuOpen(false)} />
-                )}
-              </div>
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
     </motion.header>
   )
 }
 
-function NavLink({
+function MobileMenuItem({
   href,
-  label,
-  active,
-  className,
-}: {
-  href: string
-  label: string
-  active: boolean
-  className?: string
-}) {
-  return (
-    <Link
-      href={href}
-      aria-current={active ? "page" : undefined}
-      className={cn(
-        "relative rounded-full px-3 py-1.5 text-sm transition-colors",
-        active
-          ? "text-foreground bg-secondary"
-          : "text-[var(--foreground-secondary)] hover:text-foreground hover:bg-secondary",
-        className
-      )}
-    >
-      {label}
-      {active && (
-        <motion.span
-          layoutId="nav-dot"
-          className="absolute left-1/2 -bottom-[3px] h-[2px] w-4 -translate-x-1/2 rounded-full bg-gradient-to-r from-[#b16cea] to-[#f471b5]"
-        />
-      )}
-    </Link>
-  )
-}
-
-function MobileLink({
-  href,
-  label,
   icon,
+  label,
   onClick,
 }: {
   href: string
+  icon: React.ReactNode
   label: string
-  icon?: React.ReactNode
   onClick: () => void
 }) {
   return (
     <Link
       href={href}
       onClick={onClick}
-      className="flex items-center gap-2.5 w-full px-3 py-2.5 rounded-2xl text-sm text-[var(--foreground-secondary)] hover:text-foreground hover:bg-secondary transition-colors"
+      className="flex items-center gap-2.5 w-full px-3.5 py-2.5 text-sm text-[var(--foreground-secondary)] hover:text-foreground hover:bg-secondary transition-colors"
     >
       {icon}
       {label}

@@ -9,7 +9,6 @@ import { Navbar } from "./Navbar"
 import { Footer } from "./Footer"
 import { StoryCard } from "./StoryCard"
 import { FloatingWriteButton } from "./FloatingWriteButton"
-import { Logo } from "./Logo"
 import { Stars } from "./Stars"
 import {
   COLLECTIONS,
@@ -47,7 +46,7 @@ function SectionHeading({ eyebrow, title, link }: { eyebrow?: string; title: str
 
 function Section({ children, className = "" }: { children: React.ReactNode; className?: string }) {
   return (
-    <section className={cn("max-w-7xl mx-auto px-5 md:px-8 py-10 md:py-12", className)}>
+    <section className={cn("max-w-7xl mx-auto px-5 md:px-8 py-7 md:py-12", className)}>
       {children}
     </section>
   )
@@ -111,7 +110,7 @@ export function HomeContent() {
       <>
         <Navbar />
         <main className="min-h-screen">
-          <div className="max-w-7xl mx-auto px-5 md:px-8 pt-36 pb-10 space-y-4">
+          <div className="max-w-7xl mx-auto px-5 md:px-8 pt-24 md:pt-32 pb-10 space-y-4">
             {[...Array(5)].map((_, i) => (
               <div key={i} className="h-28 rounded-3xl skeleton border border-[var(--border)]" />
             ))}
@@ -126,7 +125,7 @@ export function HomeContent() {
       <Navbar />
       <main className="min-h-screen relative">
         {/* ===== JOURNAL MASTHEAD — compact, story-first ===== */}
-        <section className="relative pt-32 md:pt-40 pb-4">
+        <section className="relative pt-24 md:pt-36 pb-2">
           <Stars count={12} className="!absolute" />
           <div className="max-w-7xl mx-auto px-5 md:px-8 text-center">
             <motion.div
@@ -134,22 +133,21 @@ export function HomeContent() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.9, ease: [0.16, 1, 0.3, 1] }}
             >
-              <Logo size="xl" shine className="inline-block" />
-              <p className="mt-5 text-sm md:text-base text-[var(--foreground-secondary)] font-[var(--font-source-serif)] italic">
+              <p className="text-sm md:text-base text-[var(--foreground-secondary)] font-[var(--font-source-serif)] italic max-w-md mx-auto">
                 A digital journal of stories, thoughts and things left unsaid.
               </p>
 
               {/* Small atmospheric moon */}
-              <div className="mt-8 flex items-center justify-center gap-3" aria-hidden="true">
-                <span className="h-px w-14 bg-gradient-to-r from-transparent to-[var(--border-strong)]" />
+              <div className="mt-5 flex items-center justify-center gap-3" aria-hidden="true">
+                <span className="h-px w-10 bg-gradient-to-r from-transparent to-[var(--border-strong)]" />
                 <span
-                  className="w-3 h-3 rounded-full animate-moon-glow"
+                  className="w-2.5 h-2.5 rounded-full animate-moon-glow"
                   style={{
                     background: "radial-gradient(circle at 35% 35%, #f5f0ff 0%, #d8c8f5 55%, #b8a5e8 100%)",
                     boxShadow: "0 0 14px rgba(167,139,250,0.35), 0 0 34px rgba(167,139,250,0.14)",
                   }}
                 />
-                <span className="h-px w-14 bg-gradient-to-l from-transparent to-[var(--border-strong)]" />
+                <span className="h-px w-10 bg-gradient-to-l from-transparent to-[var(--border-strong)]" />
               </div>
             </motion.div>
           </div>
@@ -172,7 +170,7 @@ export function HomeContent() {
         ) : (
           <>
             {/* ===== LATEST STORY — prominent, compact ===== */}
-            <Section className="pt-6">
+            <Section className="pt-2 md:pt-6">
               <SectionHeading
                 eyebrow="Newest entry"
                 title="Latest Story"

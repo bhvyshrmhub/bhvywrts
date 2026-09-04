@@ -68,22 +68,23 @@ export function StoryCard({ story, index = 0, large = false }: StoryCardProps) {
 
   return (
     <motion.article
-      initial={{ opacity: 0, y: 24 }}
+      initial={{ opacity: 0, y: 20 }}
       whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true, margin: "-60px" }}
-      transition={{ duration: 0.7, delay: (index % 3) * 0.08, ease: [0.16, 1, 0.3, 1] }}
+      viewport={{ once: true, margin: "-40px" }}
+      transition={{ duration: 0.6, delay: (index % 3) * 0.06, ease: [0.16, 1, 0.3, 1] }}
     >
       <Link href={`/stories/${story.slug}`} className="group block h-full focus-visible:outline-none">
         <div
-          className="glass-card overflow-hidden h-full hover-lift"
+          className="overflow-hidden h-full transition-all duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:-translate-y-1 group-hover:shadow-[var(--card-hover-shadow)]"
           style={{
-            borderRadius: large ? 36 : 28,
-            boxShadow: `0 4px 24px rgba(0,0,0,0.35), 0 1px 2px rgba(0,0,0,0.3)`,
+            borderRadius: large ? 28 : 22,
+            background: "linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0.01) 55%), var(--card)",
+            border: "1px solid var(--border)",
           }}
         >
-          {/* Cover — dominates the card */}
+          {/* Cover — large on mobile */}
           <div className="relative overflow-hidden bg-[#0a0a0c]">
-            <div className={cn("relative", large ? "aspect-[16/9]" : "aspect-[4/3]")}>
+            <div className={cn("relative", large ? "aspect-[16/9]" : "aspect-[3/2] md:aspect-[4/3]")}>
               {story.coverImage ? (
                 <>
                   {!imageLoaded && <div className="absolute inset-0 skeleton" />}
@@ -94,7 +95,7 @@ export function StoryCard({ story, index = 0, large = false }: StoryCardProps) {
                     decoding="async"
                     onLoad={() => setImageLoaded(true)}
                     className={cn(
-                      "w-full h-full object-cover transition-transform duration-[900ms] ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:scale-[1.06]",
+                      "w-full h-full object-cover transition-transform duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:scale-[1.04]",
                       imageLoaded ? "opacity-100" : "opacity-0"
                     )}
                     style={
@@ -111,17 +112,17 @@ export function StoryCard({ story, index = 0, large = false }: StoryCardProps) {
                     background: `linear-gradient(140deg, color-mix(in srgb, ${borderGlow} 22%, #0a0a0c) 0%, #0a0a0c 70%)`,
                   }}
                 >
-                  <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-16 h-16 rounded-full" style={{ boxShadow: `0 0 60px ${borderGlow}55, 0 0 120px ${borderGlow}30` }} />
+                  <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-14 h-14 rounded-full" style={{ boxShadow: `0 0 50px ${borderGlow}55, 0 0 100px ${borderGlow}30` }} />
                 </div>
               )}
 
-              {/* Bottom gradient — glassy, not heavy */}
-              <div className="absolute inset-0 bg-gradient-to-t from-black/55 via-black/5 to-transparent" />
+              {/* Bottom gradient */}
+              <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-black/5 to-transparent" />
 
-              {/* Mood — top right */}
+              {/* Mood badge — top right */}
               {mood && (
                 <span
-                  className="absolute top-3.5 right-3.5 px-2.5 py-1 rounded-full text-[9px] font-medium uppercase tracking-[0.14em] backdrop-blur-md border font-[var(--font-grotesk)]"
+                  className="absolute top-3 right-3 px-2 py-0.5 rounded-full text-[8px] font-medium uppercase tracking-[0.14em] backdrop-blur-md border font-[var(--font-grotesk)]"
                   style={{
                     color: moodColor,
                     borderColor: colorBrightness(moodColor, 0.35),
@@ -134,7 +135,7 @@ export function StoryCard({ story, index = 0, large = false }: StoryCardProps) {
 
               {/* Editor's Pick badge */}
               {editorsPick && (
-                <span className="absolute top-3.5 left-3.5 inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[9px] font-medium uppercase tracking-[0.14em] backdrop-blur-md border border-white/10 bg-black/30 text-white font-[var(--font-grotesk)]">
+                <span className="absolute top-3 left-3 inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[8px] font-medium uppercase tracking-[0.14em] backdrop-blur-md border border-white/10 bg-black/30 text-white font-[var(--font-grotesk)]">
                   <Star className="w-2.5 h-2.5" fill="currentColor" />
                   Editor&apos;s Pick
                 </span>
@@ -145,73 +146,73 @@ export function StoryCard({ story, index = 0, large = false }: StoryCardProps) {
           {/* Content */}
           <div className="p-4 md:p-5">
             {/* Meta row */}
-            <div className="flex items-center gap-2.5 mb-2.5">
+            <div className="flex items-center gap-2 mb-2">
               {story.category && (
-                <span className="text-[10px] uppercase tracking-[0.18em] text-[var(--foreground-secondary)] font-[var(--font-grotesk)]">
+                <span className="text-[9px] uppercase tracking-[0.18em] text-[var(--foreground-secondary)] font-[var(--font-grotesk)]">
                   {story.category}
                 </span>
               )}
               <span className="w-0.5 h-0.5 rounded-full bg-[var(--muted)]" />
-              <span className="text-[11px] text-[var(--muted)] flex items-center gap-1 font-[var(--font-grotesk)]">
-                <Clock className="w-3 h-3" />
+              <span className="text-[10px] text-[var(--muted)] flex items-center gap-1 font-[var(--font-grotesk)]">
+                <Clock className="w-2.5 h-2.5" />
                 {readingTime} min
               </span>
-              <span className="ml-auto text-[11px] text-[var(--muted)] font-[var(--font-grotesk)]">
-                {new Date(story.createdAt).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}
+              <span className="ml-auto text-[10px] text-[var(--muted)] font-[var(--font-grotesk)]">
+                {new Date(story.createdAt).toLocaleDateString("en-US", { month: "short", day: "numeric" })}
               </span>
             </div>
 
             <h3
               className={cn(
-                "font-[var(--font-instrument-serif)] text-foreground leading-[1.25] group-hover:opacity-90 transition-opacity duration-300",
-                large ? "text-2xl md:text-3xl" : "text-xl md:text-[22px]"
+                "font-[var(--font-instrument-serif)] text-foreground leading-[1.2] group-hover:opacity-90 transition-opacity duration-300",
+                large ? "text-xl md:text-2xl" : "text-lg md:text-xl"
               )}
             >
               {story.title}
             </h3>
 
             {story.excerpt && (
-              <p className={cn("text-sm text-[var(--foreground-secondary)] mt-2 leading-relaxed line-clamp-2", large && "text-[15px]")}>
+              <p className={cn("text-[13px] text-[var(--foreground-secondary)] mt-1.5 leading-relaxed line-clamp-2", large && "text-sm")}>
                 {story.excerpt}
               </p>
             )}
 
-            {/* Actions */}
-            <div className="flex items-center gap-1 mt-4 pt-3.5 border-t border-[var(--border)]">
+            {/* Actions — compact on mobile */}
+            <div className="flex items-center gap-0.5 mt-3 pt-3 border-t border-[var(--border)]">
               <button
                 onClick={bookmarks.toggle}
                 aria-label={bookmarks.isIn ? "Remove bookmark" : "Bookmark story"}
                 aria-pressed={bookmarks.isIn}
                 className={cn(
-                  "p-2 rounded-full transition-all duration-300",
+                  "p-1.5 rounded-full transition-all duration-300",
                   bookmarks.isIn
                     ? "text-[var(--lavender)] bg-secondary"
                     : "text-[var(--muted)] hover:text-foreground hover:bg-secondary"
                 )}
               >
-                <Bookmark className="w-[17px] h-[17px]" fill={bookmarks.isIn ? "currentColor" : "none"} />
+                <Bookmark className="w-4 h-4" fill={bookmarks.isIn ? "currentColor" : "none"} />
               </button>
               <button
                 onClick={favorites.toggle}
                 aria-label={favorites.isIn ? "Remove from favorites" : "Add to favorites"}
                 aria-pressed={favorites.isIn}
                 className={cn(
-                  "p-2 rounded-full transition-all duration-300",
+                  "p-1.5 rounded-full transition-all duration-300",
                   favorites.isIn
                     ? "text-[var(--orchid)] bg-secondary"
                     : "text-[var(--muted)] hover:text-foreground hover:bg-secondary"
                 )}
               >
-                <Heart className="w-[17px] h-[17px]" fill={favorites.isIn ? "currentColor" : "none"} />
+                <Heart className="w-4 h-4" fill={favorites.isIn ? "currentColor" : "none"} />
               </button>
               <button
                 onClick={handleShare}
                 aria-label="Share story"
-                className="p-2 rounded-full text-[var(--muted)] hover:text-foreground hover:bg-secondary transition-all duration-300"
+                className="p-1.5 rounded-full text-[var(--muted)] hover:text-foreground hover:bg-secondary transition-all duration-300"
               >
-                <Share2 className="w-[17px] h-[17px]" />
+                <Share2 className="w-4 h-4" />
               </button>
-              <span className="ml-auto text-[11px] text-[var(--muted)] opacity-0 group-hover:opacity-100 transition-opacity duration-300 font-[var(--font-grotesk)]">
+              <span className="ml-auto text-[10px] text-[var(--muted)] opacity-0 group-hover:opacity-100 transition-opacity duration-300 font-[var(--font-grotesk)]">
                 Read →
               </span>
             </div>
