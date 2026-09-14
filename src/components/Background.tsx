@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useMemo, useState } from "react"
+import { useMemo, useState, useEffect } from "react"
 
 interface Star {
   x: number
@@ -15,15 +15,14 @@ export function Background() {
   const [mounted, setMounted] = useState(false)
 
   const stars = useMemo<Star[]>(() => {
-    if (typeof window === "undefined") return []
-    const count = window.matchMedia("(max-width: 768px)").matches ? 40 : 90
-    return Array.from({ length: count }, () => ({
-      x: Math.random() * 100,
-      y: Math.random() * 100,
-      size: Math.random() * 1.6 + 0.6,
-      delay: Math.random() * 6,
-      duration: Math.random() * 4 + 3,
-      opacity: 0.3 + Math.random() * 0.6,
+    const count = 6
+    return Array.from({ length: count }, (_, i) => ({
+      x: ((i * 0.618033988749895) % 1) * 100,
+      y: ((i * 0.3819660112501051) % 1) * 100,
+      size: 1 + (i % 2) * 0.4,
+      delay: i * 1.2,
+      duration: 5 + (i % 3),
+      opacity: 0.2 + (i % 3) * 0.1,
     }))
   }, [])
 
@@ -33,30 +32,33 @@ export function Background() {
 
   return (
     <div className="fixed inset-0 z-0 pointer-events-none" aria-hidden="true">
+      {/* Cinematic background layer */}
+      <div className="cinematic-bg" />
+
       {/* Ambient gradient */}
       <div className="ambient-gradient" />
 
-      {/* Soft moon glow, top right, never distracting */}
+      {/* Soft pink glow, top right */}
       <div
         className="absolute top-[-10%] right-[-5%] w-[46rem] h-[46rem] rounded-full animate-moon-glow"
         style={{
           background:
-            "radial-gradient(circle, rgba(167,139,250,0.09) 0%, rgba(167,139,250,0.03) 35%, transparent 70%)",
+            "radial-gradient(circle, rgba(255,182,217,0.06) 0%, rgba(248,168,200,0.02) 35%, transparent 70%)",
           filter: "blur(20px)",
         }}
       />
 
-      {/* Deep indigo presence, bottom left */}
+      {/* Soft blue presence, bottom left */}
       <div
         className="absolute bottom-[-15%] left-[-8%] w-[40rem] h-[40rem] rounded-full"
         style={{
           background:
-            "radial-gradient(circle, rgba(99,102,241,0.06) 0%, transparent 65%)",
+            "radial-gradient(circle, rgba(141,211,255,0.04) 0%, transparent 65%)",
           filter: "blur(24px)",
         }}
       />
 
-      {/* Stars */}
+      {/* Sparse stars */}
       {mounted && (
         <div className="absolute inset-0 overflow-hidden">
           {stars.map((s, i) => (

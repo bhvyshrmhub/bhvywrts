@@ -9,7 +9,6 @@ import { Navbar } from "./Navbar"
 import { Footer } from "./Footer"
 import { StoryCard } from "./StoryCard"
 import { FloatingWriteButton } from "./FloatingWriteButton"
-import { Stars } from "./Stars"
 import {
   COLLECTIONS,
   COLLECTION_DESCRIPTIONS,
@@ -112,7 +111,7 @@ export function HomeContent() {
         <main className="min-h-screen">
           <div className="max-w-7xl mx-auto px-5 md:px-8 pt-24 md:pt-32 pb-10 space-y-4">
             {[...Array(5)].map((_, i) => (
-              <div key={i} className="h-28 rounded-3xl skeleton border border-[var(--border)]" />
+              <div key={i} className="h-28 rounded-[20px] skeleton border border-[var(--border)]" />
             ))}
           </div>
         </main>
@@ -126,7 +125,6 @@ export function HomeContent() {
       <main className="min-h-screen relative">
         {/* ===== JOURNAL MASTHEAD — compact, story-first ===== */}
         <section className="relative pt-20 md:pt-32 pb-2">
-          <Stars count={12} className="!absolute" />
           <div className="max-w-7xl mx-auto px-5 md:px-8 text-center">
             <motion.div
               initial={{ opacity: 0, y: 18 }}
@@ -209,7 +207,7 @@ export function HomeContent() {
                 >
                   <Link href={`/stories/${featured.slug}`} className="group block">
                     <div
-                      className="relative overflow-hidden rounded-[28px] border border-[var(--border)]"
+                      className="relative overflow-hidden rounded-[20px] border border-[var(--border)]"
                       style={{ boxShadow: "var(--card-hover-shadow)" }}
                     >
                       <div className="aspect-[16/9] md:aspect-[21/9] relative bg-[#0a0a0c]">
@@ -362,7 +360,7 @@ function LatestStoryCard({ story }: { story: Story }) {
     <Link href={`/stories/${story.slug}`} className="group block focus-visible:outline-none">
       <div
         className="glass-card overflow-hidden hover-lift"
-        style={{ borderRadius: 28 }}
+        style={{ borderRadius: 20 }}
       >
         <div className="grid grid-cols-1 md:grid-cols-2">
           <div className="relative aspect-[4/3] md:aspect-auto md:min-h-[320px] overflow-hidden bg-[#0a0a0c]">

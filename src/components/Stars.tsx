@@ -7,16 +7,17 @@ interface StarProps {
   className?: string
 }
 
-export function Stars({ count = 50, className = "" }: StarProps) {
+export function Stars({ count = 8, className = "" }: StarProps) {
   const [stars, setStars] = useState<Array<{ x: number; y: number; size: number; delay: number; duration: number }>>([])
 
   useEffect(() => {
-    const generated = Array.from({ length: count }, () => ({
-      x: Math.random() * 100,
-      y: Math.random() * 100,
-      size: Math.random() * 2.5 + 1,
-      delay: Math.random() * 5,
-      duration: Math.random() * 3 + 2,
+    const generated = Array.from({ length: count }, (_, i) => ({
+      // Deterministic positions using golden ratio
+      x: ((i * 0.618033988749895) % 1) * 100,
+      y: ((i * 0.3819660112501051) % 1) * 100,
+      size: 1 + (i % 3) * 0.5,
+      delay: i * 0.7,
+      duration: 4 + (i % 3),
     }))
     setStars(generated)
   }, [count])

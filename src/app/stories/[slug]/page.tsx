@@ -21,7 +21,6 @@ import { Footer } from "@/components/Footer"
 import { ReadingProgress } from "@/components/ReadingProgress"
 import { FloatingWriteButton } from "@/components/FloatingWriteButton"
 import { StoryCard } from "@/components/StoryCard"
-import { Stars } from "@/components/Stars"
 import { formatDate, cn } from "@/lib/utils"
 import { supabase } from "@/lib/supabase-client"
 import { parseStoryTags, MOOD_COLORS, type Mood } from "@/lib/constants"
@@ -199,7 +198,7 @@ export default function StoryPage({ params }: { params: Promise<{ slug: string }
         <Navbar />
         <main className="pt-24 md:pt-32 max-w-3xl mx-auto px-6 py-10">
           <div className="space-y-4">
-            <div className="h-64 skeleton rounded-[32px]" />
+            <div className="h-64 skeleton rounded-[20px]" />
             <div className="h-6 skeleton rounded w-1/3" />
             <div className="h-12 skeleton rounded w-3/4" />
             <div className="space-y-3">
@@ -218,7 +217,7 @@ export default function StoryPage({ params }: { params: Promise<{ slug: string }
       <div className="min-h-screen">
         <Navbar />
         <main className="pt-32 max-w-3xl mx-auto px-6 py-20 text-center">
-          <div className="w-16 h-16 mx-auto mb-5 rounded-full" style={{ boxShadow: "0 0 40px rgba(167,139,250,0.15)" }} />
+          <div className="w-16 h-16 mx-auto mb-5 rounded-full" style={{ boxShadow: "0 0 40px rgba(255,182,217,0.12)" }} />
           <h1 className="text-3xl font-[var(--font-instrument-serif)] text-[var(--foreground-secondary)]">
             Story not found
           </h1>
@@ -287,12 +286,11 @@ export default function StoryPage({ params }: { params: Promise<{ slug: string }
                 style={
                   moodColor
                     ? { background: `linear-gradient(150deg, ${moodColor}18 0%, #000 60%)` }
-                    : { background: "linear-gradient(150deg, rgba(177,108,234,0.12) 0%, #000 60%)" }
+                    : { background: "linear-gradient(150deg, rgba(255,182,217,0.08) 0%, #000 60%)" }
                 }
               />
             )}
             <div className="absolute inset-0 bg-gradient-to-t from-black via-black/30 to-black/10" />
-            <Stars count={24} />
           </div>
         )}
 
@@ -304,7 +302,7 @@ export default function StoryPage({ params }: { params: Promise<{ slug: string }
             transition={{ duration: 0.8, delay: readingMode ? 0 : 0.15, ease: [0.16, 1, 0.3, 1] }}
             className={cn(
               !readingMode &&
-                "md:-mt-24 glass-card p-7 md:p-10 rounded-[28px] md:rounded-[36px] relative"
+                "md:-mt-24 glass-card p-7 md:p-10 rounded-[20px] md:rounded-[28px] relative"
             )}
           >
             <div className="max-w-3xl mx-auto">
@@ -463,7 +461,7 @@ export default function StoryPage({ params }: { params: Promise<{ slug: string }
                       className="absolute inset-0 w-full h-full object-cover"
                     />
                   ) : (
-                    <div className="absolute inset-0 bg-gradient-to-br from-[#1a1024] via-[#0a0a0c] to-[#0d1a24]" />
+                    <div className="absolute inset-0 bg-gradient-to-br from-[#1a1018] via-[#0a0a0c] to-[#101a20]" />
                   )}
                   <div className="absolute inset-0 bg-gradient-to-r from-black/60 to-transparent hidden md:block" />
                 </div>

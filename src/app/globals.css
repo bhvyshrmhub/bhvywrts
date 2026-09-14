@@ -80,13 +80,13 @@
   color-scheme: dark;
 
   /* Moods */
-  --mood-dreams: #a78bfa;
+  --mood-dreams: #ffb6d9;
   --mood-moonlight: #67e8f9;
   --mood-silence: #94a3b8;
   --mood-nature: #34d399;
   --mood-heartbreak: #f471b5;
   --mood-hope: #fbbf24;
-  --mood-philosophy: #6366f1;
+  --mood-philosophy: #8fd3ff;
   --mood-rain: #7dd3fc;
   --mood-nostalgia: #fb923c;
   --mood-calm: #38bdf8;
@@ -142,9 +142,9 @@
   --gradient-logo: linear-gradient(115deg, #f47fb5 0%, #ff8ec4 35%, #ffb6d9 70%, #8fd3ff 100%);
   --gradient-shine: linear-gradient(
     100deg,
-    rgba(124, 58, 237, 0) 30%,
-    rgba(139, 92, 246, 0.28) 50%,
-    rgba(124, 58, 237, 0) 70%
+    rgba(255, 142, 196, 0) 30%,
+    rgba(255, 182, 217, 0.25) 50%,
+    rgba(255, 142, 196, 0) 70%
   );
 
   /* Reading prose */
@@ -169,7 +169,7 @@
   color-scheme: light;
 
   /* Moods — enough contrast on paper */
-  --mood-dreams: #7c3aed;
+  --mood-dreams: #ff8ec4;
   --mood-moonlight: #0891b2;
   --mood-silence: #475569;
   --mood-nature: #059669;
@@ -179,7 +179,7 @@
   --mood-rain: #0284c7;
   --mood-nostalgia: #ea580c;
   --mood-calm: #0ea5e9;
-  --mood-mystery: #9333ea;
+  --mood-mystery: #ff8ec4;
   --mood-adventure: #ea580c;
 }
 
@@ -694,10 +694,99 @@
 .reading-prose-large h2 { font-size: 1.9em; }
 .reading-prose-large h3 { font-size: 1.5em; }
 
+/* ---------- Cinematic background ---------- */
+
+.cinematic-bg {
+  position: fixed;
+  inset: 0;
+  z-index: -2;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.cinematic-bg::before {
+  content: "";
+  position: absolute;
+  inset: -20%;
+  background:
+    radial-gradient(ellipse 80% 60% at 20% 10%, rgba(255, 182, 217, 0.04), transparent 60%),
+    radial-gradient(ellipse 70% 50% at 80% 80%, rgba(141, 235, 255, 0.03), transparent 55%),
+    radial-gradient(ellipse 90% 70% at 50% 50%, rgba(248, 168, 200, 0.02), transparent 65%);
+  filter: blur(80px);
+  animation: cinematic-drift 30s ease-in-out infinite alternate;
+}
+
+.cinematic-bg::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse 100% 100% at 50% 50%, transparent 40%, var(--background) 100%);
+}
+
+@keyframes cinematic-drift {
+  0% { transform: translate(0, 0) scale(1); }
+  50% { transform: translate(-2%, 1%) scale(1.02); }
+  100% { transform: translate(1%, -1%) scale(0.98); }
+}
+
+/* ---------- Cursor glow ---------- */
+
+.cursor-glow {
+  position: fixed;
+  width: 400px;
+  height: 400px;
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 0;
+  opacity: 0;
+  transition: opacity 0.6s ease;
+  background: radial-gradient(circle, rgba(255, 182, 217, 0.06) 0%, transparent 70%);
+  transform: translate(-50%, -50%);
+  will-change: transform;
+}
+
+.cursor-glow.visible {
+  opacity: 1;
+}
+
+/* ---------- Editorial collection card ---------- */
+
+.collection-preview-strip {
+  display: flex;
+  gap: 2px;
+  overflow: hidden;
+  border-radius: 6px;
+}
+
+.collection-preview-strip img {
+  flex: 1;
+  min-width: 0;
+  height: 32px;
+  object-fit: cover;
+}
+
+/* ---------- Premium story card ---------- */
+
+.story-card-image {
+  transition: transform 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.group:hover .story-card-image {
+  transform: scale(1.04);
+}
+
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {
     animation-duration: 0.01ms !important;
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
+  }
+
+  .cinematic-bg::before {
+    animation: none;
+  }
+
+  .cursor-glow {
+    display: none;
   }
 }

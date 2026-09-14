@@ -59,7 +59,7 @@ export function MoonPhase({ size = "md" }: { size?: "sm" | "md" | "lg" }) {
     <div className="flex items-center gap-4">
       <div
         className="relative rounded-full shrink-0"
-        style={{ width: dims, height: dims, filter: "drop-shadow(0 0 24px rgba(167,139,250,0.2))" }}
+        style={{ width: dims, height: dims, filter: "drop-shadow(0 0 24px rgba(255,182,217,0.15))" }}
       >
         <svg viewBox="0 0 90 90" className="w-full h-full">
           <defs>

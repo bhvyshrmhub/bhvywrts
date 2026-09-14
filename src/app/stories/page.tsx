@@ -12,7 +12,7 @@ import { FloatingWriteButton } from "@/components/FloatingWriteButton"
 import type { Story } from "@/types"
 
 function SkeletonCard() {
-  return <div className="h-72 rounded-[28px] skeleton border border-[var(--border)]" />
+  return <div className="h-72 rounded-[20px] skeleton border border-[var(--border)]" />
 }
 
 export default function StoriesPage() {

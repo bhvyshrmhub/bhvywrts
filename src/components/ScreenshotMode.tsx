@@ -83,17 +83,17 @@ export function ScreenshotMode({ title, excerpt, author = "Bhavy" }: ScreenshotM
                 ref={cardRef}
                 className="relative overflow-hidden rounded-3xl p-10"
                 style={{
-                  background: "linear-gradient(135deg, #0f0a1a 0%, #1a0f2e 50%, #0f0a1a 100%)",
-                  boxShadow: "0 0 80px rgba(167, 139, 250, 0.15)",
+                  background: "linear-gradient(135deg, #0f0a14 0%, #1a0f1e 50%, #0f0a14 100%)",
+                  boxShadow: "0 0 80px rgba(255, 182, 217, 0.12)",
                 }}
               >
-                <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-violet-500 via-fuchsia-500 to-violet-500" />
+                <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-pink-400 via-rose-300 to-pink-400" />
 
-                <div className="absolute top-0 right-0 w-64 h-64 bg-violet-500/10 rounded-full blur-3xl" />
-                <div className="absolute bottom-0 left-0 w-48 h-48 bg-fuchsia-500/10 rounded-full blur-3xl" />
+                <div className="absolute top-0 right-0 w-64 h-64 bg-pink-400/10 rounded-full blur-3xl" />
+                <div className="absolute bottom-0 left-0 w-48 h-48 bg-rose-300/10 rounded-full blur-3xl" />
 
                 <div className="relative z-10 space-y-6">
-                  <div className="text-xs font-medium tracking-[0.2em] uppercase text-violet-400/70">
+                  <div className="text-xs font-medium tracking-[0.2em] uppercase text-pink-300/70">
                     Bhavy Writes
                   </div>
 
@@ -108,7 +108,7 @@ export function ScreenshotMode({ title, excerpt, author = "Bhavy" }: ScreenshotM
                   )}
 
                   <div className="pt-4 flex items-center gap-3 border-t border-white/10">
-                    <div className="w-10 h-10 rounded-full bg-gradient-to-br from-violet-400 to-fuchsia-400 flex items-center justify-center text-sm font-bold text-white">
+                    <div className="w-10 h-10 rounded-full bg-gradient-to-br from-pink-400 to-rose-300 flex items-center justify-center text-sm font-bold text-white">
                       B
                     </div>
                     <div>

@@ -61,8 +61,8 @@ export function CursorEffect() {
       // Soft spotlight following cursor
       const { x, y } = mouseRef.current
       const grad = ctx.createRadialGradient(x, y, 0, x, y, 240)
-      grad.addColorStop(0, "rgba(177, 108, 234, 0.045)")
-      grad.addColorStop(0.5, "rgba(167, 139, 250, 0.02)")
+      grad.addColorStop(0, "rgba(255, 182, 217, 0.04)")
+      grad.addColorStop(0.5, "rgba(248, 168, 200, 0.015)")
       grad.addColorStop(1, "rgba(0, 0, 0, 0)")
       ctx.fillStyle = grad
       ctx.fillRect(0, 0, canvas.width, canvas.height)
@@ -81,7 +81,7 @@ export function CursorEffect() {
         }
         ctx.beginPath()
         ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2)
-        ctx.fillStyle = `rgba(220, 200, 255, ${t * 0.5})`
+        ctx.fillStyle = `rgba(255, 200, 220, ${t * 0.4})`
         ctx.fill()
       }
 

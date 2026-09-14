@@ -104,7 +104,7 @@ export default function CollectionsPage() {
                     >
                       <div
                         className="glass-card overflow-hidden h-full hover-lift"
-                        style={{ borderRadius: 28 }}
+                        style={{ borderRadius: 20 }}
                       >
                         <div className="relative aspect-[16/9] overflow-hidden bg-[#0a0a0c]">
                           {colStories[0]?.coverImage ? (

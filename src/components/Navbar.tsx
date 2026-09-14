@@ -99,7 +99,7 @@ export function Navbar() {
               : "bg-transparent h-14 md:h-16 px-1 md:px-3"
           )}
         >
-          {/* Left — BW logo */}
+          {/* Left — Bhavya Writes */}
           <div className="flex items-center shrink-0">
             <Logo href="/" size="md" />
           </div>

@@ -77,7 +77,7 @@ export function StoryCard({ story, index = 0, large = false }: StoryCardProps) {
         <div
           className="overflow-hidden h-full transition-all duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:-translate-y-1 group-hover:shadow-[var(--card-hover-shadow)]"
           style={{
-            borderRadius: large ? 28 : 22,
+            borderRadius: large ? 20 : 16,
             background: "linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0.01) 55%), var(--card)",
             border: "1px solid var(--border)",
           }}

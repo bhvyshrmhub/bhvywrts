@@ -242,7 +242,7 @@ export function StoryEditorForm({ existingStory, onSaved }: StoryEditorFormProps
                       value={coverPos.x}
                       onChange={(e) => setCoverPos((p) => ({ ...p, x: parseInt(e.target.value, 10) }))}
                       aria-label="Cover horizontal focus"
-                      className="flex-1 accent-[#b16cea]"
+                      className="flex-1 accent-[#ffb6d9]"
                     />
                     <span className="text-[10px] text-[var(--muted)] font-[var(--font-grotesk)]">→</span>
                   </div>
