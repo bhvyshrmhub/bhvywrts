@@ -9,6 +9,8 @@ export interface Story {
   tags: string
   coverImage: string
   published: boolean
+  isLocked: boolean
+  passwordHash?: string | null
   featured: boolean
   wordCount: number
   readingTime: number
