@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server"
 import { sb } from "@/lib/supabase"
 import { isAuthenticated } from "@/lib/auth"
+import bcrypt from "bcryptjs"
 
 export async function GET(req: NextRequest) {
   const { searchParams } = new URL(req.url)
@@ -45,7 +46,17 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({ error: error.message }, { status: 500 })
   }
 
-  return NextResponse.json(stories)
+  // Never expose passwordHash in public responses.
+  // For locked stories, do not expose story content in the list.
+  const safeStories = stories?.map((s: Record<string, unknown>) => {
+    const { passwordHash: _hash, ...safe } = s
+    if (safe.isLocked) {
+      return { ...safe, content: "" }
+    }
+    return safe
+  })
+
+  return NextResponse.json(safeStories || [])
 }
 
 export async function POST(req: NextRequest) {
@@ -56,6 +67,20 @@ export async function POST(req: NextRequest) {
   const body = await req.json()
 
   const now = new Date().toISOString()
+  
+  let passwordHash: string | null = null
+
+  if (body.isLocked) {
+    const pwd = typeof body.password === "string" ? body.password.trim() : ""
+    if (!pwd) {
+      return NextResponse.json(
+        { error: "A password is required for a locked story." },
+        { status: 400 }
+      )
+    }
+
+    passwordHash = await bcrypt.hash(pwd, 12)
+  }
 
   const { data: story, error } = await sb()
     .insert({
@@ -70,6 +95,8 @@ export async function POST(req: NextRequest) {
       coverImage: body.coverImage || "",
       published: body.published ?? false,
       featured: body.featured ?? false,
+      isLocked: body.isLocked ?? false,
+      passwordHash: passwordHash,
       wordCount: body.wordCount ?? 0,
       readingTime: body.readingTime ?? 0,
       createdAt: now,
@@ -82,5 +109,7 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: error.message }, { status: 500 })
   }
 
-  return NextResponse.json(story)
+  // Never return passwordHash in the response
+  const { passwordHash: _hash, ...safeStory } = story
+  return NextResponse.json(safeStory)
 }
