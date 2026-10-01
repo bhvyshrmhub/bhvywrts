@@ -5,7 +5,7 @@ import { useTheme } from "next-themes"
 import { Moon, Sun } from "lucide-react"
 import { cn } from "@/lib/utils"
 
-const THEME_COLORS = { dark: "#000000", light: "#faf9f7" }
+const THEME_COLORS = { dark: "#050505", light: "#faf9f7" }
 
 export function ThemeToggle({ className }: { className?: string }) {
   const { resolvedTheme, setTheme } = useTheme()

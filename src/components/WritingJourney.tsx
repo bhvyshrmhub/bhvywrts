@@ -1,6 +1,7 @@
 "use client"
 
 import { useState, useEffect, useCallback, useMemo } from "react"
+import Link from "next/link"
 import { motion, AnimatePresence } from "framer-motion"
 import { ChevronLeft, ChevronRight, Moon } from "lucide-react"
 import { useAuthStore } from "@/lib/store"
@@ -455,13 +456,13 @@ function OnThisDayCard({ story }: { story: Story }) {
                 {story.excerpt}
               </p>
             )}
-            <a
+            <Link
               href={`/stories/${story.slug}`}
               className="inline-flex items-center gap-1.5 text-xs text-[var(--orchid)] hover:underline transition-colors font-[var(--font-grotesk)]"
             >
               Read again
               <span aria-hidden="true">→</span>
-            </a>
+            </Link>
           </div>
         </div>
       </div>

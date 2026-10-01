@@ -47,18 +47,18 @@ function ShareButton({ title, slug }: { title: string; slug: string }) {
 
     await navigator.clipboard.writeText(url)
     setCopied(true)
-
     setTimeout(() => setCopied(false), 2000)
   }
 
   return (
     <button
+      type="button"
       onClick={handleShare}
       aria-label="Share story"
-      className="p-2.5 rounded-full border border-[var(--border)] text-[var(--foreground-secondary)] hover:text-foreground hover:border-[var(--border-strong)] transition-colors"
+      className="p-2.5 rounded-full border border-[var(--border)] text-[var(--foreground-secondary)] hover:text-foreground hover:bg-secondary hover:border-[var(--border-strong)] transition-all"
     >
       {copied ? (
-        <span className="text-[10px] px-1 font-[var(--font-grotesk)]">
+        <span className="text-[10px] px-1 font-[var(--font-grotesk)] text-[var(--orchid)]">
           Copied
         </span>
       ) : (
@@ -73,43 +73,40 @@ function BookmarkButton({ id }: { id: string }) {
 
   useEffect(() => {
     if (typeof window === "undefined") return
-
-    const saved = JSON.parse(
-      localStorage.getItem("bhavy-bookmarks") || "[]"
-    )
-
-    setBookmarked(saved.includes(id))
+    try {
+      const saved = JSON.parse(localStorage.getItem("bhavy-bookmarks") || "[]")
+      setBookmarked(saved.includes(id))
+    } catch {}
   }, [id])
 
   const toggle = () => {
-    const saved: string[] = JSON.parse(
-      localStorage.getItem("bhavy-bookmarks") || "[]"
-    )
+    try {
+      const saved: string[] = JSON.parse(
+        localStorage.getItem("bhavy-bookmarks") || "[]"
+      )
+      const next = bookmarked
+        ? saved.filter((s: string) => s !== id)
+        : [...saved, id]
 
-    const next = bookmarked
-      ? saved.filter((s: string) => s !== id)
-      : [...saved, id]
-
-    localStorage.setItem("bhavy-bookmarks", JSON.stringify(next))
-    setBookmarked(!bookmarked)
+      localStorage.setItem("bhavy-bookmarks", JSON.stringify(next))
+      setBookmarked(!bookmarked)
+    } catch {}
   }
 
   return (
     <button
+      type="button"
       onClick={toggle}
       aria-label={bookmarked ? "Remove bookmark" : "Bookmark story"}
       aria-pressed={bookmarked}
       className={cn(
-        "p-2.5 rounded-full border transition-colors",
+        "p-2.5 rounded-full border transition-all",
         bookmarked
-          ? "border-[var(--lavender)]/40 text-[var(--lavender)] bg-[var(--lavender)]/10"
-          : "border-[var(--border)] text-[var(--foreground-secondary)] hover:text-foreground hover:border-[var(--border-strong)]"
+          ? "border-[var(--orchid)]/40 text-[var(--orchid)] bg-[var(--orchid)]/10"
+          : "border-[var(--border)] text-[var(--foreground-secondary)] hover:text-foreground hover:bg-secondary hover:border-[var(--border-strong)]"
       )}
     >
-      <Bookmark
-        className="w-4 h-4"
-        fill={bookmarked ? "currentColor" : "none"}
-      />
+      <Bookmark className="w-4 h-4" fill={bookmarked ? "currentColor" : "none"} />
     </button>
   )
 }
@@ -119,43 +116,38 @@ function FavoriteButton({ id }: { id: string }) {
 
   useEffect(() => {
     if (typeof window === "undefined") return
-
-    const saved = JSON.parse(
-      localStorage.getItem("bhavy-favorites") || "[]"
-    )
-
-    setFav(saved.includes(id))
+    try {
+      const saved = JSON.parse(localStorage.getItem("bhavy-favorites") || "[]")
+      setFav(saved.includes(id))
+    } catch {}
   }, [id])
 
   const toggle = () => {
-    const saved: string[] = JSON.parse(
-      localStorage.getItem("bhavy-favorites") || "[]"
-    )
+    try {
+      const saved: string[] = JSON.parse(
+        localStorage.getItem("bhavy-favorites") || "[]"
+      )
+      const next = fav ? saved.filter((s: string) => s !== id) : [...saved, id]
 
-    const next = fav
-      ? saved.filter((s: string) => s !== id)
-      : [...saved, id]
-
-    localStorage.setItem("bhavy-favorites", JSON.stringify(next))
-    setFav(!fav)
+      localStorage.setItem("bhavy-favorites", JSON.stringify(next))
+      setFav(!fav)
+    } catch {}
   }
 
   return (
     <button
+      type="button"
       onClick={toggle}
       aria-label={fav ? "Remove from favorites" : "Add to favorites"}
       aria-pressed={fav}
       className={cn(
-        "p-2.5 rounded-full border transition-colors",
+        "p-2.5 rounded-full border transition-all",
         fav
           ? "border-[var(--orchid)]/40 text-[var(--orchid)] bg-[var(--orchid)]/10"
-          : "border-[var(--border)] text-[var(--foreground-secondary)] hover:text-foreground hover:border-[var(--border-strong)]"
+          : "border-[var(--border)] text-[var(--foreground-secondary)] hover:text-foreground hover:bg-secondary hover:border-[var(--border-strong)]"
       )}
     >
-      <Heart
-        className="w-4 h-4"
-        fill={fav ? "currentColor" : "none"}
-      />
+      <Heart className="w-4 h-4" fill={fav ? "currentColor" : "none"} />
     </button>
   )
 }
@@ -167,17 +159,13 @@ function extractQuote(content: string): string | null {
     .trim()
 
   const sentences = text.match(/[^.!?]+[.!?]+/g)
-
   if (!sentences || sentences.length < 3) return null
 
   const mid = Math.floor(sentences.length / 2)
   const chosen = sentences[mid]?.trim()
-
   if (!chosen || chosen.length < 20) return null
 
-  return chosen.length > 200
-    ? chosen.slice(0, 200) + "..."
-    : chosen
+  return chosen.length > 200 ? chosen.slice(0, 200) + "..." : chosen
 }
 
 function LockedStory({
@@ -235,96 +223,75 @@ function LockedStory({
     <div className="min-h-screen relative overflow-hidden">
       <Navbar />
 
-      {/* Ambient background */}
-      <div className="fixed inset-0 pointer-events-none overflow-hidden">
+      {/* Atmospheric Orchid Ambient Light */}
+      <div className="fixed inset-0 pointer-events-none overflow-hidden" aria-hidden="true">
         <div
-          className="absolute top-[18%] left-[20%] w-[420px] h-[420px] rounded-full blur-[140px] opacity-[0.08]"
+          className="absolute top-[20%] left-1/2 -translate-x-1/2 w-[500px] h-[500px] rounded-full blur-[150px] opacity-[0.10]"
           style={{
-            background:
-              "radial-gradient(circle, rgba(232,121,249,0.8), transparent 70%)",
-          }}
-        />
-
-        <div
-          className="absolute bottom-[10%] right-[15%] w-[360px] h-[360px] rounded-full blur-[140px] opacity-[0.06]"
-          style={{
-            background:
-              "radial-gradient(circle, rgba(167,139,250,0.8), transparent 70%)",
+            background: "radial-gradient(circle, rgba(232,121,249,0.8), transparent 70%)",
           }}
         />
       </div>
 
-      <main className="relative z-10 min-h-[calc(100vh-80px)] flex items-center justify-center px-5 py-24">
+      <main className="relative z-10 min-h-[calc(100vh-80px)] flex items-center justify-center px-4 sm:px-6 py-24">
         <motion.div
-          initial={{ opacity: 0, y: 25 }}
+          initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{
-            duration: 0.7,
-            ease: [0.16, 1, 0.3, 1],
-          }}
+          transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
           className="w-full max-w-md"
         >
-          {/* Back */}
+          {/* Back to archive link */}
           <Link
             href="/stories"
-            className="inline-flex items-center gap-2 text-xs text-[var(--foreground-secondary)] hover:text-foreground transition-colors mb-8"
+            className="inline-flex items-center gap-2 text-xs text-[var(--foreground-secondary)] hover:text-foreground transition-colors mb-7 font-[var(--font-grotesk)]"
           >
             <ArrowLeft className="w-3.5 h-3.5" />
             All stories
           </Link>
 
-          {/* Card */}
-          <div className="glass-card rounded-[28px] p-8 md:p-10 text-center relative overflow-hidden">
-            {/* Top glow */}
+          {/* Locked Card */}
+          <div className="glass-card rounded-[28px] md:rounded-[32px] p-7 md:p-10 text-center relative overflow-hidden border border-[var(--border)]">
             <div
-              className="absolute -top-24 left-1/2 -translate-x-1/2 w-48 h-48 rounded-full blur-[80px] opacity-20 pointer-events-none"
+              className="absolute -top-24 left-1/2 -translate-x-1/2 w-48 h-48 rounded-full blur-[80px] opacity-25 pointer-events-none"
               style={{
-                background:
-                  "radial-gradient(circle, rgba(232,121,249,0.8), transparent 70%)",
+                background: "radial-gradient(circle, rgba(232,121,249,0.9), transparent 75%)",
               }}
             />
 
-            {/* Lock icon */}
+            {/* Lock emblem */}
             <motion.div
               initial={{ scale: 0.85, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               transition={{ delay: 0.15, duration: 0.5 }}
-              className="relative mx-auto w-16 h-16 rounded-full border border-[var(--border-strong)] bg-[var(--surface)] flex items-center justify-center mb-7"
-              style={{
-                boxShadow:
-                  "0 0 50px rgba(232,121,249,0.10)",
-              }}
+              className="relative mx-auto w-16 h-16 rounded-full border border-[var(--border-strong)] bg-secondary flex items-center justify-center mb-6 shadow-[0_0_30px_rgba(232,121,249,0.15)]"
             >
-              <Lock className="w-6 h-6 text-[var(--lavender)]" />
+              <Lock className="w-6 h-6 text-[var(--orchid)]" />
             </motion.div>
 
-            {/* Label */}
-            <p className="text-[10px] uppercase tracking-[0.3em] text-[var(--muted)] font-[var(--font-grotesk)] mb-4">
+            {/* Eyebrow */}
+            <p className="text-[10px] uppercase tracking-[0.3em] text-[var(--orchid)] font-[var(--font-grotesk)] mb-3 font-medium">
               Private Story
             </p>
 
             {/* Title */}
-            <h1 className="font-[var(--font-instrument-serif)] text-3xl md:text-4xl text-foreground leading-tight">
+            <h1 className="font-[var(--font-instrument-serif)] text-3xl md:text-3.5xl text-foreground leading-tight">
               {story.title || "This story is private"}
             </h1>
 
             {story.subtitle && (
-              <p className="mt-3 text-sm text-[var(--foreground-secondary)] font-[var(--font-source-serif)] italic">
+              <p className="mt-2.5 text-sm text-[var(--foreground-secondary)] font-[var(--font-source-serif)] italic">
                 {story.subtitle}
               </p>
             )}
 
-            {/* Description */}
-            <p className="mt-6 text-sm text-[var(--foreground-secondary)] leading-relaxed max-w-sm mx-auto">
-              This story is protected with a password.
-              Enter it below to continue reading.
+            <p className="mt-4 text-xs sm:text-sm text-[var(--foreground-secondary)] leading-relaxed max-w-sm mx-auto font-[var(--font-source-serif)]">
+              This entry is protected with a password. Enter it below to unlock and read.
             </p>
 
-            {/* Form */}
-            <form onSubmit={handleUnlock} className="mt-8">
+            {/* Password Unlock Form */}
+            <form onSubmit={handleUnlock} className="mt-7">
               <div className="relative">
                 <Eye className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-[var(--muted)] pointer-events-none" />
-
                 <input
                   type="password"
                   value={password}
@@ -332,15 +299,13 @@ function LockedStory({
                     setPassword(e.target.value)
                     if (error) setError("")
                   }}
-                  placeholder="Enter password"
+                  placeholder="Enter story password"
                   autoComplete="current-password"
                   className={cn(
-                    "w-full h-12 rounded-full border bg-black/20 pl-11 pr-5 text-sm text-foreground outline-none transition-all",
+                    "w-full h-12 rounded-full border bg-black/20 pl-11 pr-5 text-sm text-foreground outline-none transition-all font-[var(--font-grotesk)]",
                     "placeholder:text-[var(--muted)]",
-                    "focus:border-[var(--lavender)]/50 focus:ring-4 focus:ring-[var(--lavender)]/5",
-                    error
-                      ? "border-red-400/40"
-                      : "border-[var(--border)]"
+                    "focus:border-[var(--orchid)]/60 focus:ring-4 focus:ring-[var(--orchid)]/10",
+                    error ? "border-red-400/50" : "border-[var(--border)]"
                   )}
                 />
               </div>
@@ -348,10 +313,10 @@ function LockedStory({
               <AnimatePresence>
                 {error && (
                   <motion.p
-                    initial={{ opacity: 0, y: -5 }}
+                    initial={{ opacity: 0, y: -4 }}
                     animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: -5 }}
-                    className="text-xs text-red-300 mt-3"
+                    exit={{ opacity: 0, y: -4 }}
+                    className="text-xs text-red-400 mt-2.5 text-center font-[var(--font-grotesk)]"
                   >
                     {error}
                   </motion.p>
@@ -362,33 +327,31 @@ function LockedStory({
                 type="submit"
                 disabled={unlocking}
                 className={cn(
-                  "w-full h-12 mt-4 rounded-full font-[var(--font-grotesk)] text-sm",
+                  "w-full h-12 mt-4 rounded-full font-[var(--font-grotesk)] text-sm font-medium",
                   "flex items-center justify-center gap-2",
-                  "transition-all duration-300",
+                  "transition-all duration-300 shadow-sm",
                   "bg-foreground text-background",
-                  "hover:opacity-90",
+                  "hover:opacity-90 active:scale-98",
                   "disabled:opacity-50 disabled:cursor-not-allowed"
                 )}
               >
                 {unlocking ? (
                   <>
-                    <Loader2 className="w-4 h-4 animate-spin" />
-                    Unlocking...
+                    <Loader2 className="w-4 h-4 animate-spin text-[var(--orchid)]" />
+                    <span>Unlocking...</span>
                   </>
                 ) : (
                   <>
                     <Lock className="w-4 h-4" />
-                    Unlock Story
+                    <span>Unlock Story</span>
                   </>
                 )}
               </button>
             </form>
 
-            {/* Small privacy note */}
-            <div className="mt-7 pt-6 border-t border-[var(--border)]">
-              <p className="text-[10px] text-[var(--muted)] leading-relaxed">
-                This story can only be read with the password provided
-                by the author.
+            <div className="mt-6 pt-5 border-t border-[var(--border)]">
+              <p className="text-[10px] text-[var(--muted)] leading-relaxed font-[var(--font-grotesk)]">
+                This story is private and accessible only with the key from the author.
               </p>
             </div>
           </div>
@@ -408,9 +371,7 @@ export default function StoryPage({
   const { slug } = use(params)
 
   const [story, setStory] = useState<Story | null>(null)
-  const [lockedStory, setLockedStory] = useState<Partial<Story> | null>(
-    null
-  )
+  const [lockedStory, setLockedStory] = useState<Partial<Story> | null>(null)
   const [related, setRelated] = useState<Story[]>([])
   const [loading, setLoading] = useState(true)
   const [imageLoaded, setImageLoaded] = useState(false)
@@ -421,18 +382,9 @@ export default function StoryPage({
 
     try {
       const res = await fetch(`/api/stories/${slug}`)
-
       const data = await res.json()
 
-      /*
-       * Locked story
-       *
-       * API returns:
-       * {
-       *   locked: true,
-       *   story: {...}
-       * }
-       */
+      // Locked story handling
       if (res.status === 423 && data?.locked) {
         setStory(null)
         setLockedStory(data.story || null)
@@ -454,16 +406,8 @@ export default function StoryPage({
         const history: string[] = JSON.parse(
           localStorage.getItem("bhavy-reading-history") || "[]"
         )
-
-        const updated = [
-          slug,
-          ...history.filter((s: string) => s !== slug),
-        ].slice(0, 10)
-
-        localStorage.setItem(
-          "bhavy-reading-history",
-          JSON.stringify(updated)
-        )
+        const updated = [slug, ...history.filter((s: string) => s !== slug)].slice(0, 10)
+        localStorage.setItem("bhavy-reading-history", JSON.stringify(updated))
       } catch {}
 
       if (data?.category) {
@@ -489,45 +433,26 @@ export default function StoryPage({
     loadStory()
   }, [loadStory])
 
-  const tags = useMemo(
-    () => parseStoryTags(story?.tags || ""),
-    [story?.tags]
-  )
-
-  const moodColor = tags.mood
-    ? MOOD_COLORS[tags.mood as Mood]
-    : undefined
-
-  const accentColor = tags.accent || moodColor
+  const tags = useMemo(() => parseStoryTags(story?.tags || ""), [story?.tags])
+  const moodColor = tags.mood ? MOOD_COLORS[tags.mood as Mood] : undefined
+  const accentColor = tags.accent || moodColor || "var(--orchid)"
 
   const quote = useMemo(() => {
     if (!story?.content) return null
-
     if (tags.quote) return tags.quote
-
     return extractQuote(story.content)
   }, [story?.content, tags.quote])
 
   const continueStory = useMemo(() => {
     if (!story) return null
-
-    if (
-      tags.continueSlug &&
-      tags.continueSlug !== story.slug
-    ) {
-      return (
-        related.find(
-          (r) => r.slug === tags.continueSlug
-        ) || null
-      )
+    if (tags.continueSlug && tags.continueSlug !== story.slug) {
+      return related.find((r) => r.slug === tags.continueSlug) || null
     }
-
     return related[0] || null
   }, [tags.continueSlug, related, story])
 
   const handleReadingMode = useCallback(() => {
     setReadingMode((m) => !m)
-
     if (typeof window !== "undefined") {
       window.scrollTo({
         top: 0,
@@ -536,33 +461,19 @@ export default function StoryPage({
     }
   }, [])
 
-  /*
-   * ==============================
-   * LOADING
-   * ==============================
-   */
-
   if (loading) {
     return (
       <div className="min-h-screen">
         <ReadingProgress />
         <Navbar />
-
         <main className="pt-24 md:pt-32 max-w-3xl mx-auto px-6 py-10">
           <div className="space-y-4">
-            <div className="h-64 skeleton rounded-[20px]" />
-
+            <div className="h-72 skeleton rounded-[24px]" />
             <div className="h-6 skeleton rounded w-1/3" />
-
             <div className="h-12 skeleton rounded w-3/4" />
-
-            <div className="space-y-3">
+            <div className="space-y-3 pt-4">
               {SKELETON_WIDTHS.map((w, i) => (
-                <div
-                  key={i}
-                  className="h-4 skeleton rounded"
-                  style={{ width: w }}
-                />
+                <div key={i} className="h-4 skeleton rounded" style={{ width: w }} />
               ))}
             </div>
           </div>
@@ -571,49 +482,27 @@ export default function StoryPage({
     )
   }
 
-  /*
-   * ==============================
-   * LOCKED STORY
-   * ==============================
-   */
-
   if (lockedStory) {
-    return (
-      <LockedStory
-        story={lockedStory}
-        slug={slug}
-        onUnlocked={loadStory}
-      />
-    )
+    return <LockedStory story={lockedStory} slug={slug} onUnlocked={loadStory} />
   }
-
-  /*
-   * ==============================
-   * STORY NOT FOUND
-   * ==============================
-   */
 
   if (!story) {
     return (
       <div className="min-h-screen">
         <Navbar />
-
         <main className="pt-32 max-w-3xl mx-auto px-6 py-20 text-center">
           <div
             className="w-16 h-16 mx-auto mb-5 rounded-full"
             style={{
-              boxShadow:
-                "0 0 40px rgba(255,182,217,0.12)",
+              boxShadow: "0 0 40px rgba(232, 121, 249, 0.15)",
             }}
           />
-
           <h1 className="text-3xl font-[var(--font-instrument-serif)] text-[var(--foreground-secondary)]">
             Story not found
           </h1>
-
           <Link
             href="/stories"
-            className="text-sm text-[var(--muted)] hover:text-foreground mt-4 inline-block underline-animate"
+            className="text-sm text-[var(--muted)] hover:text-foreground mt-4 inline-block underline-animate font-[var(--font-grotesk)]"
           >
             Back to stories
           </Link>
@@ -622,24 +511,12 @@ export default function StoryPage({
     )
   }
 
-  /*
-   * ==============================
-   * NORMAL STORY
-   * ==============================
-   */
-
   return (
-    <div
-      className={cn(
-        "min-h-screen",
-        readingMode && "reading-mode"
-      )}
-    >
+    <div className={cn("min-h-screen relative", readingMode && "reading-mode")}>
       <ReadingProgress />
-
       {!readingMode && <Navbar />}
 
-      {/* Reading mode pill */}
+      {/* Floating Reading Mode Toggle Pill */}
       <AnimatePresence>
         {readingMode && (
           <motion.div
@@ -648,17 +525,17 @@ export default function StoryPage({
             exit={{ opacity: 0, y: -12 }}
             className="fixed top-4 left-1/2 -translate-x-1/2 z-[60]"
           >
-            <div className="glass-strong rounded-full px-4 py-2 flex items-center gap-3">
+            <div className="glass-strong rounded-full px-4 py-2 flex items-center gap-3 shadow-lg border border-[var(--border)]">
               <span className="text-[11px] text-[var(--foreground-secondary)] font-[var(--font-grotesk)] tracking-wide">
-                Reading
+                Reading Mode
               </span>
-
               <button
+                type="button"
                 onClick={handleReadingMode}
                 className="text-[11px] text-foreground hover:opacity-80 transition-opacity font-[var(--font-grotesk)] flex items-center gap-1.5"
                 aria-label="Exit reading mode"
               >
-                <Minimize2 className="w-3 h-3" />
+                <Minimize2 className="w-3 h-3 text-[var(--orchid)]" />
                 Exit
               </button>
             </div>
@@ -666,28 +543,18 @@ export default function StoryPage({
         )}
       </AnimatePresence>
 
-      <main
-        className={cn(
-          "relative",
-          readingMode && "pt-10"
-        )}
-      >
-        {/* HERO IMAGE */}
+      <main className={cn("relative", readingMode && "pt-12")}>
+        {/* CINEMATIC HERO COVER */}
         {!readingMode && (
           <div
             className={cn(
-              "relative overflow-hidden",
-              story.coverImage
-                ? "h-[46vh] md:h-[62vh] min-h-[320px]"
-                : "h-[32vh] min-h-[240px]"
+              "relative overflow-hidden bg-[#09090c]",
+              story.coverImage ? "h-[50vh] md:h-[65vh] min-h-[340px]" : "h-[35vh] min-h-[260px]"
             )}
           >
             {story.coverImage ? (
               <>
-                {!imageLoaded && (
-                  <div className="absolute inset-0 skeleton" />
-                )}
-
+                {!imageLoaded && <div className="absolute inset-0 skeleton" />}
                 <img
                   src={story.coverImage}
                   alt={story.title}
@@ -696,15 +563,11 @@ export default function StoryPage({
                   onLoad={() => setImageLoaded(true)}
                   className={cn(
                     "w-full h-full object-cover",
-                    imageLoaded
-                      ? "opacity-100 animate-image-reveal"
-                      : "opacity-0"
+                    imageLoaded ? "opacity-100 animate-image-reveal" : "opacity-0"
                   )}
                   style={
                     tags.coverPos
-                      ? {
-                          objectPosition: `${tags.coverPos.x}% ${tags.coverPos.y}%`,
-                        }
+                      ? { objectPosition: `${tags.coverPos.x}% ${tags.coverPos.y}%` }
                       : undefined
                   }
                 />
@@ -712,57 +575,33 @@ export default function StoryPage({
             ) : (
               <div
                 className="absolute inset-0"
-                style={
-                  moodColor
-                    ? {
-                        background: `linear-gradient(150deg, ${moodColor}18 0%, #000 60%)`,
-                      }
-                    : {
-                        background:
-                          "linear-gradient(150deg, rgba(255,182,217,0.08) 0%, #000 60%)",
-                      }
-                }
+                style={{
+                  background: `linear-gradient(150deg, ${moodColor || "rgba(232,121,249,0.12)"} 0%, #050505 70%)`,
+                }}
               />
             )}
 
-            <div className="absolute inset-0 bg-gradient-to-t from-black via-black/30 to-black/10" />
+            {/* Gradient Fade to Content */}
+            <div className="absolute inset-0 bg-gradient-to-t from-[var(--background)] via-[var(--background)]/35 to-black/30" />
           </div>
         )}
 
-        {/* FLOATING INFO CARD */}
-        <article
-          className={cn(
-            "mx-auto px-5 md:px-6 relative z-10",
-            readingMode
-              ? "max-w-3xl"
-              : "max-w-6xl"
-          )}
-        >
+        {/* FLOATING EDITORIAL HEADER CARD */}
+        <article className={cn("mx-auto px-4 sm:px-6 relative z-10", readingMode ? "max-w-3xl" : "max-w-5xl")}>
           <motion.div
-            initial={{
-              opacity: 0,
-              y: 24,
-            }}
-            animate={{
-              opacity: 1,
-              y: 0,
-            }}
-            transition={{
-              duration: 0.8,
-              delay: readingMode ? 0 : 0.15,
-              ease: [0.16, 1, 0.3, 1],
-            }}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: readingMode ? 0 : 0.1, ease: [0.16, 1, 0.3, 1] }}
             className={cn(
               !readingMode &&
-                "md:-mt-24 glass-card p-7 md:p-10 rounded-[20px] md:rounded-[28px] relative"
+                "md:-mt-28 glass-card p-6 sm:p-8 md:p-12 rounded-[24px] md:rounded-[32px] relative shadow-[0_20px_50px_rgba(0,0,0,0.45)] border border-[var(--border)]"
             )}
           >
             <div className="max-w-3xl mx-auto">
-              {/* Back link */}
               {!readingMode && (
                 <Link
                   href="/stories"
-                  className="inline-flex items-center gap-1.5 text-xs text-[var(--foreground-secondary)] hover:text-foreground transition-colors mb-7"
+                  className="inline-flex items-center gap-1.5 text-xs text-[var(--foreground-secondary)] hover:text-foreground transition-colors mb-7 font-[var(--font-grotesk)]"
                 >
                   <ArrowLeft className="w-3.5 h-3.5" />
                   All stories
@@ -770,22 +609,14 @@ export default function StoryPage({
               )}
 
               {/* Meta badges */}
-              <div className="flex flex-wrap items-center gap-2.5 mb-5">
+              <div className="flex flex-wrap items-center gap-2 mb-4">
                 {story.category && (
                   <span
-                    className="px-3 py-1 rounded-full text-[10px] uppercase tracking-[0.18em] border font-[var(--font-grotesk)]"
+                    className="px-3 py-1 rounded-full text-[9px] uppercase tracking-[0.2em] border font-[var(--font-grotesk)] font-medium"
                     style={{
-                      color:
-                        accentColor ||
-                        "var(--lavender)",
-                      borderColor: `${
-                        accentColor ||
-                        "var(--lavender)"
-                      }35`,
-                      background: `${
-                        accentColor ||
-                        "var(--lavender)"
-                      }0d`,
+                      color: accentColor,
+                      borderColor: `${accentColor}40`,
+                      background: `${accentColor}12`,
                     }}
                   >
                     {story.category}
@@ -793,148 +624,103 @@ export default function StoryPage({
                 )}
 
                 {tags.mood && (
-                  <span className="px-3 py-1 rounded-full text-[10px] uppercase tracking-[0.18em] border border-[var(--border)] text-[var(--foreground-secondary)] font-[var(--font-grotesk)]">
+                  <span className="px-3 py-1 rounded-full text-[9px] uppercase tracking-[0.2em] border border-[var(--border)] text-[var(--foreground-secondary)] font-[var(--font-grotesk)]">
                     {tags.mood}
                   </span>
                 )}
 
                 {tags.collection && (
                   <Link
-                    href={`/collections/${encodeURIComponent(
-                      tags.collection.toLowerCase()
-                    )}`}
-                    className="px-3 py-1 rounded-full text-[10px] uppercase tracking-[0.18em] border border-[var(--border)] text-[var(--foreground-secondary)] hover:text-foreground transition-colors font-[var(--font-grotesk)]"
+                    href={`/collections/${encodeURIComponent(tags.collection.toLowerCase())}`}
+                    className="px-3 py-1 rounded-full text-[9px] uppercase tracking-[0.2em] border border-[var(--border)] text-[var(--foreground-secondary)] hover:text-foreground transition-colors font-[var(--font-grotesk)]"
                   >
                     {tags.collection}
                   </Link>
                 )}
               </div>
 
+              {/* Title */}
               <h1
                 className={cn(
-                  "text-foreground leading-[1.1]",
-                  readingMode
-                    ? "text-3xl md:text-4xl"
-                    : "text-3xl md:text-5xl"
+                  "text-foreground font-[var(--font-instrument-serif)] leading-[1.12] tracking-tight",
+                  readingMode ? "text-3xl md:text-4.5xl" : "text-3xl sm:text-4xl md:text-5xl"
                 )}
               >
                 {story.title}
               </h1>
 
+              {/* Subtitle */}
               {story.subtitle && (
-                <p className="text-base md:text-lg text-[var(--foreground-secondary)] mt-3 font-[var(--font-source-serif)] italic">
+                <p className="text-base sm:text-lg text-[var(--foreground-secondary)] mt-3.5 font-[var(--font-source-serif)] italic leading-relaxed">
                   {story.subtitle}
                 </p>
               )}
 
-              {/* Meta row */}
-              <div className="flex flex-wrap items-center gap-x-5 gap-y-3 mt-6 text-xs text-[var(--muted)]">
-                <span className="flex items-center gap-1.5 font-[var(--font-grotesk)]">
-                  <Calendar className="w-3.5 h-3.5" />
-                  {formatDate(story.createdAt)}
-                </span>
+              {/* Meta row & Action buttons */}
+              <div className="flex flex-wrap items-center justify-between gap-y-4 gap-x-6 mt-7 pt-6 border-t border-[var(--border)] text-xs text-[var(--muted)]">
+                <div className="flex flex-wrap items-center gap-x-4 gap-y-2 font-[var(--font-grotesk)]">
+                  <span className="flex items-center gap-1.5">
+                    <Calendar className="w-3.5 h-3.5" />
+                    {formatDate(story.createdAt)}
+                  </span>
+                  <span className="flex items-center gap-1.5">
+                    <Clock className="w-3.5 h-3.5" />
+                    {story.readingTime || 5} min read
+                  </span>
+                  <span className="flex items-center gap-1.5 text-[var(--foreground-secondary)]">
+                    <Feather className="w-3.5 h-3.5 text-[var(--orchid)]" />
+                    by Bhavya
+                  </span>
+                </div>
 
-                <span className="flex items-center gap-1.5 font-[var(--font-grotesk)]">
-                  <Clock className="w-3.5 h-3.5" />
-                  {story.readingTime || 5} min read
-                </span>
-
-                <span className="flex items-center gap-1.5 font-[var(--font-grotesk)]">
-                  <Feather className="w-3.5 h-3.5" />
-                  by Bhavya
-                </span>
-
-                <div className="flex items-center gap-2 ml-auto">
+                <div className="flex items-center gap-1.5 ml-auto">
                   {!readingMode && (
                     <button
+                      type="button"
                       onClick={handleReadingMode}
                       aria-label="Enter reading mode"
                       title="Reading mode"
-                      className="p-2.5 rounded-full border border-[var(--border)] text-[var(--foreground-secondary)] hover:text-foreground hover:border-[var(--border-strong)] transition-colors"
+                      className="p-2.5 rounded-full border border-[var(--border)] text-[var(--foreground-secondary)] hover:text-foreground hover:bg-secondary transition-colors"
                     >
                       <Maximize2 className="w-4 h-4" />
                     </button>
                   )}
-
                   <FavoriteButton id={story.id} />
                   <BookmarkButton id={story.id} />
-                  <ShareButton
-                    title={story.title}
-                    slug={story.slug}
-                  />
+                  <ShareButton title={story.title} slug={story.slug} />
                 </div>
               </div>
             </div>
           </motion.div>
 
-          {/* HIGHLIGHTED QUOTE */}
+          {/* HIGHLIGHTED PULL QUOTE */}
           {quote && (
             <motion.div
-              initial={{
-                opacity: 0,
-                y: 20,
-              }}
-              animate={{
-                opacity: 1,
-                y: 0,
-              }}
-              transition={{
-                duration: 0.8,
-                delay: 0.25,
-              }}
-              className="max-w-3xl mx-auto my-10 md:my-14"
+              initial={{ opacity: 0, y: 16 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8, delay: 0.2 }}
+              className="max-w-3xl mx-auto my-12 md:my-16"
             >
-              <div className="relative px-2">
-                <Quote
-                  className="w-8 h-8 mb-4"
-                  style={{
-                    color:
-                      accentColor ||
-                      "var(--lavender)",
-                  }}
-                />
-
-                <p className="font-[var(--font-instrument-serif)] italic text-2xl md:text-3xl leading-[1.4] text-foreground">
+              <div className="relative pl-6 md:pl-8 border-l-2" style={{ borderColor: accentColor }}>
+                <Quote className="w-7 h-7 mb-3 text-[var(--orchid)] opacity-80" />
+                <p className="font-[var(--font-instrument-serif)] italic text-2xl sm:text-2.5xl md:text-3xl leading-[1.38] text-foreground">
                   &ldquo;{quote}&rdquo;
                 </p>
-
-                <div
-                  className="mt-6 h-px w-16"
-                  style={{
-                    background: `linear-gradient(to right, ${
-                      accentColor ||
-                      "var(--lavender)"
-                    }, transparent)`,
-                  }}
-                />
               </div>
             </motion.div>
           )}
 
-          {/* STORY BODY */}
+          {/* STORY PROSE BODY */}
           <motion.div
-            initial={{
-              opacity: 0,
-              y: 20,
-            }}
-            animate={{
-              opacity: 1,
-              y: 0,
-            }}
-            transition={{
-              duration: 0.8,
-              delay: 0.3,
-            }}
-            className="max-w-3xl mx-auto"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 0.25 }}
+            className="max-w-3xl mx-auto mt-10 md:mt-14"
           >
             <div
-              className={cn(
-                "reading-prose",
-                readingMode &&
-                  "reading-prose-large"
-              )}
+              className={cn("reading-prose", readingMode && "reading-prose-large")}
               dangerouslySetInnerHTML={{
-                __html: story.content,
+                __html: story.content || "",
               }}
             />
           </motion.div>
@@ -943,28 +729,24 @@ export default function StoryPage({
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            transition={{
-              duration: 0.8,
-              delay: 0.5,
-            }}
+            transition={{ duration: 0.8, delay: 0.4 }}
             className="max-w-3xl mx-auto mt-16 md:mt-24 pt-10 border-t border-[var(--border)] text-center"
           >
             <p className="font-[var(--font-instrument-serif)] italic text-lg md:text-xl text-[var(--foreground-secondary)] leading-relaxed max-w-md mx-auto">
               Thank you for reading this far.
             </p>
-
-            <p className="font-[var(--font-great-vibes)] text-3xl md:text-4xl gradient-logo mt-6">
+            <p className="font-[var(--font-great-vibes)] text-3.5xl md:text-4.5xl gradient-logo mt-5">
               Bhavya
             </p>
           </motion.div>
         </article>
 
-        {/* CONTINUE READING */}
+        {/* CONTINUE READING CARD */}
         {continueStory && !readingMode && (
-          <section className="max-w-6xl mx-auto px-5 md:px-6 mt-20 md:mt-28">
-            <div className="glass-card rounded-[32px] overflow-hidden">
+          <section className="max-w-5xl mx-auto px-4 sm:px-6 mt-20 md:mt-28">
+            <div className="glass-card rounded-[24px] md:rounded-[32px] overflow-hidden border border-[var(--border)]">
               <div className="grid grid-cols-1 md:grid-cols-2">
-                <div className="relative min-h-[240px] bg-[#0a0a0c]">
+                <div className="relative min-h-[220px] bg-[#09090c]">
                   {continueStory.coverImage ? (
                     <img
                       src={continueStory.coverImage}
@@ -973,34 +755,29 @@ export default function StoryPage({
                       className="absolute inset-0 w-full h-full object-cover"
                     />
                   ) : (
-                    <div className="absolute inset-0 bg-gradient-to-br from-[#1a1018] via-[#0a0a0c] to-[#101a20]" />
+                    <div className="absolute inset-0 bg-gradient-to-br from-[#160d16] via-[#09090c] to-[#0d161a]" />
                   )}
-
-                  <div className="absolute inset-0 bg-gradient-to-r from-black/60 to-transparent hidden md:block" />
+                  <div className="absolute inset-0 bg-gradient-to-r from-transparent to-black/60 hidden md:block" />
                 </div>
 
-                <div className="p-8 md:p-12 flex flex-col justify-center">
-                  <p className="text-[10px] uppercase tracking-[0.3em] text-[var(--muted)] font-[var(--font-grotesk)] mb-3">
+                <div className="p-7 sm:p-9 md:p-12 flex flex-col justify-center">
+                  <p className="text-[10px] uppercase tracking-[0.28em] text-[var(--orchid)] font-[var(--font-grotesk)] mb-2 font-medium">
                     Continue Reading
                   </p>
-
                   <h3 className="font-[var(--font-instrument-serif)] text-2xl md:text-3xl text-foreground leading-snug">
                     {continueStory.title}
                   </h3>
-
-                  <p className="text-sm text-[var(--foreground-secondary)] mt-3 line-clamp-2 leading-relaxed">
-                    {continueStory.excerpt}
-                  </p>
-
+                  {continueStory.excerpt && (
+                    <p className="text-xs sm:text-sm text-[var(--foreground-secondary)] mt-2.5 line-clamp-2 leading-relaxed font-[var(--font-source-serif)]">
+                      {continueStory.excerpt}
+                    </p>
+                  )}
                   <Link
                     href={`/stories/${continueStory.slug}`}
-                    className="inline-flex items-center gap-2 text-sm text-foreground mt-6 w-fit group"
+                    className="inline-flex items-center gap-2 text-xs sm:text-sm font-medium text-foreground mt-6 w-fit group font-[var(--font-grotesk)]"
                   >
-                    <span className="underline-animate">
-                      Read next
-                    </span>
-
-                    <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-0.5" />
+                    <span className="underline-animate">Read next</span>
+                    <ArrowRight className="w-4 h-4 text-[var(--orchid)] transition-transform group-hover:translate-x-1" />
                   </Link>
                 </div>
               </div>
@@ -1010,20 +787,21 @@ export default function StoryPage({
 
         {/* RELATED STORIES */}
         {related.length > 0 && !readingMode && (
-          <section className="max-w-6xl mx-auto px-5 md:px-6 mt-16 md:mt-24">
-            <div className="mb-8 flex items-center gap-2">
-              <p className="text-[10px] uppercase tracking-[0.3em] text-[var(--muted)] font-[var(--font-grotesk)]">
+          <section className="max-w-5xl mx-auto px-4 sm:px-6 mt-16 md:mt-24">
+            <div className="mb-7 flex items-center justify-between">
+              <p className="text-[10px] uppercase tracking-[0.28em] text-[var(--orchid)] font-[var(--font-grotesk)] font-medium">
                 More in {story.category}
               </p>
+              <Link
+                href="/stories"
+                className="text-xs text-[var(--foreground-secondary)] hover:text-foreground font-[var(--font-grotesk)]"
+              >
+                Browse all →
+              </Link>
             </div>
-
             <div className="grid grid-cols-1 md:grid-cols-3 gap-5 md:gap-6">
               {related.map((r, i) => (
-                <StoryCard
-                  key={r.id}
-                  story={r}
-                  index={i}
-                />
+                <StoryCard key={r.id} story={r} index={i} />
               ))}
             </div>
           </section>

@@ -1,6 +1,7 @@
 "use client"
 
 import { useEffect, useCallback } from "react"
+import Link from "next/link"
 import { motion, AnimatePresence } from "framer-motion"
 import { X, Clock, ArrowRight } from "lucide-react"
 import { parseStoryTags, MOOD_COLORS } from "@/lib/constants"
@@ -112,7 +113,7 @@ export default function DateSheet({ date, stories, onClose }: DateSheetProps) {
               ) : (
                 <div className="space-y-4">
                   {stories.map((story) => (
-                    <DateSheetStory key={story.id} story={story} />
+                    <DateSheetStory key={story.id} story={story} onClose={onClose} />
                   ))}
                 </div>
               )}
@@ -124,7 +125,7 @@ export default function DateSheet({ date, stories, onClose }: DateSheetProps) {
   )
 }
 
-function DateSheetStory({ story }: { story: Story }) {
+function DateSheetStory({ story, onClose }: { story: Story; onClose: () => void }) {
   const tags = parseStoryTags(story.tags)
   const d = new Date(story.createdAt)
   const hasTime = !isNaN(d.getTime())
@@ -136,8 +137,9 @@ function DateSheetStory({ story }: { story: Story }) {
   const accentColor = tags.accent || (tags.mood ? MOOD_COLORS[tags.mood] : undefined)
 
   return (
-    <a
+    <Link
       href={`/stories/${story.slug}`}
+      onClick={onClose}
       className="block rounded-2xl border border-[var(--border)] bg-secondary/30 p-4 hover:bg-secondary/60 transition-all duration-200 group"
     >
       <div className="flex gap-4">
@@ -223,6 +225,6 @@ function DateSheetStory({ story }: { story: Story }) {
           </div>
         </div>
       </div>
-    </a>
+    </Link>
   )
 }

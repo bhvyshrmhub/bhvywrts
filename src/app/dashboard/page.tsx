@@ -176,7 +176,7 @@ export default function DashboardPage() {
 
                 <Link
                   href="/editor"
-                  className="inline-flex items-center gap-2 px-4 py-2.5 text-sm rounded-full bg-white text-black hover:bg-white/90 transition-colors"
+                  className="inline-flex items-center gap-2 px-4 py-2.5 text-sm rounded-full bg-foreground text-background hover:opacity-90 transition-all font-[var(--font-grotesk)] shadow-sm"
                 >
                   <Plus className="w-4 h-4" />
                   New Story
@@ -247,7 +247,7 @@ export default function DashboardPage() {
                   className={cn(
                     "px-3.5 py-1.5 rounded-full text-xs border transition-colors font-[var(--font-grotesk)]",
                     filter === f
-                      ? "border-transparent bg-white text-black"
+                      ? "border-transparent bg-foreground text-background shadow-sm"
                       : "border-[var(--border)] text-[var(--foreground-secondary)] hover:border-[var(--border-strong)] hover:text-foreground"
                   )}
                 >

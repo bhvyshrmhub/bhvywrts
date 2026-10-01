@@ -1,5 +1,6 @@
 "use client"
 
+import Link from "next/link"
 import { useMemo } from "react"
 import { motion } from "framer-motion"
 import { Clock } from "lucide-react"
@@ -163,9 +164,9 @@ function TimelineEntry({ story, index, isLast }: { story: Story; index: number; 
         </p>
 
         {/* Story card */}
-        <a
+        <Link
           href={`/stories/${story.slug}`}
-          className="block -mx-2 px-2 py-3 rounded-xl hover:bg-secondary/50 transition-all duration-300 group/card"
+          className="block -mx-2 px-2 py-3 rounded-2xl hover:bg-secondary/60 transition-all duration-300 group/card"
         >
           <div className="flex flex-col sm:flex-row gap-4">
             {/* Cover */}
@@ -248,7 +249,7 @@ function TimelineEntry({ story, index, isLast }: { story: Story; index: number; 
               )}
             </div>
           </div>
-        </a>
+        </Link>
       </div>
     </motion.div>
   )
