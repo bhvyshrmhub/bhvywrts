@@ -242,6 +242,14 @@
     color-scheme: light;
   }
 
+  html.intro-active {
+    background-color: #050505 !important;
+  }
+
+  html.intro-active body {
+    overflow: hidden;
+  }
+
   body {
     @apply bg-background text-foreground antialiased;
     font-family: var(--font-inter), ui-sans-serif, system-ui, sans-serif;

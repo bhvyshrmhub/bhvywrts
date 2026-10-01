@@ -1,12 +1,18 @@
 "use client"
 
 import { useEffect, useState, useMemo } from "react"
+import dynamic from "next/dynamic"
 import { motion } from "framer-motion"
 import Link from "next/link"
 import { ArrowRight, Feather, Moon, Sparkles, BookOpen } from "lucide-react"
 import { supabase } from "@/lib/supabase-client"
 import { Navbar } from "./Navbar"
 import { Footer } from "./Footer"
+
+const CinematicIntro = dynamic(
+  () => import("./CinematicIntro").then((mod) => mod.CinematicIntro),
+  { ssr: false }
+)
 import { StoryCard } from "./StoryCard"
 import { FloatingWriteButton } from "./FloatingWriteButton"
 import {
@@ -117,10 +123,11 @@ export function HomeContent() {
     }))
   }, [stories])
 
-  if (loading) {
-    return (
-      <>
-        <Navbar />
+  return (
+    <>
+      <CinematicIntro coverImage={latestStory?.coverImage || featured?.coverImage} />
+      <Navbar />
+      {loading ? (
         <main className="min-h-screen">
           <div className="max-w-7xl mx-auto px-5 md:px-8 pt-24 md:pt-32 pb-12 space-y-5">
             <div className="h-16 w-1/3 mx-auto skeleton rounded-full mb-8" />
@@ -132,14 +139,8 @@ export function HomeContent() {
             </div>
           </div>
         </main>
-      </>
-    )
-  }
-
-  return (
-    <>
-      <Navbar />
-      <main className="min-h-screen relative overflow-hidden">
+      ) : (
+        <main className="min-h-screen relative overflow-hidden">
         {/* Subtle Ambient Glow */}
         <div className="pointer-events-none fixed inset-0 z-0 overflow-hidden" aria-hidden="true">
           <div
@@ -401,6 +402,7 @@ export function HomeContent() {
           </div>
         )}
       </main>
+      )}
       <Footer />
       <FloatingWriteButton />
     </>

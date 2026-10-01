@@ -87,6 +87,19 @@ export default function RootLayout({
       suppressHydrationWarning
       className={`${inter.variable} ${instrumentSerif.variable} ${spaceGrotesk.variable} ${sourceSerif.variable} ${greatVibes.variable} ${geistMono.variable}`}
     >
+      <head>
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              try {
+                if (!sessionStorage.getItem('bhavy-intro-seen') && !window.matchMedia('(prefers-reduced-motion: reduce)').matches && (window.location.pathname === '/' || window.location.pathname === '')) {
+                  document.documentElement.classList.add('intro-active');
+                }
+              } catch (e) {}
+            `,
+          }}
+        />
+      </head>
       <body className="min-h-screen antialiased bg-background">
         <ThemeProvider
           attribute="class"
