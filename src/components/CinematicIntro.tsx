@@ -117,7 +117,7 @@ export function CinematicIntro({ coverImage, onComplete }: CinematicIntroProps) 
             opacity: 0,
             transition: { duration: 0.55, ease: [0.16, 1, 0.3, 1] },
           }}
-          className="fixed inset-0 z-[100] bg-[#050505] flex items-center justify-center overflow-hidden select-none"
+          className="fixed inset-0 z-[100] bg-[var(--bg-base)] flex items-center justify-center overflow-hidden select-none"
           style={{ willChange: "opacity" }}
         >
           {/* Subtle Cinematic Photography Layer */}
@@ -146,21 +146,27 @@ export function CinematicIntro({ coverImage, onComplete }: CinematicIntroProps) 
             />
           </motion.div>
 
-          {/* Cinematic Vignette & AMOLED Gradient Overlays */}
+          {/* Cinematic Vignette & Aurora Gradient Overlays */}
           <div
             className="absolute inset-0 pointer-events-none"
             style={{
               background:
-                "radial-gradient(ellipse at center, rgba(5,5,5,0.45) 0%, rgba(5,5,5,0.85) 65%, #050505 100%)",
+                "radial-gradient(ellipse at center, rgba(7,6,11,0.40) 0%, rgba(7,6,11,0.78) 65%, #07060b 100%)",
             }}
           />
-          <div className="absolute inset-0 bg-gradient-to-t from-[#050505] via-transparent to-[#050505]/75 pointer-events-none" />
+          <div className="absolute inset-0 bg-gradient-to-t from-[#07060b] via-transparent to-[#07060b]/70 pointer-events-none" />
 
-          {/* Delicate Central Orchid Glow */}
+          {/* Aurora Glow Blobs: Orchid, Violet & Amber */}
           <div
-            className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[480px] h-[360px] rounded-full blur-[140px] opacity-15 pointer-events-none"
+            className="absolute top-1/3 left-1/4 -translate-x-1/2 -translate-y-1/2 w-[520px] h-[400px] rounded-full blur-[140px] opacity-25 pointer-events-none animate-aurora-1"
             style={{
               background: "radial-gradient(circle, #e879f9 0%, #a855f7 60%, transparent 80%)",
+            }}
+          />
+          <div
+            className="absolute bottom-1/4 right-1/4 w-[480px] h-[360px] rounded-full blur-[140px] opacity-20 pointer-events-none animate-aurora-3"
+            style={{
+              background: "radial-gradient(circle, #f5b97a 0%, #ea580c 60%, transparent 80%)",
             }}
           />
 

@@ -57,3 +57,13 @@ export const useAuthStore = create<AuthStore>((set) => ({
     }
   },
 }))
+
+interface AmbientStore {
+  bgImage: string | null
+  setBgImage: (image: string | null) => void
+}
+
+export const useAmbientStore = create<AmbientStore>((set) => ({
+  bgImage: null,
+  setBgImage: (bgImage) => set({ bgImage }),
+}))

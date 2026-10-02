@@ -6,29 +6,41 @@
 .dark {
   --radius: 0.875rem;
 
-  /* October Dark Palette — AMOLED / Cinematic Dark */
-  --background: #050505;
+  /* October & Aurora Dark Palette — Midnight Aurora */
+  --bg-base: #07060b;
+  --background: #07060b;
   --surface: #0b0b0f;
   --surface-secondary: #111116;
   --surface-elevated: #15151b;
   --card: #0d0d12;
   --card-secondary: #121218;
-  --border: rgba(255, 255, 255, 0.10);
-  --border-strong: rgba(255, 255, 255, 0.16);
-  --border-subtle: rgba(255, 255, 255, 0.06);
+  --border: rgba(255, 255, 255, 0.14);
+  --border-strong: rgba(255, 255, 255, 0.22);
+  --border-subtle: rgba(255, 255, 255, 0.08);
   --foreground: #f5f5f7;
-  --foreground-secondary: #b4b4bc;
-  --muted: #777780;
+  --foreground-secondary: #d0cfd6;
+  --muted: #9a98a3;
 
-  /* October Accents — Orchid / Soft Pink / Lavender */
+  /* Aurora Glass Tokens (Midnight Aurora) */
+  --glass-fill: rgba(255, 255, 255, 0.08);
+  --glass-fill-strong: rgba(255, 255, 255, 0.14);
+  --glass-border: rgba(255, 255, 255, 0.18);
+  --glass-highlight: inset 0 1px 0 rgba(255, 255, 255, 0.25);
+  --glass-shadow: 0 20px 60px rgba(0, 0, 0, 0.45);
+  --text: #f5f5f7;
+  --text-2: #d0cfd6;
+  --text-3: #9a98a3;
+
+  /* Accents */
   --orchid: #e879f9;
   --lavender: #a78bfa;
   --blush: #f4a7c7;
+  --amber: #f5b97a;
   --soft-cyan: #8debff;
   --deep-indigo: #8fd3ff;
   --soft-pink: #f4a7c7;
-
   --accent: #e879f9;
+  --accent-2: #a78bfa;
   --accent-foreground: #050505;
   --primary: #e879f9;
   --primary-foreground: #050505;
@@ -102,33 +114,46 @@
 .light {
   --radius: 0.875rem;
 
-  /* October Light Palette — Editorial Warm Paper */
+  /* October & Aurora Light Palette — Warm Dawn */
+  --bg-base: #faf9f7;
   --background: #faf9f7;
   --surface: #ffffff;
   --surface-secondary: #f3f1ef;
   --surface-elevated: #ffffff;
   --card: #ffffff;
   --card-secondary: #f6f4f0;
-  --border: rgba(0, 0, 0, 0.09);
-  --border-strong: rgba(0, 0, 0, 0.16);
+  --border: rgba(0, 0, 0, 0.10);
+  --border-strong: rgba(0, 0, 0, 0.18);
   --border-subtle: rgba(0, 0, 0, 0.05);
   --foreground: #171717;
-  --foreground-secondary: #66636a;
-  --muted: #99949a;
+  --foreground-secondary: #4a4650;
+  --muted: #7a747e;
+
+  /* Aurora Glass Light Tokens ("Warm Dawn") */
+  --glass-fill: rgba(255, 255, 255, 0.55);
+  --glass-fill-strong: rgba(255, 255, 255, 0.75);
+  --glass-border: rgba(255, 255, 255, 0.80);
+  --glass-highlight: inset 0 1px 0 rgba(255, 255, 255, 0.90);
+  --glass-shadow: 0 20px 50px rgba(80, 50, 90, 0.14);
+  --text: #171717;
+  --text-2: #4a4650;
+  --text-3: #7a747e;
 
   /* Accents — Subtle orchid and warm tones */
   --orchid: #d946ef;
   --lavender: #8b5cf6;
   --blush: #ec4899;
+  --amber: #ea580c;
   --soft-cyan: #0891b2;
   --deep-indigo: #4338ca;
   --soft-pink: #d946ef;
 
   --accent: #d946ef;
+  --accent-2: #8b5cf6;
   --accent-foreground: #ffffff;
   --primary: #d946ef;
   --primary-foreground: #ffffff;
-  --secondary: rgba(0, 0, 0, 0.04);
+  --secondary: rgba(0, 0, 0, 0.05);
   --secondary-foreground: #3f3f46;
   --ring: rgba(217, 70, 239, 0.35);
 
@@ -291,45 +316,94 @@
   }
 }
 
-/* ---------- Surfaces ---------- */
+/* ---------- Surfaces & Aurora Frosted Glass ---------- */
 
 .glass {
-  background: var(--glass-bg);
-  backdrop-filter: blur(var(--glass-blur));
-  -webkit-backdrop-filter: blur(var(--glass-blur));
+  background: var(--glass-fill);
+  backdrop-filter: blur(22px) saturate(160%);
+  -webkit-backdrop-filter: blur(22px) saturate(160%);
   border: 1px solid var(--glass-border);
-  box-shadow: 0 8px 32px var(--glass-shadow);
+  box-shadow: var(--glass-shadow), var(--glass-highlight);
   will-change: transform;
 }
 
 .glass-strong {
-  background: color-mix(in srgb, var(--surface) 82%, transparent);
-  backdrop-filter: blur(24px);
-  -webkit-backdrop-filter: blur(24px);
+  background: var(--glass-fill-strong);
+  backdrop-filter: blur(28px) saturate(170%);
+  -webkit-backdrop-filter: blur(28px) saturate(170%);
   border: 1px solid var(--glass-border);
-  box-shadow: 0 12px 48px var(--glass-shadow);
+  box-shadow: var(--glass-shadow), var(--glass-highlight);
+  will-change: transform;
+}
+
+.glass-pill {
+  background: var(--glass-fill);
+  backdrop-filter: blur(22px) saturate(160%);
+  -webkit-backdrop-filter: blur(22px) saturate(160%);
+  border: 1px solid var(--glass-border);
+  border-radius: 9999px;
+  box-shadow: var(--glass-shadow), var(--glass-highlight);
   will-change: transform;
 }
 
 .glass-card {
-  background: linear-gradient(180deg, rgba(255, 255, 255, 0.035), rgba(255, 255, 255, 0.01) 60%), var(--card);
-  border: 1px solid var(--border);
-  border-radius: 22px;
+  background: var(--glass-fill);
+  backdrop-filter: blur(22px) saturate(160%);
+  -webkit-backdrop-filter: blur(22px) saturate(160%);
+  border: 1px solid var(--glass-border);
+  border-radius: 28px;
+  box-shadow: var(--glass-shadow), var(--glass-highlight);
   transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1),
               box-shadow 0.35s cubic-bezier(0.16, 1, 0.3, 1),
-              border-color 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+              border-color 0.35s cubic-bezier(0.16, 1, 0.3, 1),
+              background-color 0.35s cubic-bezier(0.16, 1, 0.3, 1);
   will-change: transform;
 }
 
-.light .glass-card {
-  background: #ffffff;
-  border: 1px solid var(--border);
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03);
+.glass-card:hover {
+  background: var(--glass-fill-strong);
+  border-color: rgba(255, 255, 255, 0.28);
+  box-shadow: 0 28px 72px rgba(0, 0, 0, 0.5), var(--glass-highlight);
 }
 
-.glass-card:hover {
-  border-color: var(--border-strong);
-  box-shadow: var(--card-hover-shadow);
+.light .glass-card:hover {
+  border-color: rgba(255, 255, 255, 0.95);
+  box-shadow: 0 28px 60px rgba(80, 50, 90, 0.2), var(--glass-highlight);
+}
+
+.reading-glass {
+  background: rgba(10, 8, 16, 0.62);
+  backdrop-filter: blur(28px) saturate(160%);
+  -webkit-backdrop-filter: blur(28px) saturate(160%);
+  border: 1px solid var(--glass-border);
+  box-shadow: var(--glass-shadow), var(--glass-highlight);
+}
+
+.light .reading-glass {
+  background: rgba(255, 255, 255, 0.82);
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  box-shadow: 0 20px 50px rgba(80, 50, 90, 0.08);
+}
+
+@supports not (backdrop-filter: blur(1px)) {
+  .glass,
+  .glass-pill,
+  .glass-card {
+    background: rgba(15, 12, 22, 0.85);
+  }
+  .light .glass,
+  .light .glass-pill,
+  .light .glass-card {
+    background: rgba(255, 255, 255, 0.92);
+  }
+  .glass-strong,
+  .reading-glass {
+    background: rgba(18, 14, 26, 0.92);
+  }
+  .light .glass-strong,
+  .light .reading-glass {
+    background: rgba(255, 255, 255, 0.96);
+  }
 }
 
 .surface {
@@ -667,6 +741,25 @@
 .animate-write-in { animation: write-in 1.4s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
 .animate-moon-rise { animation: moon-rise 1.4s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
 .animate-sparkle { animation: star-sparkle 2.4s ease-in-out infinite; }
+
+@keyframes aurora-drift-1 {
+  0%, 100% { transform: translate(0px, 0px) scale(1); }
+  50% { transform: translate(50px, -35px) scale(1.12); }
+}
+
+@keyframes aurora-drift-2 {
+  0%, 100% { transform: translate(0px, 0px) scale(1); }
+  50% { transform: translate(-45px, 45px) scale(1.08); }
+}
+
+@keyframes aurora-drift-3 {
+  0%, 100% { transform: translate(0px, 0px) scale(1); }
+  50% { transform: translate(35px, 50px) scale(1.15); }
+}
+
+.animate-aurora-1 { animation: aurora-drift-1 32s ease-in-out infinite alternate; }
+.animate-aurora-2 { animation: aurora-drift-2 38s ease-in-out infinite alternate; }
+.animate-aurora-3 { animation: aurora-drift-3 35s ease-in-out infinite alternate; }
 
 /* ---------- Micro-interactions ---------- */
 

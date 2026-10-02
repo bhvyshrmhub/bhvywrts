@@ -130,8 +130,10 @@ export function StoryEditorForm({
   const excerpt = useMemo(() => {
     const text = content.replace(/<[^>]*>/g, "").trim()
     const firstParagraph = text.split(/\n\s*\n/)[0] || text
-
-    return firstParagraph.slice(0, 220) || ""
+    if (firstParagraph.length <= 220) return firstParagraph
+    const cut = firstParagraph.slice(0, 220)
+    const lastSpace = cut.lastIndexOf(" ")
+    return (lastSpace > 80 ? cut.slice(0, lastSpace) : cut) + "…"
   }, [content])
 
   const tags = useMemo(
@@ -324,17 +326,17 @@ export function StoryEditorForm({
             </h1>
           </div>
 
-          <div className="flex items-center gap-1.5">
+          <div className="inline-flex items-center gap-1 p-1 rounded-full glass-pill">
             {modes.map((m) => (
               <button
                 key={m.id}
                 onClick={() => setMode(m.id)}
                 aria-pressed={mode === m.id}
                 className={cn(
-                  "px-2.5 py-1 rounded-full text-[11px] border transition-colors font-[var(--font-grotesk)]",
+                  "px-3 py-1 rounded-full text-[11px] transition-all font-[var(--font-grotesk)]",
                   mode === m.id
-                    ? "border-transparent bg-white text-black"
-                    : "border-[var(--border)] text-[var(--foreground-secondary)] hover:text-foreground"
+                    ? "glass-strong text-foreground border border-white/20 shadow-sm font-medium"
+                    : "text-[var(--muted)] hover:text-foreground"
                 )}
               >
                 {m.label}
@@ -915,9 +917,9 @@ export function StoryEditorForm({
                 disabled={
                   saving || !title.trim()
                 }
-                className="h-9 px-4 text-xs rounded-full border border-[var(--border)] text-[var(--foreground-secondary)] hover:text-foreground hover:border-[var(--border-strong)] transition-colors disabled:opacity-40 flex items-center gap-1.5 font-[var(--font-grotesk)]"
+                className="h-9 px-4 text-xs rounded-full glass-pill hover:scale-105 transition-all disabled:opacity-40 flex items-center gap-1.5 font-[var(--font-grotesk)]"
               >
-                <Save className="w-3.5 h-3.5" />
+                <Save className="w-3.5 h-3.5 text-[var(--accent)]" />
 
                 <span className="hidden sm:inline">
                   Save Draft
@@ -933,7 +935,7 @@ export function StoryEditorForm({
                 disabled={
                   saving || !title.trim()
                 }
-                className="h-9 px-4 text-xs rounded-full bg-white text-black hover:bg-white/90 transition-colors disabled:opacity-40 flex items-center gap-1.5 font-[var(--font-grotesk)]"
+                className="h-9 px-4 text-xs rounded-full bg-[var(--text)] text-[var(--bg-base)] hover:opacity-90 hover:scale-105 transition-all disabled:opacity-40 flex items-center gap-1.5 font-[var(--font-grotesk)] font-medium shadow-sm"
               >
                 <Check className="w-3.5 h-3.5" />
 

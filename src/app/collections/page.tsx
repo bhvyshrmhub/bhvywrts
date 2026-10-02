@@ -3,7 +3,7 @@
 import { useEffect, useState, useMemo } from "react"
 import Link from "next/link"
 import { motion } from "framer-motion"
-import { Moon, ArrowRight, FolderOpen, Sparkles } from "lucide-react"
+import { Moon, ArrowRight, FolderOpen, Sparkles, BookOpen } from "lucide-react"
 import { Navbar } from "@/components/Navbar"
 import { Footer } from "@/components/Footer"
 import { FloatingWriteButton } from "@/components/FloatingWriteButton"
@@ -57,18 +57,8 @@ export default function CollectionsPage() {
       <ReadingProgress />
       <Navbar />
 
-      {/* Ambient background glow */}
-      <div className="pointer-events-none fixed inset-0 z-0 overflow-hidden" aria-hidden="true">
-        <div
-          className="absolute top-[-10%] left-[20%] w-[500px] h-[350px] rounded-full blur-[140px] opacity-[0.06]"
-          style={{
-            background: "radial-gradient(circle, #e879f9 0%, #a855f7 50%, transparent 70%)",
-          }}
-        />
-      </div>
-
       <main className="relative z-10 pt-28 md:pt-36">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 md:px-8 pb-16">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 md:px-8 pb-20">
           <motion.div
             initial={{ opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
@@ -81,31 +71,32 @@ export default function CollectionsPage() {
             <h1 className="text-4xl md:text-5.5xl text-foreground font-[var(--font-instrument-serif)] tracking-tight">
               Collections
             </h1>
-            <p className="text-sm md:text-base text-[var(--foreground-secondary)] mt-3.5 max-w-md mx-auto leading-relaxed font-[var(--font-source-serif)] italic">
+            <p className="text-sm md:text-base text-[var(--text-2)] mt-3.5 max-w-md mx-auto leading-relaxed font-[var(--font-source-serif)] italic">
               Groups of stories that belong to the same world, mood, or season of the heart.
             </p>
           </motion.div>
 
           {loading ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-7">
               {Array.from({ length: 4 }).map((_, i) => (
-                <div key={i} className="h-72 rounded-[24px] skeleton border border-[var(--border)]" />
+                <div key={i} className="h-80 rounded-[32px] skeleton border border-white/15" />
               ))}
             </div>
           ) : collections.length === 0 ? (
-            <div className="text-center py-20 glass-card rounded-[28px] max-w-md mx-auto p-8">
+            <div className="text-center py-20 glass-card rounded-[32px] max-w-md mx-auto p-8 border border-white/20 shadow-xl">
               <Moon className="w-10 h-10 text-[var(--muted)] mx-auto mb-4 opacity-50" />
               <p className="text-xl font-[var(--font-instrument-serif)] text-foreground">
                 Some stories are still waiting for a home.
               </p>
-              <p className="text-xs text-[var(--muted)] mt-2">
+              <p className="text-xs text-[var(--text-3)] mt-2 font-[var(--font-source-serif)]">
                 Collections will appear here as stories find their place.
               </p>
             </div>
           ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-7 lg:gap-8">
               {collections.map(({ collection, stories: colStories }, i) => {
                 const accent = COLLECTION_ACCENTS[collection] || "#e879f9"
+                const firstStory = colStories[0]
                 return (
                   <motion.div
                     key={collection}
@@ -118,51 +109,60 @@ export default function CollectionsPage() {
                       href={`/collections/${encodeURIComponent(collection.toLowerCase())}`}
                       className="group block h-full focus-visible:outline-none"
                     >
-                      <div
-                        className="glass-card overflow-hidden h-full hover-lift rounded-[24px] md:rounded-[28px] border border-[var(--border)] group-hover:border-[var(--border-strong)]"
-                      >
-                        <div className="relative aspect-[16/9] overflow-hidden bg-[#09090c]">
-                          {colStories[0]?.coverImage ? (
+                      <div className="glass-card overflow-hidden h-full rounded-[32px] border border-[var(--glass-border)] group-hover:border-white/30 transition-all duration-500 shadow-lg flex flex-col justify-between">
+                        {/* Book Cover Image Area */}
+                        <div className="relative aspect-[16/10] overflow-hidden bg-[#09090c]">
+                          {firstStory?.coverImage ? (
                             <img
-                              src={colStories[0].coverImage}
+                              src={firstStory.coverImage}
                               alt={collection}
                               loading="lazy"
                               decoding="async"
-                              className="w-full h-full object-cover transition-transform duration-[900ms] group-hover:scale-[1.05]"
+                              className="w-full h-full object-cover transition-transform duration-[1000ms] group-hover:scale-[1.05]"
                             />
                           ) : (
                             <div
                               className="w-full h-full"
-                              style={{ background: `linear-gradient(140deg, ${accent}22 0%, #09090c 70%)` }}
+                              style={{ background: `linear-gradient(140deg, ${accent}25 0%, #07060b 80%)` }}
                             />
                           )}
-                          <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
-                          <div className="absolute top-5 left-6 flex items-center gap-2">
-                            <Moon className="w-4 h-4" style={{ color: accent }} />
-                            <span className="text-[9px] uppercase tracking-[0.22em] text-white/90 font-[var(--font-grotesk)]">
+                          <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/30 to-black/15" />
+
+                          {/* Top Tag */}
+                          <div className="absolute top-5 left-5 flex items-center gap-2">
+                            <span className="glass-pill px-3 py-1 text-[9px] uppercase tracking-[0.2em] font-medium text-white font-[var(--font-grotesk)] border border-white/20">
                               Collection
                             </span>
                           </div>
-                          <div className="absolute bottom-5 left-6 right-6">
-                            <h2 className="font-[var(--font-instrument-serif)] text-2.5xl md:text-3xl text-white leading-tight">
-                              {collection}
-                            </h2>
+
+                          {/* Overlaid Frosted Glass Title Capsule */}
+                          <div className="absolute inset-x-5 bottom-5">
+                            <div className="glass-strong rounded-[24px] p-4.5 border border-white/25 shadow-xl backdrop-blur-xl">
+                              <h2 className="font-[var(--font-instrument-serif)] text-2xl md:text-3xl text-white leading-tight">
+                                {collection}
+                              </h2>
+                              <p className="text-[11px] text-white/80 font-[var(--font-grotesk)] uppercase tracking-wider mt-1">
+                                {colStories.length} {colStories.length === 1 ? "story" : "stories"}
+                              </p>
+                            </div>
                           </div>
-                          <div className="absolute inset-x-6 bottom-0" style={{ borderBottom: `2px solid ${accent}50` }} />
                         </div>
-                        <div className="p-6 md:p-8">
-                          <p className="text-xs sm:text-sm text-[var(--foreground-secondary)] leading-relaxed font-[var(--font-source-serif)]">
+
+                        {/* Bottom Description Strip */}
+                        <div className="p-6 md:p-8 flex flex-col justify-between flex-1">
+                          <p className="text-xs sm:text-sm text-[var(--text-2)] leading-relaxed font-[var(--font-source-serif)] italic">
                             {COLLECTION_DESCRIPTIONS[collection]}
                           </p>
-                          <div className="flex items-center justify-between mt-6 pt-4 border-t border-[var(--border)]">
-                            <span className="text-xs text-[var(--muted)] font-[var(--font-grotesk)]">
-                              {colStories.length} {colStories.length === 1 ? "story" : "stories"}
+
+                          <div className="flex items-center justify-between mt-6 pt-4 border-t border-[var(--glass-border)]">
+                            <span className="text-xs text-[var(--text-3)] font-[var(--font-grotesk)]">
+                              Curated series
                             </span>
                             <span
-                              className="inline-flex items-center gap-1.5 text-xs font-medium font-[var(--font-grotesk)] transition-all duration-300 group-hover:gap-2.5"
+                              className="inline-flex items-center gap-1.5 text-xs font-medium font-[var(--font-grotesk)] transition-all duration-300 group-hover:translate-x-1"
                               style={{ color: accent }}
                             >
-                              Explore Collection
+                              <span>Explore stories</span>
                               <ArrowRight className="w-3.5 h-3.5" />
                             </span>
                           </div>
@@ -176,6 +176,7 @@ export default function CollectionsPage() {
           )}
         </div>
       </main>
+
       <Footer />
       <FloatingWriteButton />
     </div>

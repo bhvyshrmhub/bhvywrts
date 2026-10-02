@@ -18,6 +18,7 @@ import {
   type CollectionType,
 } from "@/lib/constants"
 import { cn } from "@/lib/utils"
+import { useAmbientStore } from "@/lib/store"
 import type { Story } from "@/types"
 
 interface GroupedMonth {
@@ -102,6 +103,9 @@ export default function CollectionPage({ params }: { params: Promise<{ slug: str
             return tags.collection === collection
           })
           setStories(filtered)
+          if (filtered[0]?.coverImage) {
+            useAmbientStore.getState().setBgImage(filtered[0].coverImage)
+          }
         }
       } catch {}
       setLoading(false)
@@ -119,14 +123,14 @@ export default function CollectionPage({ params }: { params: Promise<{ slug: str
       <main className="pt-32 md:pt-40">
         <div className="max-w-7xl mx-auto px-5 md:px-8 pb-16">
           {!collection ? (
-            <div className="text-center py-24">
+            <div className="text-center py-24 glass-card rounded-[32px] p-8 max-w-lg mx-auto">
               <Moon className="w-10 h-10 text-[var(--muted)] mx-auto mb-4 opacity-40" />
               <p className="text-lg font-[var(--font-instrument-serif)] text-[var(--foreground-secondary)]">
                 This collection hasn&apos;t been opened yet.
               </p>
               <Link
                 href="/collections"
-                className="inline-flex items-center gap-1.5 text-sm text-[var(--muted)] hover:text-foreground mt-4 underline-animate"
+                className="inline-flex items-center gap-1.5 text-xs text-foreground mt-5 px-4 py-2 rounded-full glass-pill hover:scale-105 transition-all"
               >
                 <ArrowLeft className="w-3.5 h-3.5" />
                 Back to collections
@@ -139,11 +143,15 @@ export default function CollectionPage({ params }: { params: Promise<{ slug: str
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
-                className="text-center mb-12"
+                className="glass-card rounded-[32px] md:rounded-[36px] p-8 md:p-12 text-center mb-14 max-w-3xl mx-auto relative overflow-hidden"
               >
+                <div
+                  className="absolute -top-24 left-1/2 -translate-x-1/2 w-80 h-80 rounded-full blur-[90px] opacity-20 pointer-events-none"
+                  style={{ backgroundColor: COLLECTION_ACCENTS[collection] || "var(--accent)" }}
+                />
                 <Link
                   href="/collections"
-                  className="inline-flex items-center gap-1.5 text-xs text-[var(--foreground-secondary)] hover:text-foreground transition-colors mb-6"
+                  className="inline-flex items-center gap-1.5 text-xs text-[var(--foreground-secondary)] hover:text-foreground transition-all mb-6 px-3.5 py-1.5 rounded-full glass-pill"
                 >
                   <ArrowLeft className="w-3.5 h-3.5" />
                   All collections
@@ -158,13 +166,17 @@ export default function CollectionPage({ params }: { params: Promise<{ slug: str
                     Collection
                   </span>
                 </div>
-                <h1 className="text-4xl md:text-6xl text-foreground">{collection}</h1>
+                <h1 className="text-4xl md:text-6xl text-foreground font-[var(--font-instrument-serif)] tracking-tight">
+                  {collection}
+                </h1>
                 <p className="text-sm md:text-base text-[var(--foreground-secondary)] mt-4 max-w-md mx-auto leading-relaxed">
                   {COLLECTION_DESCRIPTIONS[collection]}
                 </p>
-                <p className="text-xs text-[var(--muted)] mt-4 font-[var(--font-grotesk)]">
-                  {stories.length} {stories.length === 1 ? "story" : "stories"} · newest first
-                </p>
+                <div className="inline-flex items-center gap-2 mt-5 px-3 py-1 rounded-full bg-white/[0.04] dark:bg-white/[0.06] border border-white/10 text-xs text-[var(--muted)] font-[var(--font-grotesk)]">
+                  <span>{stories.length} {stories.length === 1 ? "story" : "stories"}</span>
+                  <span>·</span>
+                  <span>newest first</span>
+                </div>
               </motion.div>
 
               {loading ? (

@@ -68,7 +68,7 @@ export default function DateSheet({ date, stories, onClose }: DateSheetProps) {
             animate={{ y: 0 }}
             exit={{ y: "100%" }}
             transition={{ type: "spring", damping: 30, stiffness: 300 }}
-            className="fixed bottom-0 left-0 right-0 z-[101] max-h-[85vh] overflow-y-auto rounded-t-3xl bg-[var(--surface)] border-t border-[var(--border)] md:bottom-auto md:top-1/2 md:left-1/2 md:-translate-x-1/2 md:-translate-y-1/2 md:max-w-md md:w-full md:rounded-3xl md:border"
+            className="fixed bottom-0 left-0 right-0 z-[101] max-h-[85vh] overflow-y-auto rounded-t-[32px] glass-strong border-t md:border border-white/20 shadow-[0_25px_60px_rgba(0,0,0,0.5)] md:bottom-auto md:top-1/2 md:left-1/2 md:-translate-x-1/2 md:-translate-y-1/2 md:max-w-md md:w-full md:rounded-[32px]"
             role="dialog"
             aria-modal="true"
             aria-label={`Stories from ${dateStr}`}

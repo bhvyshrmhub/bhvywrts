@@ -180,7 +180,7 @@ export default function WritingJourney() {
 
   if (checking || loading) {
     return (
-      <div className="min-h-screen bg-background">
+      <div className="min-h-screen relative">
         <div className="max-w-4xl mx-auto px-5 md:px-8 pt-32 md:pt-40">
           <div className="space-y-6">
             <div className="h-4 w-24 rounded-full skeleton" />
@@ -211,8 +211,8 @@ export default function WritingJourney() {
 
   if (error) {
     return (
-      <div className="min-h-screen bg-background flex items-center justify-center">
-        <div className="text-center space-y-4 max-w-sm">
+      <div className="min-h-screen relative flex items-center justify-center">
+        <div className="text-center space-y-4 max-w-sm glass-card rounded-[32px] p-8">
           <div className="text-4xl opacity-40">
             <Moon className="w-10 h-10 mx-auto text-[var(--muted)]" />
           </div>
@@ -224,7 +224,7 @@ export default function WritingJourney() {
           </p>
           <button
             onClick={fetchStories}
-            className="text-sm text-[var(--orchid)] hover:underline transition-colors"
+            className="text-sm text-[var(--accent)] hover:underline transition-colors"
           >
             Try again
           </button>
@@ -235,7 +235,7 @@ export default function WritingJourney() {
 
   if (stories.length === 0) {
     return (
-      <div className="min-h-screen bg-background">
+      <div className="min-h-screen relative">
         <div className="max-w-4xl mx-auto px-5 md:px-8 pt-32 md:pt-40 text-center space-y-6">
           <div className="inline-flex items-center gap-2 text-[10px] uppercase tracking-[0.25em] text-[var(--muted)] font-[var(--font-grotesk)]">
             <Moon className="w-3 h-3" />
@@ -253,7 +253,7 @@ export default function WritingJourney() {
   }
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen relative">
       <div className="max-w-4xl mx-auto px-5 md:px-8 pt-28 md:pt-36 pb-20">
         {/* Header */}
         <header className="text-center mb-10 md:mb-14">
@@ -301,11 +301,11 @@ export default function WritingJourney() {
             transition={{ delay: 0.2, duration: 0.6 }}
             className="text-center mb-10"
           >
-            <div className="inline-flex items-center gap-3 px-4 py-2 rounded-full bg-secondary border border-[var(--border)]">
-              <span className="text-[10px] uppercase tracking-[0.2em] text-[var(--muted)] font-[var(--font-grotesk)]">
+            <div className="inline-flex items-center gap-3 px-4 py-2 rounded-full glass-pill">
+              <span className="text-[10px] uppercase tracking-[0.2em] text-[var(--accent)] font-[var(--font-grotesk)]">
                 Writing rhythm
               </span>
-              <span className="w-px h-3 bg-[var(--border)]" />
+              <span className="w-px h-3 bg-white/20" />
               <span className="text-xs text-[var(--foreground-secondary)]">
                 {writingRhythm}
               </span>
@@ -324,11 +324,11 @@ export default function WritingJourney() {
 
           <div className="flex items-center gap-2">
             {years.length > 1 && view === "timeline" && (
-              <div className="flex items-center gap-1">
+              <div className="flex items-center gap-1.5 glass-pill px-2 py-1">
                 <button
                   onClick={handlePrevYear}
                   disabled={years.indexOf(selectedYear!) >= years.length - 1}
-                  className="p-1.5 rounded-full text-[var(--muted)] hover:text-foreground hover:bg-secondary transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
+                  className="p-1 rounded-full text-[var(--muted)] hover:text-foreground transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
                   aria-label="Previous year"
                 >
                   <ChevronLeft className="w-4 h-4" />
@@ -339,7 +339,7 @@ export default function WritingJourney() {
                 <button
                   onClick={handleNextYear}
                   disabled={years.indexOf(selectedYear!) <= 0}
-                  className="p-1.5 rounded-full text-[var(--muted)] hover:text-foreground hover:bg-secondary transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
+                  className="p-1 rounded-full text-[var(--muted)] hover:text-foreground transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
                   aria-label="Next year"
                 >
                   <ChevronRight className="w-4 h-4" />
@@ -348,20 +348,20 @@ export default function WritingJourney() {
             )}
 
             {view === "calendar" && (
-              <div className="flex items-center gap-1">
+              <div className="flex items-center gap-1.5 glass-pill px-2 py-1">
                 <button
                   onClick={handlePrevMonth}
-                  className="p-1.5 rounded-full text-[var(--muted)] hover:text-foreground hover:bg-secondary transition-colors"
+                  className="p-1 rounded-full text-[var(--muted)] hover:text-foreground transition-colors"
                   aria-label="Previous month"
                 >
                   <ChevronLeft className="w-4 h-4" />
                 </button>
-                <span className="text-sm font-medium text-foreground min-w-[10rem] text-center font-[var(--font-grotesk)]">
+                <span className="text-sm font-medium text-foreground min-w-[9.5rem] text-center font-[var(--font-grotesk)]">
                   {MONTH_NAMES[selectedMonth]} {selectedYear}
                 </span>
                 <button
                   onClick={handleNextMonth}
-                  className="p-1.5 rounded-full text-[var(--muted)] hover:text-foreground hover:bg-secondary transition-colors"
+                  className="p-1 rounded-full text-[var(--muted)] hover:text-foreground transition-colors"
                   aria-label="Next month"
                 >
                   <ChevronRight className="w-4 h-4" />
@@ -371,40 +371,42 @@ export default function WritingJourney() {
           </div>
         </div>
 
-        {/* Content */}
-        <AnimatePresence mode="wait">
-          {view === "timeline" ? (
-            <motion.div
-              key={`timeline-${selectedYear}`}
-              initial={{ opacity: 0, y: 8 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -8 }}
-              transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
-            >
-              <TimelineView
-                groupedByMonth={groupedByMonth}
-                selectedYear={selectedYear!}
-                yearStoryCount={filteredStories.length}
-              />
-            </motion.div>
-          ) : (
-            <motion.div
-              key={`calendar-${selectedYear}-${selectedMonth}`}
-              initial={{ opacity: 0, y: 8 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -8 }}
-              transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
-            >
-              <CalendarView
-                year={selectedYear!}
-                month={selectedMonth}
-                storiesByDate={storiesByDate}
-                selectedDate={selectedDate}
-                onSelectDate={setSelectedDate}
-              />
-            </motion.div>
-          )}
-        </AnimatePresence>
+        {/* Content panel wrapped in frosted glass */}
+        <div className="glass-card rounded-[32px] md:rounded-[36px] p-6 sm:p-8 md:p-10 border border-white/10 shadow-[0_20px_50px_rgba(0,0,0,0.3)]">
+          <AnimatePresence mode="wait">
+            {view === "timeline" ? (
+              <motion.div
+                key={`timeline-${selectedYear}`}
+                initial={{ opacity: 0, y: 8 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -8 }}
+                transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
+              >
+                <TimelineView
+                  groupedByMonth={groupedByMonth}
+                  selectedYear={selectedYear!}
+                  yearStoryCount={filteredStories.length}
+                />
+              </motion.div>
+            ) : (
+              <motion.div
+                key={`calendar-${selectedYear}-${selectedMonth}`}
+                initial={{ opacity: 0, y: 8 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -8 }}
+                transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
+              >
+                <CalendarView
+                  year={selectedYear!}
+                  month={selectedMonth}
+                  storiesByDate={storiesByDate}
+                  selectedDate={selectedDate}
+                  onSelectDate={setSelectedDate}
+                />
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </div>
       </div>
 
       {/* Date Sheet */}
@@ -431,14 +433,14 @@ function OnThisDayCard({ story }: { story: Story }) {
       transition={{ delay: 0.3, duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
       className="mb-10"
     >
-      <div className="relative overflow-hidden rounded-2xl border border-[var(--border)] bg-secondary/50 p-6 md:p-8">
-        <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-bl from-[var(--orchid)]/5 to-transparent pointer-events-none" />
+      <div className="relative overflow-hidden rounded-[28px] glass-card border border-white/15 p-6 md:p-8">
+        <div className="absolute top-0 right-0 w-36 h-36 bg-gradient-to-bl from-[var(--accent)]/10 to-transparent pointer-events-none" />
         <div className="relative z-10 flex flex-col md:flex-row items-start gap-5">
           <div className="flex-shrink-0 mt-1">
-            <Moon className="w-5 h-5 text-[var(--orchid)] opacity-60" />
+            <Moon className="w-5 h-5 text-[var(--accent)] opacity-80" />
           </div>
           <div className="flex-1 min-w-0">
-            <p className="text-[10px] uppercase tracking-[0.25em] text-[var(--orchid)] font-[var(--font-grotesk)] mb-2">
+            <p className="text-[10px] uppercase tracking-[0.25em] text-[var(--accent)] font-[var(--font-grotesk)] mb-2 font-medium">
               On this day
             </p>
             <p className="text-xs text-[var(--muted)] mb-3">
@@ -458,7 +460,7 @@ function OnThisDayCard({ story }: { story: Story }) {
             )}
             <Link
               href={`/stories/${story.slug}`}
-              className="inline-flex items-center gap-1.5 text-xs text-[var(--orchid)] hover:underline transition-colors font-[var(--font-grotesk)]"
+              className="inline-flex items-center gap-1.5 text-xs text-[var(--accent)] hover:underline transition-colors font-[var(--font-grotesk)]"
             >
               Read again
               <span aria-hidden="true">→</span>
@@ -472,12 +474,12 @@ function OnThisDayCard({ story }: { story: Story }) {
 
 function ViewSwitcher({ view, onChange }: { view: ViewMode; onChange: (v: ViewMode) => void }) {
   return (
-    <div className="relative inline-flex items-center rounded-full bg-secondary border border-[var(--border)] p-0.5">
+    <div className="relative inline-flex items-center rounded-full glass-pill p-1">
       <div
-        className="absolute top-0.5 bottom-0.5 rounded-full bg-[var(--card)] border border-[var(--border)] shadow-sm transition-all duration-300 ease-out"
+        className="absolute top-1 bottom-1 rounded-full glass-strong border border-white/20 shadow-sm transition-all duration-300 ease-out"
         style={{
-          left: view === "timeline" ? "2px" : "calc(50% + 1px)",
-          right: view === "timeline" ? "calc(50% + 1px)" : "2px",
+          left: view === "timeline" ? "4px" : "calc(50% + 2px)",
+          right: view === "timeline" ? "calc(50% + 2px)" : "4px",
         }}
       />
       {(["timeline", "calendar"] as const).map((v) => (
@@ -485,7 +487,7 @@ function ViewSwitcher({ view, onChange }: { view: ViewMode; onChange: (v: ViewMo
           key={v}
           onClick={() => onChange(v)}
           className={`relative z-10 px-4 py-1.5 text-xs font-medium capitalize transition-colors duration-200 font-[var(--font-grotesk)] ${
-            view === v ? "text-foreground" : "text-[var(--muted)] hover:text-[var(--foreground-secondary)]"
+            view === v ? "text-foreground font-semibold" : "text-[var(--muted)] hover:text-foreground"
           }`}
         >
           {v}

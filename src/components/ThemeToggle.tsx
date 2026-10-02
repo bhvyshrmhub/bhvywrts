@@ -3,9 +3,8 @@
 import { useEffect, useState } from "react"
 import { useTheme } from "next-themes"
 import { Moon, Sun } from "lucide-react"
+import { motion } from "framer-motion"
 import { cn } from "@/lib/utils"
-
-const THEME_COLORS = { dark: "#050505", light: "#faf9f7" }
 
 export function ThemeToggle({ className }: { className?: string }) {
   const { resolvedTheme, setTheme } = useTheme()
@@ -15,22 +14,13 @@ export function ThemeToggle({ className }: { className?: string }) {
     setMounted(true)
   }, [])
 
-  useEffect(() => {
-    if (!mounted) return
-    const color = resolvedTheme === "light" ? THEME_COLORS.light : THEME_COLORS.dark
-    const meta = document.querySelector<HTMLMetaElement>('meta[name="theme-color"]')
-    if (meta) meta.content = color
-  }, [mounted, resolvedTheme])
-
   const isDark = resolvedTheme === "dark"
 
   if (!mounted) {
     return (
-      <button
-        type="button"
-        aria-label="Toggle theme"
+      <div
         className={cn(
-          "relative inline-flex items-center justify-center w-9 h-9 rounded-full border border-transparent",
+          "w-16 h-8 rounded-full border border-[var(--glass-border)] bg-[var(--glass-fill)]",
           className
         )}
       />
@@ -38,20 +28,61 @@ export function ThemeToggle({ className }: { className?: string }) {
   }
 
   return (
-    <button
-      type="button"
-      onClick={() => setTheme(isDark ? "light" : "dark")}
-      aria-label={isDark ? "Switch to light theme" : "Switch to dark theme"}
-      title={isDark ? "Switch to light theme" : "Switch to dark theme"}
+    <div
+      role="radiogroup"
+      aria-label="Theme mode"
       className={cn(
-        "relative inline-flex items-center justify-center w-9 h-9 rounded-full border border-[var(--border-strong)] text-[var(--foreground-secondary)] hover:text-foreground hover:border-[var(--border-strong)] transition-colors",
+        "relative flex items-center p-0.5 rounded-full border border-[var(--glass-border)] bg-[var(--glass-fill)] backdrop-blur-md transition-colors",
         className
       )}
     >
-      <span className="absolute inset-0 rounded-full bg-secondary opacity-0 hover:opacity-100 transition-opacity" />
-      <span key={isDark ? "moon" : "sun"} className="relative animate-scale-in">
-        {isDark ? <Sun className="w-[17px] h-[17px]" /> : <Moon className="w-[17px] h-[17px]" />}
-      </span>
-    </button>
+      <button
+        type="button"
+        role="radio"
+        aria-checked={!isDark}
+        onClick={() => setTheme("light")}
+        aria-label="Light mode"
+        title="Light mode"
+        className={cn(
+          "relative z-10 flex items-center justify-center w-7 h-7 rounded-full text-xs transition-colors cursor-pointer",
+          !isDark
+            ? "text-amber-500 font-semibold"
+            : "text-[var(--text-3)] hover:text-[var(--text)]"
+        )}
+      >
+        {!isDark && (
+          <motion.span
+            layoutId="theme-pill-indicator"
+            className="absolute inset-0 rounded-full bg-white shadow-sm border border-black/10 -z-10"
+            transition={{ type: "spring", stiffness: 450, damping: 35 }}
+          />
+        )}
+        <Sun className="w-3.5 h-3.5" />
+      </button>
+
+      <button
+        type="button"
+        role="radio"
+        aria-checked={isDark}
+        onClick={() => setTheme("dark")}
+        aria-label="Dark mode"
+        title="Dark mode"
+        className={cn(
+          "relative z-10 flex items-center justify-center w-7 h-7 rounded-full text-xs transition-colors cursor-pointer",
+          isDark
+            ? "text-[var(--orchid)] font-semibold"
+            : "text-[var(--text-3)] hover:text-[var(--text)]"
+        )}
+      >
+        {isDark && (
+          <motion.span
+            layoutId="theme-pill-indicator"
+            className="absolute inset-0 rounded-full bg-white/20 dark:bg-white/15 shadow-sm border border-white/25 -z-10"
+            transition={{ type: "spring", stiffness: 450, damping: 35 }}
+          />
+        )}
+        <Moon className="w-3.5 h-3.5" />
+      </button>
+    </div>
   )
 }

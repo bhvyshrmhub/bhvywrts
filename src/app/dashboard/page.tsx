@@ -168,15 +168,15 @@ export default function DashboardPage() {
               <div className="flex items-center gap-2">
                 <Link
                   href="/admin/analytics"
-                  className="inline-flex items-center gap-2 px-4 py-2.5 text-sm rounded-full border border-[var(--border)] text-[var(--foreground-secondary)] hover:text-foreground hover:border-[var(--border-strong)] transition-colors"
+                  className="inline-flex items-center gap-2 px-4 py-2 text-sm rounded-full glass-pill hover:scale-105 transition-all"
                 >
-                  <BarChart3 className="w-4 h-4" />
+                  <BarChart3 className="w-4 h-4 text-[var(--accent)]" />
                   Analytics
                 </Link>
 
                 <Link
                   href="/editor"
-                  className="inline-flex items-center gap-2 px-4 py-2.5 text-sm rounded-full bg-foreground text-background hover:opacity-90 transition-all font-[var(--font-grotesk)] shadow-sm"
+                  className="inline-flex items-center gap-2 px-4 py-2 text-sm rounded-full bg-[var(--text)] text-[var(--bg-base)] font-medium hover:opacity-90 transition-all font-[var(--font-grotesk)] shadow-sm hover:scale-105"
                 >
                   <Plus className="w-4 h-4" />
                   New Story
@@ -185,7 +185,7 @@ export default function DashboardPage() {
             </div>
 
             {/* Stats */}
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-10">
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3.5 mb-10">
               {[
                 {
                   label: "Total Stories",
@@ -222,9 +222,9 @@ export default function DashboardPage() {
                     delay: i * 0.06,
                     duration: 0.6,
                   }}
-                  className="p-5 rounded-3xl glass-card"
+                  className="p-5 rounded-[26px] glass-card border border-white/10 hover:border-white/20 transition-all"
                 >
-                  <stat.icon className="w-4 h-4 text-[var(--muted)] mb-3" />
+                  <stat.icon className="w-4 h-4 text-[var(--accent)] mb-3" />
 
                   <div className="text-2xl font-[var(--font-instrument-serif)] text-foreground">
                     {stat.value}
@@ -238,17 +238,17 @@ export default function DashboardPage() {
             </div>
 
             {/* Filter tabs */}
-            <div className="flex items-center gap-1.5 mb-6">
+            <div className="inline-flex items-center gap-1 p-1 rounded-full glass-pill mb-7">
               {(["all", "published", "drafts"] as const).map((f) => (
                 <button
                   key={f}
                   onClick={() => setFilter(f)}
                   aria-pressed={filter === f}
                   className={cn(
-                    "px-3.5 py-1.5 rounded-full text-xs border transition-colors font-[var(--font-grotesk)]",
+                    "px-4 py-1.5 rounded-full text-xs transition-all font-[var(--font-grotesk)] font-medium",
                     filter === f
-                      ? "border-transparent bg-foreground text-background shadow-sm"
-                      : "border-[var(--border)] text-[var(--foreground-secondary)] hover:border-[var(--border-strong)] hover:text-foreground"
+                      ? "glass-strong text-foreground border border-white/20 shadow-sm"
+                      : "text-[var(--muted)] hover:text-foreground"
                   )}
                 >
                   {f.charAt(0).toUpperCase() + f.slice(1)}

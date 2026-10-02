@@ -2,15 +2,13 @@
 
 import { useState, useEffect, useRef } from "react"
 import Link from "next/link"
-import { usePathname, useRouter } from "next/navigation"
+import { usePathname } from "next/navigation"
 import { AnimatePresence, motion } from "framer-motion"
 import {
   Menu,
   X,
-  LogOut,
   PenSquare,
   LayoutDashboard,
-  BarChart3,
   BookOpen,
   FolderOpen,
   Calendar,
@@ -31,8 +29,7 @@ const NAV_ITEMS = [
 
 export function Navbar() {
   const pathname = usePathname()
-  const router = useRouter()
-  const { isAdmin, checking, logout } = useAuthStore()
+  const { isAdmin, checking } = useAuthStore()
   const [scrolled, setScrolled] = useState(false)
   const [hidden, setHidden] = useState(false)
   const [drawerOpen, setDrawerOpen] = useState(false)
@@ -40,12 +37,12 @@ export function Navbar() {
   const lastScrollY = useRef(0)
   const drawerOpenRef = useRef(false)
 
-  // Keep ref in sync so scroll handler sees latest drawer state
+  const isStoryPage = pathname.startsWith("/stories/") && pathname !== "/stories"
+
   useEffect(() => {
     drawerOpenRef.current = drawerOpen
   }, [drawerOpen])
 
-  // Prevent background scrolling when mobile drawer is open
   useEffect(() => {
     if (drawerOpen) {
       document.body.style.overflow = "hidden"
@@ -57,7 +54,6 @@ export function Navbar() {
     }
   }, [drawerOpen])
 
-  // Auto-close drawer on route change
   useEffect(() => {
     setDrawerOpen(false)
   }, [pathname])
@@ -67,18 +63,15 @@ export function Navbar() {
       if (!ticking.current) {
         requestAnimationFrame(() => {
           const currentY = window.scrollY
-          const isScrolled = currentY > 24
+          const isScrolled = currentY > 20
 
           setScrolled(isScrolled)
 
-          // Don't auto-hide when drawer is open or near top
-          if (drawerOpenRef.current || currentY < 80) {
+          if (drawerOpenRef.current || currentY < 60) {
             setHidden(false)
           } else if (currentY > lastScrollY.current + 8) {
-            // Scrolling down — hide
             setHidden(true)
           } else if (currentY < lastScrollY.current - 8) {
-            // Scrolling up — show
             setHidden(false)
           }
 
@@ -113,67 +106,68 @@ export function Navbar() {
   return (
     <>
       <motion.header
-        initial={{ opacity: 0, y: -12 }}
+        initial={{ opacity: 0, y: -16 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.6, delay: 0.1, ease: [0.16, 1, 0.3, 1] }}
+        transition={{ duration: 0.6, delay: 0.05, ease: [0.16, 1, 0.3, 1] }}
         className={cn(
-          "fixed top-0 left-0 right-0 z-50 transition-all duration-500 will-change-transform",
-          scrolled ? "pt-2 md:pt-3.5" : "pt-0 md:pt-2",
-          hidden && !drawerOpen ? "-translate-y-full" : "translate-y-0"
+          "fixed top-3 sm:top-4 inset-x-0 z-50 transition-transform duration-300 will-change-transform px-3.5 sm:px-6 pointer-events-none",
+          hidden && !drawerOpen ? "-translate-y-24" : "translate-y-0"
         )}
       >
-        <div className="max-w-6xl mx-auto px-3.5 md:px-6">
+        <div className="max-w-[1100px] mx-auto pointer-events-auto">
           <nav
             className={cn(
-              "relative flex items-center justify-between transition-all duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] will-change-transform",
-              scrolled
-                ? "glass-strong h-12 md:h-13 px-4 md:px-6 rounded-full border shadow-[0_8px_32px_rgba(0,0,0,0.36)]"
-                : "bg-transparent h-14 md:h-16 px-1.5 md:px-4"
+              "relative flex items-center justify-between h-14 md:h-[58px] px-3 md:px-5 rounded-full transition-all duration-300",
+              "glass-pill shadow-[0_12px_40px_rgba(0,0,0,0.35)]",
+              isStoryPage && "bg-[var(--glass-fill)]/70 backdrop-blur-xl opacity-90 hover:opacity-100"
             )}
           >
-            {/* Left — Logo */}
-            <div className="flex items-center shrink-0">
+            {/* Left — Logo Wordmark */}
+            <div className="flex items-center shrink-0 pl-1">
               <Logo href="/" size="md" />
             </div>
 
-            {/* Center — desktop nav links with animated pill */}
-            <div className="hidden md:flex items-center gap-1">
-              {NAV_ITEMS.map((item) => (
-                <Link
-                  key={item.href}
-                  href={item.href}
-                  aria-current={isActive(item.href) ? "page" : undefined}
-                  className={cn(
-                    "relative px-4 py-1.5 text-[13px] font-medium transition-colors duration-200 rounded-full font-[var(--font-grotesk)]",
-                    isActive(item.href)
-                      ? "text-foreground font-semibold"
-                      : "text-[var(--foreground-secondary)] hover:text-foreground"
-                  )}
-                >
-                  {isActive(item.href) && (
-                    <motion.span
-                      layoutId="nav-pill"
-                      className="absolute inset-0 rounded-full bg-secondary border border-[var(--border-strong)] -z-10 shadow-sm"
-                      transition={{ type: "spring", stiffness: 420, damping: 32 }}
-                    />
-                  )}
-                  {item.label}
-                </Link>
-              ))}
+            {/* Center — Desktop Nav Links with Sliding Highlight */}
+            <div className="hidden md:flex items-center gap-1 p-1 rounded-full bg-black/10 dark:bg-white/5 border border-white/5">
+              {NAV_ITEMS.map((item) => {
+                const active = isActive(item.href)
+                return (
+                  <Link
+                    key={item.href}
+                    href={item.href}
+                    aria-current={active ? "page" : undefined}
+                    className={cn(
+                      "relative px-4 py-1.5 text-xs font-medium transition-colors duration-200 rounded-full font-[var(--font-grotesk)]",
+                      active
+                        ? "text-foreground font-semibold"
+                        : "text-[var(--text-2)] hover:text-foreground"
+                    )}
+                  >
+                    {active && (
+                      <motion.span
+                        layoutId="navbar-pill-active"
+                        className="absolute inset-0 rounded-full bg-white/20 dark:bg-white/15 border border-white/25 shadow-sm -z-10"
+                        transition={{ type: "spring", stiffness: 450, damping: 35 }}
+                      />
+                    )}
+                    {item.label}
+                  </Link>
+                )
+              })}
             </div>
 
-            {/* Right — theme, admin shortcuts & mobile menu button */}
-            <div className="flex items-center gap-1.5 md:gap-2 shrink-0">
+            {/* Right — Theme Toggle, Admin Controls & Mobile Menu */}
+            <div className="flex items-center gap-2 shrink-0">
               <ThemeToggle />
 
-              {/* Desktop Admin Controls */}
+              {/* Admin Write Pill */}
               {adminReady && (
-                <div className="hidden md:flex items-center gap-1.5 pl-1 border-l border-[var(--border)]">
+                <div className="hidden sm:flex items-center gap-1.5 pl-1.5 border-l border-[var(--glass-border)]">
                   <Link
                     href="/dashboard"
                     aria-label="Dashboard"
                     title="Dashboard"
-                    className="inline-flex items-center justify-center w-8 h-8 rounded-full text-[var(--foreground-secondary)] hover:text-foreground hover:bg-secondary transition-colors"
+                    className="inline-flex items-center justify-center w-8 h-8 rounded-full text-[var(--text-2)] hover:text-foreground hover:bg-white/10 transition-colors"
                   >
                     <LayoutDashboard className="w-3.5 h-3.5" />
                   </Link>
@@ -182,18 +176,18 @@ export function Navbar() {
                     className="inline-flex items-center gap-1.5 rounded-full px-3.5 py-1.5 text-xs font-medium bg-foreground text-background hover:opacity-90 transition-all font-[var(--font-grotesk)] shadow-sm active:scale-95"
                   >
                     <PenSquare className="w-3 h-3" />
-                    Write
+                    <span>Write</span>
                   </Link>
                 </div>
               )}
 
-              {/* Mobile Drawer Toggle */}
+              {/* Mobile Drawer Trigger */}
               <button
                 type="button"
                 onClick={() => setDrawerOpen(!drawerOpen)}
                 aria-label={drawerOpen ? "Close menu" : "Open menu"}
                 aria-expanded={drawerOpen}
-                className="md:hidden inline-flex items-center justify-center w-9 h-9 rounded-full border border-[var(--border)] text-[var(--foreground-secondary)] hover:text-foreground hover:bg-secondary transition-colors"
+                className="md:hidden inline-flex items-center justify-center w-9 h-9 rounded-full border border-[var(--glass-border)] bg-[var(--glass-fill)] text-[var(--text)] hover:bg-white/10 transition-colors cursor-pointer"
               >
                 {drawerOpen ? <X className="w-4 h-4" /> : <Menu className="w-4 h-4" />}
               </button>
@@ -202,7 +196,7 @@ export function Navbar() {
         </div>
       </motion.header>
 
-      {/* Mobile Drawer Sheet */}
+      {/* Mobile Drawer (Aurora Frosted Glass Slide from Top/Side) */}
       <AnimatePresence>
         {drawerOpen && (
           <>
@@ -213,118 +207,84 @@ export function Navbar() {
               exit={{ opacity: 0 }}
               transition={{ duration: 0.3 }}
               onClick={() => setDrawerOpen(false)}
-              className="fixed inset-0 z-[60] bg-black/70 backdrop-blur-md md:hidden"
+              className="fixed inset-0 z-[60] bg-black/60 backdrop-blur-md md:hidden"
             />
 
-            {/* Slide-out Drawer */}
+            {/* Glass Drawer Panel */}
             <motion.aside
-              initial={{ x: "100%" }}
-              animate={{ x: 0 }}
-              exit={{ x: "100%" }}
-              transition={{ type: "spring", stiffness: 350, damping: 35 }}
-              className="fixed top-0 right-0 bottom-0 z-[70] w-full max-w-[320px] bg-[var(--surface)] border-l border-[var(--border)] flex flex-col justify-between p-6 shadow-2xl md:hidden overflow-y-auto"
+              initial={{ y: "-100%", opacity: 0 }}
+              animate={{ y: 0, opacity: 1 }}
+              exit={{ y: "-100%", opacity: 0 }}
+              transition={{ type: "spring", stiffness: 350, damping: 32 }}
+              className="fixed top-0 inset-x-0 z-[70] p-4 md:hidden pointer-events-auto"
             >
-              <div>
-                {/* Drawer Header */}
-                <div className="flex items-center justify-between pb-6 border-b border-[var(--border)]">
+              <div className="glass-strong rounded-[32px] p-6 shadow-2xl border border-[var(--glass-border)] max-w-md mx-auto">
+                <div className="flex items-center justify-between pb-4 border-b border-[var(--glass-border)]">
                   <Logo href="/" size="sm" />
                   <button
                     onClick={() => setDrawerOpen(false)}
                     aria-label="Close menu"
-                    className="inline-flex items-center justify-center w-8 h-8 rounded-full border border-[var(--border)] text-[var(--foreground-secondary)] hover:text-foreground hover:bg-secondary transition-colors"
+                    className="inline-flex items-center justify-center w-8 h-8 rounded-full border border-[var(--glass-border)] text-foreground hover:bg-white/10 transition-colors cursor-pointer"
                   >
                     <X className="w-4 h-4" />
                   </button>
                 </div>
 
-                {/* Journal Info / Subtitle */}
                 <div className="py-4">
                   <p className="text-[10px] uppercase tracking-[0.28em] text-[var(--orchid)] font-[var(--font-grotesk)]">
                     Digital Journal
                   </p>
-                  <p className="text-xs text-[var(--muted)] mt-1 font-[var(--font-source-serif)] italic">
+                  <p className="text-xs text-[var(--text-3)] mt-1 font-[var(--font-source-serif)] italic">
                     Stories, thoughts and things left unsaid.
                   </p>
                 </div>
 
                 {/* Primary Nav Links */}
-                <div className="space-y-1.5 pt-2">
+                <nav className="space-y-1.5 py-2">
                   {NAV_ITEMS.map((item) => {
-                    const Icon = item.icon
                     const active = isActive(item.href)
+                    const Icon = item.icon
                     return (
                       <Link
                         key={item.href}
                         href={item.href}
                         onClick={() => setDrawerOpen(false)}
                         className={cn(
-                          "flex items-center justify-between px-3.5 py-3 rounded-2xl text-sm transition-colors font-[var(--font-grotesk)]",
+                          "flex items-center justify-between px-4 py-3 rounded-2xl text-sm font-medium transition-all font-[var(--font-grotesk)]",
                           active
-                            ? "bg-secondary text-foreground font-semibold border border-[var(--border-strong)]"
-                            : "text-[var(--foreground-secondary)] hover:text-foreground hover:bg-secondary/60"
+                            ? "bg-white/20 dark:bg-white/15 text-foreground font-semibold border border-white/20"
+                            : "text-[var(--text-2)] hover:text-foreground hover:bg-white/10"
                         )}
                       >
-                        <div className="flex items-center gap-3">
-                          <Icon className={cn("w-4 h-4", active ? "text-[var(--orchid)]" : "text-[var(--muted)]")} />
+                        <span className="flex items-center gap-3">
+                          <Icon className="w-4 h-4 text-[var(--orchid)]" />
                           <span>{item.label}</span>
-                        </div>
-                        <ArrowRight className="w-3.5 h-3.5 opacity-40" />
+                        </span>
+                        <ArrowRight className="w-3.5 h-3.5 opacity-60" />
                       </Link>
                     )
                   })}
-                </div>
+                </nav>
 
-                {/* Admin Section (if logged in) */}
+                {/* Mobile Admin Section */}
                 {adminReady && (
-                  <div className="mt-6 pt-5 border-t border-[var(--border)] space-y-1.5">
-                    <p className="text-[10px] uppercase tracking-[0.24em] text-[var(--muted)] font-[var(--font-grotesk)] px-3 mb-2">
-                      Admin Area
-                    </p>
+                  <div className="mt-4 pt-4 border-t border-[var(--glass-border)] flex items-center gap-2">
                     <Link
                       href="/dashboard"
                       onClick={() => setDrawerOpen(false)}
-                      className="flex items-center gap-3 px-3.5 py-2.5 rounded-2xl text-sm text-[var(--foreground-secondary)] hover:text-foreground hover:bg-secondary transition-colors"
+                      className="flex-1 text-center py-2.5 rounded-xl border border-[var(--glass-border)] text-xs font-medium font-[var(--font-grotesk)] hover:bg-white/10 transition-colors"
                     >
-                      <LayoutDashboard className="w-4 h-4 text-[var(--orchid)]" />
-                      <span>Dashboard</span>
+                      Dashboard
                     </Link>
                     <Link
                       href="/editor"
                       onClick={() => setDrawerOpen(false)}
-                      className="flex items-center gap-3 px-3.5 py-2.5 rounded-2xl text-sm text-[var(--foreground-secondary)] hover:text-foreground hover:bg-secondary transition-colors"
+                      className="flex-1 text-center py-2.5 rounded-xl bg-foreground text-background text-xs font-medium font-[var(--font-grotesk)] hover:opacity-90 transition-opacity"
                     >
-                      <PenSquare className="w-4 h-4 text-[var(--orchid)]" />
-                      <span>Write story</span>
+                      Write Story
                     </Link>
-                    <Link
-                      href="/admin/analytics"
-                      onClick={() => setDrawerOpen(false)}
-                      className="flex items-center gap-3 px-3.5 py-2.5 rounded-2xl text-sm text-[var(--foreground-secondary)] hover:text-foreground hover:bg-secondary transition-colors"
-                    >
-                      <BarChart3 className="w-4 h-4 text-[var(--orchid)]" />
-                      <span>Analytics</span>
-                    </Link>
-                    <button
-                      onClick={() => {
-                        setDrawerOpen(false)
-                        logout()
-                        router.push("/")
-                      }}
-                      className="flex items-center gap-3 w-full px-3.5 py-2.5 rounded-2xl text-sm text-red-400 hover:text-red-300 hover:bg-red-500/10 transition-colors text-left"
-                    >
-                      <LogOut className="w-4 h-4" />
-                      <span>Log out</span>
-                    </button>
                   </div>
                 )}
-              </div>
-
-              {/* Drawer Footer */}
-              <div className="pt-6 border-t border-[var(--border)] flex items-center justify-between">
-                <span className="text-xs text-[var(--muted)] font-[var(--font-grotesk)]">
-                  Appearance
-                </span>
-                <ThemeToggle />
               </div>
             </motion.aside>
           </>

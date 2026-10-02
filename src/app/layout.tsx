@@ -7,7 +7,7 @@ import {
   Source_Serif_4,
   Great_Vibes,
 } from "next/font/google"
-import { Background } from "@/components/Background"
+import { AmbientBackground } from "@/components/AmbientBackground"
 import { CursorWrapper } from "@/components/CursorWrapper"
 import { VisitTracker } from "@/components/VisitTracker"
 import { ThemeProvider } from "@/components/ThemeProvider"
@@ -107,7 +107,7 @@ export default function RootLayout({
           enableSystem
           themes={["light", "dark"]}
         >
-          <Background />
+          <AmbientBackground />
           <CursorWrapper />
           <VisitTracker />
           {children}

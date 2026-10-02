@@ -90,21 +90,21 @@ export default function CalendarView({ year, month, storiesByDate, selectedDate,
                 <button
                   key={di}
                   onClick={() => onSelectDate(isSelected ? null : dateKey)}
-                  className={`relative aspect-square rounded-xl flex flex-col items-center justify-center gap-1 transition-all duration-200 ${
+                  className={`relative aspect-square rounded-2xl flex flex-col items-center justify-center gap-1 transition-all duration-300 ${
                     isSelected
-                      ? "bg-secondary border border-[var(--orchid)]/30"
+                      ? "glass-strong border border-[var(--accent)] shadow-[0_0_15px_rgba(232,121,249,0.35)] scale-105 z-10"
                       : hasStories
-                        ? "hover:bg-secondary/60 border border-transparent hover:border-[var(--border)]"
-                        : "border border-transparent hover:bg-secondary/30"
+                        ? "glass border border-white/10 hover:border-[var(--accent)]/50 hover:scale-105"
+                        : "border border-transparent hover:bg-white/[0.04] text-[var(--muted)]"
                   }`}
                   aria-label={`${day}${hasStories ? `, ${dayStories.length} ${dayStories.length === 1 ? "story" : "stories"}` : ""}`}
                 >
                   <span
                     className={`text-sm font-[var(--font-grotesk)] ${
                       isSelected
-                        ? "text-foreground font-medium"
+                        ? "text-foreground font-semibold"
                         : hasStories
-                          ? "text-foreground"
+                          ? "text-foreground font-medium"
                           : "text-[var(--muted)]"
                     }`}
                   >
@@ -112,21 +112,20 @@ export default function CalendarView({ year, month, storiesByDate, selectedDate,
                   </span>
 
                   {hasStories && (
-                    <div className="flex items-center gap-0.5">
+                    <div className="flex items-center gap-1">
                       {dayStories.length <= 3 ? (
                         dayStories.map((_, i) => (
                           <span
                             key={i}
-                            className="w-1 h-1 rounded-full transition-colors duration-200"
+                            className="w-1.5 h-1.5 rounded-full transition-all duration-300"
                             style={{
-                              backgroundColor: isSelected
-                                ? accentColor || "var(--orchid)"
-                                : `${accentColor || "var(--orchid)"}80`,
+                              backgroundColor: accentColor || "var(--accent)",
+                              boxShadow: `0 0 6px ${accentColor || "var(--accent)"}`,
                             }}
                           />
                         ))
                       ) : (
-                        <span className="text-[8px] text-[var(--muted)] font-[var(--font-grotesk)]">
+                        <span className="text-[8px] font-semibold text-[var(--accent)] font-[var(--font-grotesk)]">
                           {dayStories.length}
                         </span>
                       )}
