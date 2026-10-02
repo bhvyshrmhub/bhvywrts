@@ -444,52 +444,51 @@
 
 .reading-prose {
   font-family: var(--font-source-serif), Georgia, serif;
-  font-size: 1.19rem;
-  line-height: 1.85;
+  font-size: 1.2rem;
+  line-height: 1.84;
   color: var(--reading-text);
-  max-width: 680px;
+  max-width: 720px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+@media (max-width: 640px) {
+  .reading-prose {
+    font-size: 1.1rem;
+    line-height: 1.78;
+  }
 }
 
 .reading-prose p {
-  margin-bottom: 1.65em;
-}
-
-.reading-prose p:first-child::first-letter {
-  font-family: var(--font-instrument-serif), serif;
-  font-size: 3.1em;
-  line-height: 0.85;
-  float: left;
-  padding-right: 0.12em;
-  margin-top: 0.04em;
-  color: var(--reading-heading);
+  margin-bottom: 1.75em;
+  word-break: break-word;
 }
 
 .reading-prose h1,
 .reading-prose h2,
 .reading-prose h3,
 .reading-prose h4 {
-  font-family: var(--font-instrument-serif), serif;
+  font-family: var(--font-instrument-serif), Georgia, serif;
   color: var(--reading-heading);
-  margin-top: 2.2em;
-  margin-bottom: 0.7em;
   line-height: 1.25;
   font-weight: 400;
+  letter-spacing: -0.01em;
 }
 
-.reading-prose h1 { font-size: 2.1em; }
-.reading-prose h2 { font-size: 1.7em; }
-.reading-prose h3 { font-size: 1.35em; }
-.reading-prose h4 { font-size: 1.15em; }
+.reading-prose h1 { font-size: 2.25em; margin-top: 2.4em; margin-bottom: 0.8em; }
+.reading-prose h2 { font-size: 1.8em; margin-top: 2.2em; margin-bottom: 0.7em; }
+.reading-prose h3 { font-size: 1.4em; margin-top: 2em; margin-bottom: 0.6em; }
+.reading-prose h4 { font-size: 1.18em; margin-top: 1.8em; margin-bottom: 0.5em; }
 
 .reading-prose a {
-  color: var(--lavender);
+  color: var(--orchid);
   text-decoration: none;
-  border-bottom: 1px solid color-mix(in srgb, var(--lavender) 35%, transparent);
-  transition: border-color 0.3s;
+  border-bottom: 1px solid color-mix(in srgb, var(--orchid) 40%, transparent);
+  transition: border-color 0.25s, color 0.25s;
 }
 
 .reading-prose a:hover {
-  border-color: color-mix(in srgb, var(--lavender) 90%, transparent);
+  border-color: var(--orchid);
 }
 
 .reading-prose strong {
@@ -502,17 +501,20 @@
 }
 
 .reading-prose blockquote {
-  border-left: 2px solid color-mix(in srgb, var(--lavender) 50%, transparent);
+  border-left: 2px solid var(--orchid);
   padding-left: 1.5em;
-  margin: 2em 0;
+  margin: 2.4em 0;
   font-style: italic;
+  font-family: var(--font-instrument-serif), Georgia, serif;
+  font-size: 1.35em;
+  line-height: 1.48;
   color: var(--reading-blockquote);
 }
 
 .reading-prose ul,
 .reading-prose ol {
-  margin: 1.5em 0;
-  padding-left: 1.5em;
+  margin: 1.6em 0;
+  padding-left: 1.6em;
 }
 
 .reading-prose ul { list-style: disc; }
@@ -523,9 +525,24 @@
 }
 
 .reading-prose img {
-  border-radius: 16px;
-  margin: 2.2em auto;
+  border-radius: 20px;
+  margin: 2.6em auto;
   max-width: 100%;
+  height: auto;
+  object-fit: cover;
+  box-shadow: 0 12px 36px rgba(0, 0, 0, 0.28);
+}
+
+.reading-prose figcaption,
+.reading-prose .caption {
+  font-family: var(--font-source-serif), Georgia, serif;
+  font-size: 12px;
+  font-style: italic;
+  text-align: center;
+  color: var(--muted);
+  opacity: 0.7;
+  margin-top: -1.8em;
+  margin-bottom: 2.2em;
 }
 
 .reading-prose hr {
@@ -706,8 +723,9 @@
 
 /* Reading mode — larger type, more air */
 .reading-prose-large {
-  font-size: 1.38rem;
+  font-size: 1.34rem;
   line-height: 1.95;
+  max-width: 720px;
 }
 
 .reading-prose-large p {

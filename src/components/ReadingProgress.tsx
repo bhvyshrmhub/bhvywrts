@@ -13,10 +13,10 @@ export function ReadingProgress() {
 
   return (
     <motion.div
-      className="fixed top-0 left-0 right-0 z-[55] h-[2px] origin-left"
+      className="fixed top-0 left-0 right-0 z-[60] h-[2px] origin-left pointer-events-none"
       style={{
         scaleX: scaleY,
-        background: "linear-gradient(90deg, rgba(255,182,217,0.8), rgba(248,168,200,0.6))",
+        background: "linear-gradient(90deg, var(--orchid), rgba(244,167,199,0.95))",
       }}
     />
   )
